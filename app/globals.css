@@ -938,3 +938,8 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .brief-actions{display:flex;gap:8px;margin-left:auto}
 @media (max-width:900px){.brief-tips ol{grid-template-columns:1fr 1fr}.brief-grid{grid-template-columns:1fr}}
 @media (max-width:560px){.brief-tips ol{grid-template-columns:1fr}.brief-actions{width:100%}.brief-actions>*{flex:1;justify-content:center}}
+.order-sum{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-bottom:14px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,91,31,.35);background:rgba(255,91,31,.35)}
+.order-sum div{display:grid;gap:4px;padding:14px 16px;background:#17171a}
+.order-sum span{font-size:12px;color:var(--mute)}
+.order-sum b{font-weight:500;font-size:15px}
+.order-sum .big b{font-size:24px;font-weight:600;color:var(--accent2);letter-spacing:-.02em}

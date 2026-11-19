@@ -163,10 +163,18 @@ function Onboarding({ d }: { d: Ready }) {
           <ol className="onb-how">
             <li>Deschide aplicația băncii tale și alege <b>Plată nouă</b> sau <b>Transfer</b>.</li>
             <li>Copiază beneficiarul, IBAN-ul și suma de mai jos.</li>
-            <li>La <b>Detalii plată</b> scrie exact referința <b className="mono">{d.company.bank_reference}</b>.</li>
+            <li>La <b>Detalii plată</b> scrie exact <b className="mono">Comanda {d.company.bank_reference}</b>.</li>
             <li>Trimite plata. Te anunțăm pe email când o confirmăm, iar contul se deblochează.</li>
           </ol>
-          <BankDetails amount={d.firstDue ? money(d.firstDue.amount_net, d.currency, 2) : null} reference={d.company.bank_reference} />
+          <div>
+            <div className="order-sum">
+              <div><span>Număr comandă</span><b className="mono">{d.company.bank_reference}</b></div>
+              <div><span>Plan</span><b>{d.planName}</b></div>
+              <div className="big"><span>De plată acum</span><b>{d.firstDue ? money(d.firstDue.amount_net, d.currency, 2) : "—"}</b></div>
+              <div><span>Apoi, lunar</span><b>{d.installments[1] ? money(d.installments[1].amount_net, d.currency) : "—"}</b></div>
+            </div>
+            <BankDetails amount={d.firstDue ? money(d.firstDue.amount_net, d.currency, 2) : null} reference={d.company.bank_reference} />
+          </div>
         </div>
       )}
     </div>

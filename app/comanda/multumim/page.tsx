@@ -6,10 +6,12 @@ import { Arrow } from "@/components/site/visuals";
 
 export const metadata: Metadata = { title: "Comanda a fost înregistrată", robots: { index: false, follow: false } };
 
-export default async function ThankYou({ searchParams }: { searchParams: Promise<{ ref?: string; suma?: string; email?: string; cont?: string }> }) {
+export default async function ThankYou({ searchParams }: { searchParams: Promise<{ ref?: string; suma?: string; lunar?: string; plan?: string; email?: string; cont?: string }> }) {
   const q = await searchParams;
   const ref = /^LNR-\d{3,6}$/.test(q.ref ?? "") ? q.ref! : null;
   const amount = (q.suma ?? "").slice(0, 30) || null;
+  const monthly = (q.lunar ?? "").slice(0, 30) || null;
+  const plan = (q.plan ?? "").slice(0, 30) || null;
   const email = /^[^@\s]+@[^@\s]+$/.test(q.email ?? "") ? q.email! : "";
   const hasAccount = q.cont === "1";
   const e = encodeURIComponent(email);
@@ -26,6 +28,14 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
           <div className="card ty-card">
             <span className="offer-k">Pasul 1 · Plătește prima rată</span>
             <h2>Datele pentru transfer</h2>
+            {(ref || amount) && (
+              <div className="order-sum">
+                {ref && <div><span>Număr comandă</span><b className="mono">{ref}</b></div>}
+                {plan && <div><span>Plan</span><b>{plan}</b></div>}
+                {amount && <div className="big"><span>De plată acum</span><b>{amount}</b></div>}
+                {monthly && <div><span>Apoi, lunar</span><b>{monthly}</b></div>}
+              </div>
+            )}
             <BankDetails amount={amount} reference={ref} />
           </div>
           <div className="card ty-card">

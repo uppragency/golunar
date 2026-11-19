@@ -147,17 +147,17 @@ export const templates = {
     }),
   bankOrder: (name: string, amount: string, reference: string, iban: string, email = "") =>
     layout({
-      preheader: `Prima rată: ${amount}. Plătești prin transfer cu referința ${reference}.`,
+      preheader: `Comanda ${reference}: de plată ${amount} prin transfer bancar.`,
       eyebrow: "Comandă",
-      title: "Comanda e înregistrată.",
-      titleDim: "Plătești prin transfer.",
+      title: `Comanda ${reference} e înregistrată.`,
+      titleDim: `De plată: ${amount}.`,
       body: `<p>Mulțumim, ${esc(name)}. Pentru a porni lansarea, plătește prima rată prin transfer bancar, din aplicația băncii tale.</p>
 <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin:12px 0">
 <tr><td style="padding:7px 0;color:#8C8C93">Beneficiar</td><td align="right"><b style="color:#F5F5F6">UPPRMARKETING S.R.L.</b></td></tr>
 <tr><td style="padding:7px 0;color:#8C8C93">IBAN</td><td align="right"><b style="color:#F5F5F6;font-family:${MONO}">${esc(iban)}</b></td></tr>
 <tr><td style="padding:7px 0;color:#8C8C93">Banca</td><td align="right"><b style="color:#F5F5F6">BANCA TRANSILVANIA</b></td></tr>
 <tr><td style="padding:7px 0;color:#8C8C93">Suma</td><td align="right"><b style="color:#F5F5F6">${esc(amount)}</b></td></tr>
-<tr><td style="padding:7px 0;color:#8C8C93">Detalii plată</td><td align="right"><b style="color:#FF7A45;font-family:${MONO}">${esc(reference)}</b></td></tr></table>
+<tr><td style="padding:7px 0;color:#8C8C93">Detalii plată</td><td align="right"><b style="color:#FF7A45;font-family:${MONO}">Comanda ${esc(reference)}</b></td></tr></table>
 <p>Pașii următori:</p>
 <ol style="margin:6px 0 0;padding-left:18px"><li style="margin:4px 0">Plătești prima rată cu referința de mai sus.</li><li style="margin:4px 0">Îți creezi parola contului de client, cu acest email.</li><li style="margin:4px 0">Confirmăm plata, de obicei în aceeași zi lucrătoare, și primești acces complet.</li><li style="margin:4px 0">Completezi brief-ul din cont. Lansăm în 10 zile lucrătoare.</li></ol>
 <p style="margin-top:16px;color:#8C8C93;font-size:12px">Facturile sunt emise de UPPRMARKETING S.R.L., CIF 52762670, J2025081624004.</p>`,

@@ -42,7 +42,7 @@ export default async function PortalLayout({ children }: { children: React.React
   }
   const payBanner = d.awaitingPayment ? (
     <div className="demo-bar pay-bar">
-      <span>Contul se activează după confirmarea primei plăți{d.firstDue ? ` (${money(d.firstDue.amount_net, d.currency)}, referința ${d.company.bank_reference})` : ""}.</span>
+      <span>Contul se activează după confirmarea primei plăți{d.firstDue ? ` (comanda ${d.company.bank_reference}, de plată ${money(d.firstDue.amount_net, d.currency)})` : ""}.</span>
       <Link href="/cont" className="btn-plain sm" style={{ color: "inherit" }}>Datele de plată</Link>
     </div>
   ) : null;
