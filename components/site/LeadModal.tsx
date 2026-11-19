@@ -46,7 +46,7 @@ export function LeadModal({ open, onClose, plan }: { open: boolean; onClose: () 
                 <div className="fld"><label htmlFor="ld-phone">Telefon</label><input id="ld-phone" name="phone" type="tel" autoComplete="tel" /></div>
               </div>
               <div className="fld"><label htmlFor="ld-msg">Ce face afacerea ta?</label><textarea id="ld-msg" name="message" rows={4} placeholder="Ex: clinică stomatologică în Iași, avem site vechi din 2018" /></div>
-              <input type="text" name="website" tabIndex={-1} autoComplete="off" style={{ position: "absolute", left: -9999 }} aria-hidden="true" />
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hp" aria-hidden="true" />
               {err && <p className="err" role="alert">{err}</p>}
               <button className="btn btn-ink" style={{ width: "100%", justifyContent: "space-between", marginTop: 8 }} disabled={busy}>
                 <span className="ic"><Arrow /></span><span>{busy ? "Se trimite…" : "Trimite"}</span><span style={{ width: 8 }} />

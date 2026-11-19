@@ -465,3 +465,5 @@ a.btn,a.btn-plain{display:inline-flex;align-items:center}
 .login-link{font-size:13px;color:var(--accent2);margin:-4px 0 6px}
 .auth-card .err{color:var(--bad);margin:0 0 6px}
 .side .logout svg{width:18px;height:18px;flex:none;opacity:.8}
+.sheet{overflow-x:hidden}
+.hp{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px}
