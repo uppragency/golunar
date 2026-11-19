@@ -458,3 +458,8 @@ a.btn,a.btn-plain{display:inline-flex;align-items:center}
 @media (max-width:900px){.side{display:none}}
 .paycard.add{width:100%;font:inherit}
 .paycard.add:disabled{opacity:.5;cursor:not-allowed}
+.login-switches{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.login-switch{font-size:14px;color:var(--mute);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line2)}
+.login-switch:hover{color:var(--text)}
+.lead-ok+.login-switch{display:block;margin:16px auto 0}
+.login-link{font-size:13px;color:var(--accent2);margin:-4px 0 6px}

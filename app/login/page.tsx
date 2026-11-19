@@ -15,7 +15,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <div className="auth-card">
         <Link href="/" className="logo"><i />LUNAR</Link>
         <h1>Contul meu</h1>
-        <p>Primești pe email un link de autentificare. Fără parolă.</p>
+        <p>Intră cu link pe email sau cu parolă.</p>
         {error && <p className="err" role="alert" style={{ marginBottom: 14 }}>Link-ul a expirat sau a fost deja folosit. Cere unul nou.</p>}
         <LoginForm next={next} />
       </div>

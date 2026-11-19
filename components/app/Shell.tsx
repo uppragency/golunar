@@ -45,6 +45,7 @@ export default function Shell({ items, who, badge, banner, children }: {
             </Link>
           ))}
           <div className="sp" />
+          <Link href="/parola-noua"><Icon name="shield" />Parolă</Link>
           <form action="/auth/signout" method="post">
             <button className="logout" type="submit"><Icon name="out" />Ieșire</button>
           </form>
