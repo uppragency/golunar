@@ -28,7 +28,7 @@ export function PartnersStrip() {
 
 /* ---------- de ce LUNAR ---------- */
 const WHY: [string, string, string][] = [
-  ["Cost", "Mii de lei plătiți în avans, înainte să vezi ceva.", "Începi cu 6 lei. Fără avans, fără taxă de creare."],
+  ["Cost", "Mii de lei plătiți în avans, înainte să vezi ceva.", "Începi cu 4,99 lei. Fără avans, fără taxă de creare."],
   ["Timp", "Săptămâni sau luni de așteptare.", "Live în 10 zile lucrătoare, garantat. Dacă întârziem, luna următoare e gratuită."],
   ["După lansare", "Site predat și uitat. Orice modificare se plătește separat.", "Îmbunătățiri lunare incluse în abonament."],
   ["Liniște", "Erori, site căzut, mesaje fără răspuns.", "Monitorizare la 10 minute, backup zilnic, răspuns în 48 de ore."],
@@ -55,7 +55,7 @@ export function WhySection({ onOrder }: { onOrder: () => void }) {
           ))}
         </div>
         <div className="why-cta reveal">
-          <button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Comandă website cu 6 lei</button>
+          <button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Comandă website cu 4,99 lei</button>
         </div>
       </div>
     </section>
@@ -87,7 +87,7 @@ export function CompareSection({ onOrder }: { onOrder: () => void }) {
               ))}
             </tbody>
             <tfoot>
-              <tr><td /><td className="cmp-l"><button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Comandă cu 6 lei</button></td><td /><td /></tr>
+              <tr><td /><td className="cmp-l"><button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Comandă cu 4,99 lei</button></td><td /><td /></tr>
             </tfoot>
           </table>
         </div>
@@ -131,7 +131,7 @@ function PortalMock({ tab }: { tab: (typeof TABS)[number] }) {
       <div className="pm-body">
         <div className="pm-h"><b>Plăți și facturi</b><span>Calendarul celor 12 rate și facturile din SPV.</span></div>
         <div className="pm-list">
-          {[["01", "12 nov. 2026", "6 lei", "Plătită"], ["02", "12 dec. 2026", "449 lei", "Plătită"], ["03", "12 ian. 2027", "449 lei", "Următoarea"], ["04", "12 feb. 2027", "449 lei", "Programată"]].map(([n, d, a, s]) => (
+          {[["01", "12 nov. 2026", "4,99 lei", "Plătită"], ["02", "12 dec. 2026", "269 lei", "Plătită"], ["03", "12 ian. 2027", "269 lei", "Următoarea"], ["04", "12 feb. 2027", "269 lei", "Programată"]].map(([n, d, a, s]) => (
             <div key={n}><span className="mono">{n}/12</span><span>{d}</span><b>{a}</b><em className={s === "Plătită" ? "ok" : s === "Următoarea" ? "acc" : ""}>{s}</em></div>
           ))}
         </div>
@@ -178,7 +178,7 @@ export function PortalPreview({ onOrder }: { onOrder: () => void }) {
           </div>
           <p className="pm-note">Previzualizare cu date de exemplu.</p>
         </div>
-        <div className="why-cta reveal"><button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Vreau acces în portal · comandă cu 6 lei</button></div>
+        <div className="why-cta reveal"><button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Vreau acces în portal · comandă cu 4,99 lei</button></div>
       </div>
     </section>
   );

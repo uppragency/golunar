@@ -1,7 +1,7 @@
 /** Comparația LUNAR / agenție clasică / site făcut cu AI. */
 export type Cell = { t: string; win?: boolean };
 export const COMP: { k: string; lunar: Cell; agency: Cell; ai: Cell }[] = [
-  { k: "Cost la început", lunar: { t: "6 lei prima lună", win: true }, agency: { t: "Mii de lei în avans" }, ai: { t: "Abonament + ore din timpul tău" } },
+  { k: "Cost la început", lunar: { t: "4,99 lei prima lună", win: true }, agency: { t: "Mii de lei în avans" }, ai: { t: "Abonament + ore din timpul tău" } },
   { k: "Timp până la lansare", lunar: { t: "10 zile lucrătoare, garantat", win: true }, agency: { t: "Săptămâni sau luni" }, ai: { t: "Depinde cât timp ai tu" } },
   { k: "Design", lunar: { t: "Personalizat pentru brandul tău", win: true }, agency: { t: "Personalizat" }, ai: { t: "Șablon, seamănă cu alte site-uri" } },
   { k: "Texte pentru clienți", lunar: { t: "Scrise de noi, orientate spre cereri", win: true }, agency: { t: "Uneori, cost separat" }, ai: { t: "Generice, le corectezi singur" } },

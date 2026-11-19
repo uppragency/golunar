@@ -59,8 +59,8 @@ export default function ResourceShell({ r, children, faq }: { r: Resource; child
       <main className="wrap">
         {children}
         <div className="r-cta">
-          <h3>Vrei să-l facem noi? <span>Începi cu 6 lei în prima lună, apoi {PLANS.essential.ron} lei pe lună. Live în 10 zile.</span></h3>
-          <Link href="/?comanda=1" className="btn"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</Link>
+          <h3>Vrei să-l facem noi? <span>Începi cu 4,99 lei în prima lună, apoi {PLANS.essential.ron} lei pe lună. Live în 10 zile.</span></h3>
+          <Link href="/?comanda=1" className="btn"><span className="ic"><Arrow /></span>Comandă website cu 4,99 lei</Link>
         </div>
         <section className="r-related">
           <h2>Citește și</h2>

@@ -183,7 +183,7 @@ export default function Landing() {
           <div className="mnav-foot" style={{ transitionDelay: menu ? "320ms" : "0ms" }}>
             <CurSeg cur={cur} onChange={switchCur} />
             <Link href="/cont" className="btn-plain" tabIndex={menu ? 0 : -1}>Contul meu</Link>
-            <button className="btn-plain mnav-order" tabIndex={menu ? 0 : -1} onClick={() => { setMenu(false); orderNow(); }}>Comandă website cu 6 lei</button>
+            <button className="btn-plain mnav-order" tabIndex={menu ? 0 : -1} onClick={() => { setMenu(false); orderNow(); }}>Comandă website cu 4,99 lei</button>
           </div>
         </div>
       </div>
@@ -196,7 +196,7 @@ export default function Landing() {
               <a href="#abonamente" className="price-chip promo-chip" onClick={() => pick("essential")}>
                 <span className="muted" style={{ fontSize: 14 }}>începi cu</span>
                 <b>{launchPrice(cur)}</b>
-                <span className="muted" style={{ fontSize: 14 }}>prima lună · apoi {p(89, 449)} / lună ({PRICE_NOTE})</span>
+                <span className="muted" style={{ fontSize: 14 }}>prima lună · apoi {p(53, 269)} / lună ({PRICE_NOTE})</span>
               </a>
             </div>
             <p className="hero-tag">Website-ul tău, live în 10 zile. <span>O echipă care îl face mai bun în fiecare lună.</span></p>
@@ -209,7 +209,7 @@ export default function Landing() {
                 <p>Website personalizat, fără taxă de dezvoltare. Abonamentul acoperă designul, hostingul, mentenanța și optimizarea lunară. După 12 plăți, site-ul devine al tău.</p>
               </div>
               <div className="row">
-                <button className="btn btn-accent" onClick={orderNow}><span className="ic"><Arrow /></span>Comandă website cu 6 lei</button>
+                <button className="btn btn-accent" onClick={orderNow}><span className="ic"><Arrow /></span>Comandă website cu 4,99 lei</button>
                 <a href="#abonamente" className="btn btn-ghost"><span className="ic"><Arrow /></span>Vezi abonamentele</a>
               </div>
             </div>
@@ -286,11 +286,11 @@ export default function Landing() {
           <div className="cfg">
             <div>
               <div className="plans" role="radiogroup" aria-label="Plan">
-                <PlanCard code="essential" sel={cart.plan} onPick={pick} price={p(89, 449)} promo={launchPrice(cur)} tag={`Prima lună ${launchPrice(cur)}`} lead="Prezență online profesionistă și credibilă."
+                <PlanCard code="essential" sel={cart.plan} onPick={pick} price={p(53, 269)} promo={launchPrice(cur)} tag={`Prima lună ${launchPrice(cur)}`} lead="Prezență online profesionistă și credibilă."
                   items={PLAN_FEATURES.essential} />
-                <PlanCard code="growth" sel={cart.plan} onPick={pick} price={p(189, 949)} cls="pop" tag="Cel mai ales" lead="Mai multă vizibilitate și mai multe cereri de ofertă."
+                <PlanCard code="growth" sel={cart.plan} onPick={pick} price={p(155, 790)} cls="pop" tag="Cel mai ales" lead="Mai multă vizibilitate și mai multe cereri de ofertă."
                   items={PLAN_FEATURES.growth} />
-                <PlanCard code="partner" sel={cart.plan} onPick={pick} price={p(390, 1990)} cls="dark" lead="Echipa ta digitală externă, lună de lună."
+                <PlanCard code="partner" sel={cart.plan} onPick={pick} price={p(271, 1379)} cls="dark" lead="Echipa ta digitală externă, lună de lună."
                   items={PLAN_FEATURES.partner} />
               </div>
               <div className="addons">
@@ -398,7 +398,7 @@ export default function Landing() {
           <h2>Plătești lunar.<br /><span className="dim">Crești lunar.</span></h2>
           <p className="end-promo">Începi cu <b>{launchPrice(cur)}</b> în prima lună. Codul {LAUNCH.code} e deja aplicat.</p>
           <div className="row">
-            <button onClick={orderNow} className="btn btn-accent"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</button>
+            <button onClick={orderNow} className="btn btn-accent"><span className="ic"><Arrow /></span>Comandă website cu 4,99 lei</button>
             <button className="btn btn-ghost" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Programează discuția</button>
           </div>
         </div>

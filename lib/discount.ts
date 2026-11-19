@@ -1,6 +1,6 @@
 /** Campania de lansare: Esențial, prima lună. Valorile reale vin din codul din baza de date. */
-export const LAUNCH = { code: "GOLUNAR", ron: 6, eur: 1 } as const;
-export const launchPrice = (cur: "RON" | "EUR") => (cur === "EUR" ? "1 €" : "6 lei");
+export const LAUNCH = { code: "GOLUNAR", ron: 4.99, eur: 1 } as const;
+export const launchPrice = (cur: "RON" | "EUR") => (cur === "EUR" ? "1 €" : "4,99 lei");
 
 import { ADDONS, PLANS, cartLines, round2, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 

@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
   return [
     u("/", SITE_UPDATED, "weekly", 1),
-    u("/website-6-lei", SITE_UPDATED, "weekly", 0.9),
+    u("/website-4-99-lei", SITE_UPDATED, "weekly", 0.9),
     u("/audit", SITE_UPDATED, "monthly", 0.8),
     u("/cum-lucram", SITE_UPDATED, "monthly", 0.7),
     u("/garantii", SITE_UPDATED, "monthly", 0.7),

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const E = PLANS.essential;
 
 const DETAIL: { h: string; lunar: string; agency: string; ai: string }[] = [
-  { h: "Costul real, nu doar prețul de început", lunar: `Începi cu 6 lei în prima lună, apoi ${E.ron} lei pe lună, cu tot inclus: design, texte, hosting, mentenanță și îmbunătățiri. Știi din prima zi cât plătești în fiecare lună.`, agency: "Plătești de obicei o sumă mare la început, de multe ori în avans. Hostingul, mentenanța și modificările ulterioare vin separat, la ofertă nouă.", ai: "Abonamentul platformei pare mic, dar adaugi domeniu, șablon premium, aplicații și, mai ales, orele tale de lucru. Timpul tău are un cost." },
+  { h: "Costul real, nu doar prețul de început", lunar: `Începi cu 4,99 lei în prima lună, apoi ${E.ron} lei pe lună, cu tot inclus: design, texte, hosting, mentenanță și îmbunătățiri. Știi din prima zi cât plătești în fiecare lună.`, agency: "Plătești de obicei o sumă mare la început, de multe ori în avans. Hostingul, mentenanța și modificările ulterioare vin separat, la ofertă nouă.", ai: "Abonamentul platformei pare mic, dar adaugi domeniu, șablon premium, aplicații și, mai ales, orele tale de lucru. Timpul tău are un cost." },
   { h: "Cât durează până ești online", lunar: "10 zile lucrătoare de la brief, garantat în contract. Dacă întârziem din vina noastră, luna următoare e gratuită.", agency: "Proiectele trec prin ofertare, contract, avans și mai multe runde de feedback. Durata se întinde de la câteva săptămâni la câteva luni.", ai: "Poți avea o pagină în câteva ore, dar un site complet, cu texte bune și imagini potrivite, cere zile de lucru din partea ta." },
   { h: "Design și texte", lunar: "Design personalizat pe brandul tău și texte scrise pentru clienții tăi, cu un singur scop pe pagină: cererea de ofertă sau programarea.", agency: "Designul e personalizat. Textele sunt adesea responsabilitatea ta sau un serviciu plătit separat.", ai: "Pornești de la un șablon pe care îl folosesc mii de alte site-uri. Textele generate sunt generice și trebuie rescrise ca să sune a tine." },
   { h: "Ce se întâmplă după lansare", lunar: "Site-ul se îmbunătățește lunar: pagini noi, oferte, integrări, din portalul de client, cu răspuns în 48 de ore. Primești raport lunar.", agency: "Site-ul e predat. Fiecare modificare devine un mic proiect nou, cu ofertă și termen.", ai: "Toate modificările le faci singur. Dacă ceva nu merge, cauți soluția în documentație sau scrii la suportul platformei." },
@@ -26,7 +26,7 @@ const DETAIL: { h: string; lunar: string; agency: string; ai: string }[] = [
 ];
 
 const FAQ: [string, string][] = [
-  ["Ce este mai ieftin: agenție, AI sau abonament?", `Pe hârtie, un builder cu AI pare cel mai ieftin. Dacă pui la socoteală timpul tău, modificările și mentenanța, abonamentul LUNAR rămâne de obicei cel mai avantajos: începi cu 6 lei, apoi ${E.ron} lei pe lună, cu tot inclus.`],
+  ["Ce este mai ieftin: agenție, AI sau abonament?", `Pe hârtie, un builder cu AI pare cel mai ieftin. Dacă pui la socoteală timpul tău, modificările și mentenanța, abonamentul LUNAR rămâne de obicei cel mai avantajos: începi cu 4,99 lei, apoi ${E.ron} lei pe lună, cu tot inclus.`],
   ["Pot face singur site-ul cu AI și apoi să trec la LUNAR?", "Da. Preluăm conținutul existent și îl refacem pe designul nostru, cu redirecționări ca să nu pierzi pozițiile din Google."],
   ["Am deja o agenție. Pot trece la LUNAR?", "Da. Te ajutăm cu mutarea domeniului și a conținutului. Vezi ghidul pentru schimbarea furnizorului fără pierderi de trafic."],
 ];
@@ -38,7 +38,7 @@ export default function ComparePage() {
       eyebrow="Comparație"
       title={<>LUNAR, agenție sau AI. <span className="dim">Ce alegi pentru website-ul tău.</span></>}
       lede="Sunt trei drumuri pentru un website de firmă. Le-am pus alături pe criteriile care contează după lansare, nu doar în prima zi."
-      meta={<><span className="pill acc"><span className="d" />Începi cu 6 lei</span><span className="pill">Lansare în 10 zile</span><span className="pill">Al tău după 12 plăți</span></>}
+      meta={<><span className="pill acc"><span className="d" />Începi cu 4,99 lei</span><span className="pill">Lansare în 10 zile</span><span className="pill">Al tău după 12 plăți</span></>}
       jsonLd={[faqLd(FAQ)]}
     >
       <div className="wide-block">

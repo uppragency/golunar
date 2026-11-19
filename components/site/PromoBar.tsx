@@ -19,12 +19,12 @@ export default function PromoBar() {
     setOn(false);
     try { sessionStorage.setItem("lunar_promo_off", "1"); } catch {}
   };
-  if (path === "/website-6-lei") return null;
+  if (path === "/website-4-99-lei") return null;
   return (
     <div className={`promo-bar${on ? " on" : ""}`} role="region" aria-label="Ofertă de lansare" aria-hidden={!on}>
       <span className="promo-dot" aria-hidden="true" />
-      <Link href="/website-6-lei" tabIndex={on ? 0 : -1} onClick={close}>
-        <b>Website-ul tău de la 6 lei</b><span> prima lună, cu codul GOLUNAR aplicat automat</span>
+      <Link href="/website-4-99-lei" tabIndex={on ? 0 : -1} onClick={close}>
+        <b>Website-ul tău de la 4,99 lei</b><span> prima lună, cu codul GOLUNAR aplicat automat</span>
       </Link>
       <button type="button" onClick={close} aria-label="Închide oferta" tabIndex={on ? 0 : -1}>×</button>
     </div>

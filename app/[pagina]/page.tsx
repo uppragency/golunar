@@ -61,7 +61,7 @@ function IndustryPage({ l }: { l: Industry }) {
       eyebrow={`Website pentru ${l.name}`}
       title={<>{l.h1} <span className="dim">{l.h1Dim}</span></>}
       lede={l.lede}
-      meta={<><span className="pill acc"><span className="d" />Lansare în 10 zile lucrătoare</span><Link href="/website-6-lei" className="pill acc">Prima lună 6 lei</Link><span className="pill">Apoi {PLANS.essential.ron} lei / lună, TVA inclus</span><span className="pill">Al tău după 12 plăți</span></>}
+      meta={<><span className="pill acc"><span className="d" />Lansare în 10 zile lucrătoare</span><Link href="/website-4-99-lei" className="pill acc">Prima lună 4,99 lei</Link><span className="pill">Apoi {PLANS.essential.ron} lei / lună, TVA inclus</span><span className="pill">Al tău după 12 plăți</span></>}
       jsonLd={[serviceLd(`Site pentru ${l.name}`, l.desc, `${SITE_URL}/${l.slug}`), faqLd(l.faq)]}
     >
       <article className="article">
@@ -100,7 +100,7 @@ function CityPage({ l }: { l: City }) {
       eyebrow={`Website ${l.inCity}`}
       title={<>{l.h1} <span className="dim">{l.h1Dim}</span></>}
       lede={l.lede}
-      meta={<><span className="pill acc"><span className="d" />Lansare în 10 zile lucrătoare</span><Link href="/website-6-lei" className="pill acc">Prima lună 6 lei</Link><span className="pill">Apoi {PLANS.essential.ron} lei / lună, TVA inclus</span><span className="pill">0 lei taxă de creare</span></>}
+      meta={<><span className="pill acc"><span className="d" />Lansare în 10 zile lucrătoare</span><Link href="/website-4-99-lei" className="pill acc">Prima lună 4,99 lei</Link><span className="pill">Apoi {PLANS.essential.ron} lei / lună, TVA inclus</span><span className="pill">0 lei taxă de creare</span></>}
       jsonLd={[serviceLd(`Creare site ${l.city}`, l.desc, `${SITE_URL}/${l.slug}`, l.city), faqLd(l.faq)]}
     >
       <article className="article">

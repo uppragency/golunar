@@ -50,7 +50,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div className="fb-card">
               <div className="eyebrow">Dacă începi azi</div>
               <h2 style={{ marginTop: 18 }}>Online pe <span>{launch}</span></h2>
-              <p className="fb-guar">Începi cu 6 lei în prima lună. Garanție: dacă întârziem lansarea, luna următoare e gratuită.</p>
+              <p className="fb-guar">Începi cu 4,99 lei în prima lună. Garanție: dacă întârziem lansarea, luna următoare e gratuită.</p>
               <div className="fb-tl">
                 {[["ZIUA 1", "Brief"], ["ZIUA 4", "Design"], ["ZIUA 7", "Dezvoltare"], ["ZIUA 10", "Lansare"]].map(([d, l]) => (
                   <div key={d}><b />{d}<br />{l}</div>
@@ -59,7 +59,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div className="fb-card hot">
               <h2>Începe website-ul tău. <span>Fără investiție inițială.</span></h2>
-              <Link className="fb-btn" href="/?comanda=1"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</Link>
+              <Link className="fb-btn" href="/?comanda=1"><span className="ic"><Arrow /></span>Comandă website cu 4,99 lei</Link>
               <button className="fb-sec" onClick={openLead}>sau programează o discuție gratuită de 20 min</button>
             </div>
           </div>
@@ -72,11 +72,12 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div>
               <h6>Explorează</h6>
               <Link href="/#proces">Proces</Link><Link href="/portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
-              <Link href="/website-6-lei">Website de la 6 lei</Link><Link href="/tehnologii">Tehnologii</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/garantii">Garanții</Link><Link href="/lunar-vs-agentie-vs-ai">LUNAR vs agenție vs AI</Link><Link href="/audit">Audit SEO gratuit</Link>
+              <Link href="/website-4-99-lei">Website de la 4,99 lei</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/garantii">Garanții</Link><Link href="/audit">Audit SEO gratuit</Link>
             </div>
             <div>
               <h6>Resurse</h6>
               {RESOURCES.map((r) => <Link key={r.slug} href={`/resurse/${r.slug}`}>{r.title.split(":")[0]}</Link>)}
+              <Link href="/lunar-vs-agentie-vs-ai">LUNAR vs agenție vs AI</Link><Link href="/tehnologii">Tehnologii</Link>
               <Link href="/resurse">Toate resursele →</Link>
             </div>
             <div>

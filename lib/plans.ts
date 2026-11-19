@@ -3,14 +3,14 @@ export type AddonCode = "brand" | "local" | "lang";
 export type Currency = "RON" | "EUR";
 
 export const PLANS: Record<PlanCode, { name: string; eur: number; ron: number; improvements: number; minMonths: number }> = {
-  essential: { name: "Esențial", eur: 89, ron: 449, improvements: 1, minMonths: 3 },
-  growth: { name: "Creștere", eur: 189, ron: 949, improvements: 2, minMonths: 2 },
-  partner: { name: "Partener", eur: 390, ron: 1990, improvements: 4, minMonths: 1 },
+  essential: { name: "Esențial", eur: 53, ron: 269, improvements: 1, minMonths: 3 },
+  growth: { name: "Creștere", eur: 155, ron: 790, improvements: 2, minMonths: 2 },
+  partner: { name: "Partener", eur: 271, ron: 1379, improvements: 4, minMonths: 1 },
 };
 
 export const ADDONS: Record<AddonCode, { name: string; eur: number; ron: number; maxCycles?: number; maxQty?: number }> = {
   brand: { name: "Identitate vizuală", eur: 79, ron: 399, maxCycles: 12 },
-  local: { name: "Vizibilitate locală Google", eur: 39, ron: 199 },
+  local: { name: "Vizibilitate locală Google", eur: 19, ron: 99 },
   lang: { name: "Limbă suplimentară", eur: 29, ron: 149, maxQty: 5 },
 };
 

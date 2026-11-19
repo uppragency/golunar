@@ -42,7 +42,7 @@ export default function PortfolioPage() {
       </div>
       <article className="article">
         <h2>Vrei un site ca acestea?</h2>
-        <p>Fiecare proiect pornește de la un brief scurt și ajunge online în 10 zile lucrătoare. Pe planul Esențial, prima lună costă 6 lei. Vezi <Link className="inl" href="/cum-lucram">cum lucrăm</Link> sau <Link className="inl" href="/?comanda=1">comandă acum</Link>.</p>
+        <p>Fiecare proiect pornește de la un brief scurt și ajunge online în 10 zile lucrătoare. Pe planul Esențial, prima lună costă 4,99 lei. Vezi <Link className="inl" href="/cum-lucram">cum lucrăm</Link> sau <Link className="inl" href="/?comanda=1">comandă acum</Link>.</p>
       </article>
     </PageShell>
   );
