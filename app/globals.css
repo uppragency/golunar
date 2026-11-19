@@ -1184,3 +1184,7 @@ html,body{overflow-x:clip}
   .why-row.why-m-hide{display:none}
   .why-more{display:flex;margin:14px auto 0;height:44px;padding:0 22px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:#fff;font-size:15px;font-weight:500;cursor:pointer;align-items:center}
 }
+/* footer: linie între punctele din calendarul de lansare */
+.fb-tl{display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.fb-tl::before{content:"";position:absolute;left:5px;width:75%;top:4px;height:2px;background:linear-gradient(90deg,var(--accent),rgba(255,91,31,.55));border-radius:2px}
+.fb-tl b{position:relative;z-index:1}
