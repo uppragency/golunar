@@ -470,3 +470,15 @@ a.btn,a.btn-plain{display:inline-flex;align-items:center}
 .side a.logo{height:auto;padding:4px 10px 22px;color:var(--text);background:none}.side a.logo:hover{background:none;opacity:.85}
 .sheet>*,.grid2>*{min-width:0}
 .fld input,.fld select,.fld textarea{width:100%;min-width:0}
+/* Timeline · accent card (livrare rapidă) */
+.card.timeline{background:#FF5B1F;border-color:#FF5B1F;color:#fff;box-shadow:0 24px 60px rgba(255,91,31,.22)}
+.timeline .launch .mono{color:rgba(255,255,255,.78)}
+.timeline .launch b{color:#fff}
+.timeline .tl-track .bar{background:rgba(255,255,255,.32)}
+.timeline .tl-track .fill{background:#fff}
+.timeline .tl-track .m span{color:rgba(255,255,255,.82)}
+.timeline .tl-track .m em{color:#fff;font-weight:500}
+.timeline .tl-track .m b{background:#FF5B1F;border-color:rgba(255,255,255,.55)}
+.timeline .tl-track .m.on b{background:#fff;border-color:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.22)}
+.timeline .pill.acc{background:#fff;color:#0B0B0C;border-color:#fff;font-weight:600}
+.timeline .pill.acc .d{background:#FF5B1F}
