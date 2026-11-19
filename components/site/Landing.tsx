@@ -6,6 +6,8 @@ import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Cart, type Currency, type Pl
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
+import SiteFooter from "./SiteFooter";
+import { RESOURCES } from "@/lib/resources";
 
 const fmt = (v: number, cur: Currency, d?: number) => {
   const dec = d ?? (Number.isInteger(v) ? 0 : 2);
@@ -67,7 +69,6 @@ export default function Landing() {
   const [toast, setToast] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
   const root = useRef<HTMLDivElement>(null);
-  const wordRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const [railEdge, setRailEdge] = useState({ start: true, end: false });
 
@@ -114,19 +115,6 @@ export default function Landing() {
     if (!r || !card) return;
     r.scrollBy({ left: dir * (card.offsetWidth + 16), behavior: "smooth" });
   };
-
-  useEffect(() => {
-    const el = wordRef.current;
-    if (!el) return;
-    const fit = () => {
-      el.style.fontSize = "100px";
-      el.style.fontSize = `${(100 * (window.innerWidth - 40)) / el.scrollWidth}px`;
-    };
-    fit();
-    document.fonts?.ready.then(fit);
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = menu ? "hidden" : "";
@@ -375,17 +363,13 @@ export default function Landing() {
             <p>Ghiduri și instrumente pentru antreprenorii care aleg între abonament, plată unică sau DIY.</p>
           </div>
           <div className="res">
-            {[
-              ["Ghid · Calculator", "Abonament sau plată unică: costul real pe 3 ani", "8 min · instrument inclus"],
-              ["Comparație", "DIY, AI builder sau agenție: ce alegi în 2026", "6 min"],
-              ["Template", "Cum pregătești brief-ul unui website", "5 min · model descărcabil"],
-              ["Checklist", "Schimbi furnizorul web fără să pierzi trafic", "7 min"],
-            ].map(([kk, h, s]) => (
-              <a href="#resurse" className="card reveal" key={h} onClick={(e) => { e.preventDefault(); flash("Ghidul apare în curând"); }}>
-                <span className="k">{kk}</span><h4>{h}</h4><span>{s}</span>
-              </a>
+            {RESOURCES.map((r) => (
+              <Link href={`/resurse/${r.slug}`} className="card reveal" key={r.slug}>
+                <span className="k">{r.kicker}</span><h4>{r.title}</h4><span>{r.minutes} min{r.extra ? ` · ${r.extra}` : ""}</span>
+              </Link>
             ))}
           </div>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}><Link href="/resurse" className="btn-plain">Toate resursele →</Link></div>
         </div>
       </section>
 
@@ -400,43 +384,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="fb">
-        <div className="fb-sky" aria-hidden="true" /><div className="fb-stars" aria-hidden="true" /><div className="fb-moon" aria-hidden="true" />
-        <div className="wrap">
-          <div className="fb-cta">
-            <div className="fb-card">
-              <div className="eyebrow">Dacă începi azi</div>
-              <h2 style={{ marginTop: 18 }}>Online pe <span>{launch}</span></h2>
-              <div className="fb-tl">
-                {[["ZIUA 1", "Brief"], ["ZIUA 4", "Design"], ["ZIUA 7", "Dezvoltare"], ["ZIUA 10", "Lansare"]].map(([d, l]) => (
-                  <div key={d}><b />{d}<br />{l}</div>
-                ))}
-              </div>
-            </div>
-            <div className="fb-card hot">
-              <h2>Începe website-ul tău. <span>Fără investiție inițială.</span></h2>
-              <button className="fb-btn" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Discuție gratuită de 20 min</button>
-            </div>
-          </div>
-          <div className="fb-cols">
-            <div>
-              <a href="#top" className="logo"><i />LUNAR</a>
-              <p>Website-ul tău, mai bun lună de lună. Al tău după 12 plăți.</p>
-            </div>
-            <div><h6>Explorează</h6><a href="#proces">Proces</a><a href="#portofoliu">Portofoliu</a><a href="#abonamente">Abonamente</a><a href="#intrebari">Întrebări</a><a href="#resurse">Resurse</a></div>
-            <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><a href="#abonamente">Începe proiectul</a><Link href="/cont/cereri">Cere o îmbunătățire</Link></div>
-            <div><h6>Contact</h6><a href="mailto:salut@golunar.ro">salut@golunar.ro</a><a href="mailto:facturare@golunar.ro">facturare@golunar.ro</a></div>
-          </div>
-        </div>
-        <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span> LUNAR</div>
-        <div className="fb-legal">
-          <div className="wrap">
-            <span>© {new Date().getFullYear()} LUNAR · golunar.ro · Prețuri finale</span>
-            <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
-            <a href="#top">Înapoi sus ↑</a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter onLead={() => setLead(true)} />
 
       <CheckoutModal open={checkout} onClose={() => setCheckout(false)} cart={cart} cur={cur} />
       <LeadModal open={lead} onClose={() => setLead(false)} plan={cart.plan} />
