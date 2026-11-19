@@ -95,7 +95,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
         <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span><span>LUNAR</span></div>
         <div className="fb-legal">
           <div className="wrap">
-            <span className="fb-co">© {new Date().getFullYear()} LUNAR este un serviciu {PAYEE.name} · CIF {PAYEE.cif} · {PAYEE.regCom} · {PAYEE.address} · {PAYEE.bank}</span>
+            <span className="fb-co">© {new Date().getFullYear()} LUNAR este un serviciu {PAYEE.name} · CIF {PAYEE.cif} · {PAYEE.regCom}</span>
             <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
           </div>
         </div>
