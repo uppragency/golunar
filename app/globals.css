@@ -1138,3 +1138,4 @@ html,body{overflow-x:clip}
 /* lumină între „De ce LUNAR” și „Proces”, pe dreapta, peste granița secțiunilor */
 #proces::before{display:block;width:680px;height:680px;right:-220px;left:auto;top:-340px;bottom:auto;filter:blur(110px);opacity:.75;background:radial-gradient(circle,rgba(255,91,31,.5),rgba(255,110,50,.18) 45%,rgba(255,91,31,0) 70%);animation-delay:-4s}
 @media (max-width:760px){#proces::before{width:360px;height:360px;right:-140px;top:-180px}}
+.pf-note-acc{flex-basis:100%;width:100%;margin:6px 0 0;font-size:14px;line-height:1.5;color:var(--accent2,#FF6A1A)}

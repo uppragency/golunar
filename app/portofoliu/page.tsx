@@ -19,10 +19,9 @@ export default function PortfolioPage() {
       eyebrow="Portofoliu"
       title={<>Făcut pentru tine. <span className="dim">Fără șabloane.</span></>}
       lede="Website-uri construite de echipa din spatele LUNAR pentru clinici, academii, evenimente, magazine online și servicii profesionale. Derulează în fiecare captură pentru a vedea pagina completă."
-      meta={<><span className="pill acc"><span className="d" />{PORTFOLIO.length} proiecte</span><span className="pill">Design unic pentru fiecare client</span></>}
+      meta={<><span className="pill acc"><span className="d" />{PORTFOLIO.length} proiecte</span><span className="pill">Design unic pentru fiecare client</span><p className="pf-note-acc">{PORTFOLIO_NOTE}</p></>}
     >
       <div className="wide-block">
-        <p className="pf-note">{PORTFOLIO_NOTE}</p>
         <div className="pf-grid">
           {PORTFOLIO.map((p, i) => (
             <article className="pf-card" id={p.slug} key={p.slug}>

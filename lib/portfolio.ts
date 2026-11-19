@@ -26,4 +26,4 @@ export const PORTFOLIO: Project[] = [
   { slug: "superbootcamp", name: "SuperBootCamp MentorMed 2027", category: "Eveniment medical", url: "https://drbogdanchiper.ro", h: 9000 },
 ];
 
-export const PORTFOLIO_NOTE = "Previzualizările sunt capturi de ecran comprimate. Calitatea reală se vede pe site-urile live.";
+export const PORTFOLIO_NOTE = "Previzualizările sunt capturi de ecran comprimate și pot conține bug-uri de previzualizare. Calitatea reală se vede pe site-urile live.";
