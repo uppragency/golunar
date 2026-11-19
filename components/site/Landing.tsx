@@ -370,11 +370,11 @@ export default function Landing() {
 
       <section className="end dots" id="contact">
         <div className="wrap">
-          <div className="eyebrow" style={{ justifyContent: "center", marginBottom: 24 }}>Final de pagină</div>
-          <h2>Aici se termină pagina. <span className="dim">Începe website-ul tău.</span></h2>
+          <div className="eyebrow" style={{ justifyContent: "center", marginBottom: 24 }}>Ritmul tău</div>
+          <h2>Plătești lunar.<br /><span className="dim">Crești lunar.</span></h2>
           <div className="row">
-            <button className="btn btn-accent" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Programează 20 de minute pe Google Meet</button>
-            <a href="#abonamente" className="btn btn-ghost"><span className="ic"><Arrow /></span>Începe proiectul</a>
+            <a href="#abonamente" className="btn btn-accent"><span className="ic"><Arrow /></span>Vreau un site nou</a>
+            <button className="btn btn-ghost" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Programează discuția</button>
           </div>
         </div>
       </section>
