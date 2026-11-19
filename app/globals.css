@@ -947,3 +947,17 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .fb-sec:hover{color:#fff}
 .mnav-order{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
 .audit-cta .inl{color:var(--accent2);text-decoration:underline;text-underline-offset:3px}
+/* ---------- validare câmpuri comandă ---------- */
+.vwrap{position:relative;display:block;flex:1;min-width:0}
+.vwrap input{width:100%;padding-right:44px!important}
+.vwrap input[aria-invalid="true"]{border-color:#E5484D!important;box-shadow:0 0 0 3px rgba(229,72,77,.12)}
+.vmark{position:absolute;right:12px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;display:grid;place-items:center;pointer-events:none;animation:vpop .25s var(--ease)}
+.vmark svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.vmark.ok{background:#1FB66B}
+.vmark.bad{background:#E5484D}
+.vmsg{position:absolute;left:2px;top:calc(100% + 4px);font-size:12px;color:#D93036;white-space:nowrap}
+.sheet .fld{position:relative;margin-bottom:26px}
+@keyframes vpop{from{transform:scale(.5);opacity:0}}
+/* footer: spațiu între coloane și GO LUNAR, butoanele rămân clicabile */
+.fb-cols{position:relative;z-index:2}
+.fb-word{margin-top:clamp(56px,7vw,110px)!important;pointer-events:none;position:relative;z-index:1}

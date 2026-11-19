@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
 import { allFeatures, discountLabel, paymentSchedule, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
+import { checks, type Check, type FieldKey } from "@/lib/validate";
 import { Arrow } from "./visuals";
 
 const fmt = (v: number, cur: Currency, d?: number) => {
@@ -19,7 +20,16 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
   const [vatPayer, setVatPayer] = useState(true);
   const [shown, setShown] = useState(3);
   const [pm, setPm] = useState<"card" | "bank_transfer">("bank_transfer");
-  const [accept, setAccept] = useState(false);
+  const [accept, setAccept] = useState(true);
+  const [touched, setTouched] = useState<Partial<Record<FieldKey, boolean>>>({});
+  const touch = (k: FieldKey) => () => setTouched((t) => ({ ...t, [k]: true }));
+  const st = (k: FieldKey) => {
+    const c = checks[k](f[k]);
+    if (!c) return null;
+    if (c.ok) return c;
+    return touched[k] ? c : null;
+  };
+  const mark = (k: FieldKey) => <FieldMark c={st(k)} />;
   const [busy, setBusy] = useState<"anaf" | "pay" | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
@@ -61,6 +71,13 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
+    const bad = (Object.keys(checks) as FieldKey[]).filter((k) => checks[k](f[k])?.ok === false);
+    if (bad.length) {
+      setTouched(Object.fromEntries(bad.map((k) => [k, true])));
+      const ids: Record<FieldKey, string> = { cui: "co-cui", name: "co-name", regCom: "co-reg", address: "co-addr", contact: "co-contact", email: "co-email", phone: "co-phone", domain: "co-dom" };
+      document.getElementById(ids[bad[0]])?.focus();
+      return setErr("Verifică câmpurile marcate cu roșu.");
+    }
     if (!accept) return setErr("Bifează acceptarea contractului-cadru.");
     setBusy("pay");
     try {
@@ -101,22 +118,22 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
               <div className="fld">
                 <label htmlFor="co-cui">CUI</label>
                 <div className="cui">
-                  <input id="co-cui" value={f.cui} onChange={set("cui")} placeholder="RO12345678" required inputMode="text" autoComplete="off" />
+                  <span className="vwrap"><input id="co-cui" value={f.cui} onChange={set("cui")} onBlur={touch("cui")} placeholder="RO12345678" required inputMode="text" autoComplete="off" aria-invalid={st("cui")?.ok === false} />{mark("cui")}</span>
                   <button type="button" onClick={lookup} disabled={busy === "anaf" || f.cui.replace(/\D/g, "").length < 2}>{busy === "anaf" ? "Caut…" : "Caută"}</button>
                 </div>
               </div>
               <div className="grid2">
-                <div className="fld"><label htmlFor="co-name">Denumire firmă</label><input id="co-name" value={f.name} onChange={set("name")} required autoComplete="organization" /></div>
-                <div className="fld"><label htmlFor="co-reg">Nr. Reg. Com.</label><input id="co-reg" value={f.regCom} onChange={set("regCom")} /></div>
+                <div className="fld"><label htmlFor="co-name">Denumire firmă</label><span className="vwrap"><input id="co-name" value={f.name} onChange={set("name")} onBlur={touch("name")} required autoComplete="organization" aria-invalid={st("name")?.ok === false} />{mark("name")}</span></div>
+                <div className="fld"><label htmlFor="co-reg">Nr. Reg. Com.</label><span className="vwrap"><input id="co-reg" value={f.regCom} onChange={set("regCom")} onBlur={touch("regCom")} aria-invalid={st("regCom")?.ok === false} />{mark("regCom")}</span></div>
               </div>
-              <div className="fld"><label htmlFor="co-addr">Adresă sediu</label><input id="co-addr" value={f.address} onChange={set("address")} required autoComplete="street-address" /></div>
+              <div className="fld"><label htmlFor="co-addr">Adresă sediu</label><span className="vwrap"><input id="co-addr" value={f.address} onChange={set("address")} onBlur={touch("address")} required autoComplete="street-address" aria-invalid={st("address")?.ok === false} />{mark("address")}</span></div>
               <div className="grid2">
-                <div className="fld"><label htmlFor="co-contact">Persoană de contact</label><input id="co-contact" value={f.contact} onChange={set("contact")} placeholder="Nume Prenume" required autoComplete="name" /></div>
-                <div className="fld"><label htmlFor="co-email">Email (cont și facturi)</label><input id="co-email" type="email" value={f.email} onChange={set("email")} placeholder="contabilitate@firma.ro" required autoComplete="email" /></div>
+                <div className="fld"><label htmlFor="co-contact">Persoană de contact</label><span className="vwrap"><input id="co-contact" value={f.contact} onChange={set("contact")} onBlur={touch("contact")} placeholder="Nume Prenume" required autoComplete="name" aria-invalid={st("contact")?.ok === false} />{mark("contact")}</span></div>
+                <div className="fld"><label htmlFor="co-email">Email (cont și facturi)</label><span className="vwrap"><input id="co-email" type="email" value={f.email} onChange={set("email")} onBlur={touch("email")} placeholder="contabilitate@firma.ro" required autoComplete="email" aria-invalid={st("email")?.ok === false} />{mark("email")}</span></div>
               </div>
               <div className="grid2">
-                <div className="fld"><label htmlFor="co-phone">Telefon</label><input id="co-phone" type="tel" value={f.phone} onChange={set("phone")} placeholder="+40 7xx xxx xxx" autoComplete="tel" /></div>
-                <div className="fld"><label htmlFor="co-dom">Domeniu dorit</label><input id="co-dom" value={f.domain} onChange={set("domain")} placeholder="firmata.ro" /></div>
+                <div className="fld"><label htmlFor="co-phone">Telefon</label><span className="vwrap"><input id="co-phone" type="tel" value={f.phone} onChange={set("phone")} onBlur={touch("phone")} placeholder="+40 7xx xxx xxx" autoComplete="tel" aria-invalid={st("phone")?.ok === false} />{mark("phone")}</span></div>
+                <div className="fld"><label htmlFor="co-dom">Domeniu dorit</label><span className="vwrap"><input id="co-dom" value={f.domain} onChange={set("domain")} onBlur={touch("domain")} placeholder="firmata.ro" aria-invalid={st("domain")?.ok === false} />{mark("domain")}</span></div>
               </div>
               <span className="eyebrow" style={{ marginTop: 20 }}>Pasul 2 din 2</span>
               <h3 style={{ marginTop: 14, fontSize: 22 }}>Metodă de plată</h3>
@@ -193,5 +210,17 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
         <button type="button" className="x" onClick={onClose} aria-label="Închide">✕</button>
       </form>
     </div>
+  );
+}
+
+function FieldMark({ c }: { c: Check }) {
+  if (!c) return null;
+  return c.ok ? (
+    <span className="vmark ok" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-6.5" /></svg></span>
+  ) : (
+    <>
+      <span className="vmark bad" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" /></svg></span>
+      <span className="vmsg" role="alert">{c.msg}</span>
+    </>
   );
 }
