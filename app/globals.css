@@ -508,3 +508,4 @@ a.btn,a.btn-plain{display:inline-flex;align-items:center}
 @media (max-width:900px){.nav .burger{display:block!important}}
 @media (max-width:600px){.nav .seg{display:none}.nav-r{gap:6px}}
 @media (prefers-reduced-motion:reduce){.mnav li,.mnav-in,.mnav-foot{transition:none!important}}
+@media (max-width:900px){.nav .seg{display:none}}
