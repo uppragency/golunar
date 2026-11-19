@@ -61,6 +61,7 @@ export default function Landing() {
   useEffect(() => {
     if (cart.plan !== "essential") {
       if (discount?.code === LAUNCH.code) setDiscountRaw(null);
+      setLaunchOff(false); // la revenirea pe Esențial, codul se aplică din nou automat
       return;
     }
     if (discount || launchOff || codeParam) return;
