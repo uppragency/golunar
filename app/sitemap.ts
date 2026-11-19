@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u("/cum-lucram", SITE_UPDATED, "monthly", 0.7),
     u("/garantii", SITE_UPDATED, "monthly", 0.7),
     u("/portofoliu", SITE_UPDATED, "monthly", 0.8),
+    u("/tehnologii", SITE_UPDATED, "monthly", 0.6),
     u("/lunar-vs-agentie-vs-ai", SITE_UPDATED, "monthly", 0.7),
     ...INDUSTRIES.map((l) => u(`/${l.slug}`, l.updated, "monthly", 0.8)),
     ...CITIES.map((l) => u(`/${l.slug}`, l.updated, "monthly", 0.8)),

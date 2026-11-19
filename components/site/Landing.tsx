@@ -8,7 +8,7 @@ import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDisco
 import { DiscountField } from "./DiscountField";
 import PromoBar from "./PromoBar";
 import { PORTFOLIO, PORTFOLIO_NOTE } from "@/lib/portfolio";
-import { PartnersStrip, PortalPreview, WhySection } from "./HomeSections";
+import { PortalPreview, WhySection } from "./HomeSections";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
@@ -221,7 +221,6 @@ export default function Landing() {
         </div>
       </header>
 
-      <PartnersStrip />
       <WhySection onOrder={orderNow} />
 
       <section className="sec" id="proces">
