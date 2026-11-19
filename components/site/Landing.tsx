@@ -65,6 +65,7 @@ export default function Landing() {
   const [faqCat, setFaqCat] = useState(0);
   const [launch, setLaunch] = useState("—");
   const [toast, setToast] = useState<string | null>(null);
+  const [menu, setMenu] = useState(false);
   const root = useRef<HTMLDivElement>(null);
 
   const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
@@ -94,6 +95,14 @@ export default function Landing() {
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menu ? "hidden" : "";
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenu(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menu]);
 
   const switchCur = (c: Currency) => {
     setCur(c);
@@ -126,9 +135,28 @@ export default function Landing() {
         <div className="nav-r">
           <CurSeg cur={cur} onChange={switchCur} />
           <Link href="/cont" className="login">Contul meu</Link>
-          <button className="cta" onClick={() => setLead(true)}>Discuție<span className="lg">&nbsp;gratuită</span></button>
+          <button className={`burger${menu ? " on" : ""}`} aria-label={menu ? "Închide meniul" : "Deschide meniul"} aria-expanded={menu} aria-controls="mnav" onClick={() => setMenu((m) => !m)}>
+            <span /><span /><span />
+          </button>
+          <button className="cta" onClick={() => { setMenu(false); setLead(true); }}>Discuție<span className="lg">&nbsp;gratuită</span></button>
         </div>
       </nav>
+
+      <div id="mnav" className={`mnav${menu ? " on" : ""}`} aria-hidden={!menu} onClick={(e) => e.target === e.currentTarget && setMenu(false)}>
+        <div className="mnav-in">
+          <ul>
+            {[["#proces", "Proces"], ["#portofoliu", "Portofoliu"], ["#abonamente", "Abonamente"], ["#intrebari", "Întrebări"], ["#resurse", "Resurse"]].map(([href, label], i) => (
+              <li key={href} style={{ transitionDelay: menu ? `${80 + i * 45}ms` : "0ms" }}>
+                <a href={href} tabIndex={menu ? 0 : -1} onClick={() => setMenu(false)}><span className="mono">0{i + 1}</span>{label}</a>
+              </li>
+            ))}
+          </ul>
+          <div className="mnav-foot" style={{ transitionDelay: menu ? "320ms" : "0ms" }}>
+            <CurSeg cur={cur} onChange={switchCur} />
+            <Link href="/cont" className="btn-plain" tabIndex={menu ? 0 : -1}>Contul meu</Link>
+          </div>
+        </div>
+      </div>
 
       <header className="hero dots" id="top">
         <div className="hero-glow" />
