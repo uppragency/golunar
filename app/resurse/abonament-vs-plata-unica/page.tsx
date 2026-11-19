@@ -4,7 +4,12 @@ import CostCalculator from "@/components/site/CostCalculator";
 import { resourceBySlug } from "@/lib/resources";
 
 const r = resourceBySlug("abonament-vs-plata-unica")!;
-export const metadata: Metadata = { title: r.title, description: r.excerpt, alternates: { canonical: `/resurse/${r.slug}` }, openGraph: { title: r.title, description: r.excerpt, type: "article" } };
+export const metadata: Metadata = {
+  title: r.metaTitle,
+  description: r.metaDesc,
+  alternates: { canonical: `/resurse/${r.slug}` },
+  openGraph: { title: r.title, description: r.metaDesc, type: "article", url: `/resurse/${r.slug}`, publishedTime: r.updated, modifiedTime: r.updated },
+};
 
 const FAQ: [string, string][] = [
   ["Abonamentul este mai scump decât plata unică?", "Depinde de cât modifici site-ul după lansare. Dacă nu schimbi nimic timp de trei ani, plata unică iese de obicei mai ieftin. Dacă faci modificări lunare, plătești mentenanță și hosting separat, abonamentul ajunge la un cost total apropiat sau mai mic, fără investiție inițială."],

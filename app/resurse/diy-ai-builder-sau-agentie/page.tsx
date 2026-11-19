@@ -4,7 +4,12 @@ import BuildQuiz from "@/components/site/BuildQuiz";
 import { resourceBySlug } from "@/lib/resources";
 
 const r = resourceBySlug("diy-ai-builder-sau-agentie")!;
-export const metadata: Metadata = { title: r.title, description: r.excerpt, alternates: { canonical: `/resurse/${r.slug}` }, openGraph: { title: r.title, description: r.excerpt, type: "article" } };
+export const metadata: Metadata = {
+  title: r.metaTitle,
+  description: r.metaDesc,
+  alternates: { canonical: `/resurse/${r.slug}` },
+  openGraph: { title: r.title, description: r.metaDesc, type: "article", url: `/resurse/${r.slug}`, publishedTime: r.updated, modifiedTime: r.updated },
+};
 
 const ROWS: [string, string, string, string][] = [
   ["Timp până la lansare", "Săptămâni, în funcție de timpul tău liber", "Ore sau zile", "2–8 săptămâni la agenții clasice; 10 zile lucrătoare la LUNAR"],

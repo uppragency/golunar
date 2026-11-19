@@ -4,7 +4,12 @@ import MigrationChecklist, { type Phase } from "@/components/site/MigrationCheck
 import { resourceBySlug } from "@/lib/resources";
 
 const r = resourceBySlug("schimbi-furnizorul-web-fara-sa-pierzi-trafic")!;
-export const metadata: Metadata = { title: r.title, description: r.excerpt, alternates: { canonical: `/resurse/${r.slug}` }, openGraph: { title: r.title, description: r.excerpt, type: "article" } };
+export const metadata: Metadata = {
+  title: r.metaTitle,
+  description: r.metaDesc,
+  alternates: { canonical: `/resurse/${r.slug}` },
+  openGraph: { title: r.title, description: r.metaDesc, type: "article", url: `/resurse/${r.slug}`, publishedTime: r.updated, modifiedTime: r.updated },
+};
 
 const PHASES: Phase[] = [
   {

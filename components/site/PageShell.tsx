@@ -4,6 +4,7 @@ import SiteFooter from "./SiteFooter";
 import { Arrow } from "./visuals";
 import { SITE_URL } from "@/lib/env";
 import { PLANS } from "@/lib/plans";
+import { JsonLd } from "@/lib/seo";
 
 export type Crumb = [href: string, label: string];
 
@@ -29,7 +30,7 @@ export default function PageShell({
   };
   return (
     <div id="top">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([breadcrumb, ...jsonLd]) }} />
+      <JsonLd data={[breadcrumb, ...jsonLd]} />
       <SubHeader />
       <header className="r-hero dots">
         <div className="wrap">

@@ -280,7 +280,7 @@ export const CITIES: City[] = [
     city: "București",
     inCity: "în București",
     metaTitle: "Creare site București pe abonament lunar · LUNAR",
-    desc: "Creare site București pentru firme mici și mijlocii: design personalizat, SEO local pe sectoare și cartiere, lansare în 10 zile. Abonament lunar, al tău după 12 plăți.",
+    desc: "Creare site București pentru firme mici și mijlocii: design personalizat, SEO local pe sectoare și cartiere, lansare în 10 zile. Abonament lunar, fără taxă.",
     h1: "Creare site București.",
     h1Dim: "Pentru firme care vor clienți, nu doar prezență.",
     lede: "În București concurența pentru fiecare căutare locală e mare. Un site rapid, scris pentru clienții tăi și optimizat pe zona în care lucrezi face diferența.",

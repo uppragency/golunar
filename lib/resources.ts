@@ -18,6 +18,9 @@ export type Resource = {
   minutes: number;
   extra?: string;
   updated: string; // YYYY-MM-DD
+  keyword: string;
+  metaTitle: string;
+  metaDesc: string;
 };
 
 export const RESOURCES: Resource[] = [
@@ -30,6 +33,9 @@ export const RESOURCES: Resource[] = [
     minutes: 8,
     extra: "instrument inclus",
     updated: "2026-11-19",
+    keyword: "cât costă un website",
+    metaTitle: "Cât costă un website: abonament vs plată unică",
+    metaDesc: "Cât costă un website în 3 ani: compară abonamentul lunar cu plata unică, cu mentenanță și modificări incluse. Calculator gratuit cu cifrele tale.",
   },
   {
     slug: "diy-ai-builder-sau-agentie",
@@ -39,6 +45,9 @@ export const RESOURCES: Resource[] = [
     categories: ["articol", "ghid"],
     minutes: 6,
     updated: "2026-11-19",
+    keyword: "AI website builder sau agenție",
+    metaTitle: "AI website builder, DIY sau agenție în 2026",
+    metaDesc: "AI website builder, DIY sau agenție web? Comparăm timpul, costul, controlul și rezultatele, plus un test de 5 întrebări care îți arată ce ți se potrivește.",
   },
   {
     slug: "cum-pregatesti-brief-ul-unui-website",
@@ -49,6 +58,9 @@ export const RESOURCES: Resource[] = [
     minutes: 5,
     extra: "model descărcabil",
     updated: "2026-11-19",
+    keyword: "brief website",
+    metaTitle: "Brief website: cum îl pregătești, cu model gratuit",
+    metaDesc: "Cum pregătești brief-ul unui website: ce informații îi dai echipei ca să primești din prima un site care vinde. Model de brief gratuit, gata de copiat.",
   },
   {
     slug: "schimbi-furnizorul-web-fara-sa-pierzi-trafic",
@@ -58,6 +70,9 @@ export const RESOURCES: Resource[] = [
     categories: ["checklist", "ghid"],
     minutes: 7,
     updated: "2026-11-19",
+    keyword: "migrare site fără pierdere de trafic",
+    metaTitle: "Migrare site fără să pierzi traficul din Google",
+    metaDesc: "Migrare site fără pierdere de trafic: pașii exacți pentru redirecționări, emailuri și date, ca să păstrezi pozițiile din Google. Checklist interactiv gratuit.",
   },
 ];
 

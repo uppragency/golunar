@@ -4,7 +4,12 @@ import BriefTemplate from "@/components/site/BriefTemplate";
 import { resourceBySlug } from "@/lib/resources";
 
 const r = resourceBySlug("cum-pregatesti-brief-ul-unui-website")!;
-export const metadata: Metadata = { title: r.title, description: r.excerpt, alternates: { canonical: `/resurse/${r.slug}` }, openGraph: { title: r.title, description: r.excerpt, type: "article" } };
+export const metadata: Metadata = {
+  title: r.metaTitle,
+  description: r.metaDesc,
+  alternates: { canonical: `/resurse/${r.slug}` },
+  openGraph: { title: r.title, description: r.metaDesc, type: "article", url: `/resurse/${r.slug}`, publishedTime: r.updated, modifiedTime: r.updated },
+};
 
 export default function Page() {
   return (

@@ -3,6 +3,8 @@ import SubHeader from "./SubHeader";
 import SiteFooter from "./SiteFooter";
 import { RESOURCES, type Resource } from "@/lib/resources";
 import { SITE_URL } from "@/lib/env";
+import { PLANS } from "@/lib/plans";
+import { ORG_ID } from "@/lib/seo";
 import { Arrow } from "./visuals";
 
 const fmtDate = (d: string) => new Date(d).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" });
@@ -18,9 +20,20 @@ export default function ResourceShell({ r, children, faq }: { r: Resource; child
       datePublished: r.updated,
       dateModified: r.updated,
       inLanguage: "ro-RO",
-      author: { "@type": "Organization", name: "LUNAR", url: SITE_URL },
-      publisher: { "@type": "Organization", name: "LUNAR", url: SITE_URL },
+      author: { "@id": ORG_ID },
+      publisher: { "@id": ORG_ID },
+      image: `${SITE_URL}/resurse/${r.slug}/opengraph-image`,
+      keywords: r.keyword,
       mainEntityOfPage: `${SITE_URL}/resurse/${r.slug}`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "LUNAR", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Resurse", item: `${SITE_URL}/resurse` },
+        { "@type": "ListItem", position: 3, name: r.title, item: `${SITE_URL}/resurse/${r.slug}` },
+      ],
     },
     ...(faq?.length
       ? [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }]
@@ -32,7 +45,7 @@ export default function ResourceShell({ r, children, faq }: { r: Resource; child
       <SubHeader />
       <header className="r-hero dots">
         <div className="wrap">
-          <nav className="crumbs" aria-label="Breadcrumb"><Link href="/">LUNAR</Link><span>/</span><Link href="/resurse">Resurse</Link><span>/</span><span>{r.kicker}</span></nav>
+          <nav className="crumbs" aria-label="Breadcrumb"><Link href="/">LUNAR</Link><span>/</span><Link href="/resurse">Resurse</Link><span>/</span><span aria-current="page">{r.kicker}</span></nav>
           <div className="eyebrow">{r.kicker}</div>
           <h1>{r.title}</h1>
           <p className="lede">{r.excerpt}</p>
@@ -46,7 +59,7 @@ export default function ResourceShell({ r, children, faq }: { r: Resource; child
       <main className="wrap">
         {children}
         <div className="r-cta">
-          <h3>Vrei să-l facem noi? <span>Site live în 10 zile, de la 89 € pe lună.</span></h3>
+          <h3>Vrei să-l facem noi? <span>Site live în 10 zile, de la {PLANS.essential.ron} lei pe lună.</span></h3>
           <Link href="/#abonamente" className="btn"><span className="ic"><Arrow /></span>Vezi abonamentele</Link>
         </div>
         <section className="r-related">
