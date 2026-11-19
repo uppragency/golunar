@@ -195,7 +195,6 @@ export default function Landing() {
           <div className="bento">
             <div className="card intro reveal">
               <div>
-                <div className="avatars"><span>A</span><span>M</span></div>
                 <h1 style={{ marginTop: 28, fontSize: "clamp(26px,2.4vw,34px)" }}>Un website care lucrează pentru tine.<br /><span className="muted">Nu invers.</span></h1>
                 <p>Website personalizat, fără taxă de dezvoltare. Abonamentul acoperă designul, hostingul, mentenanța și optimizarea lunară. După 12 plăți, site-ul devine al tău.</p>
               </div>
