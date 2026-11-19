@@ -67,6 +67,7 @@ export default function Landing() {
   const [toast, setToast] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const wordRef = useRef<HTMLDivElement>(null);
 
   const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
   const p = (eur: number, ron: number) => fmt(cur === "EUR" ? eur : ron, cur);
@@ -94,6 +95,19 @@ export default function Landing() {
     );
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = wordRef.current;
+    if (!el) return;
+    const fit = () => {
+      el.style.fontSize = "100px";
+      el.style.fontSize = `${(100 * (window.innerWidth - 40)) / el.scrollWidth}px`;
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
   }, []);
 
   useEffect(() => {
@@ -365,20 +379,41 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer>
+      <footer className="fb">
+        <div className="fb-sky" aria-hidden="true" /><div className="fb-stars" aria-hidden="true" /><div className="fb-moon" aria-hidden="true" />
         <div className="wrap">
-          <div className="foot">
-            <div>
-              <a href="#top" className="logo" style={{ color: "var(--text)" }}><i />LUNAR</a>
-              <p style={{ marginTop: 14, maxWidth: 320, color: "var(--text)" }}>Website-ul tău, mai bun lună de lună.</p>
-              <p style={{ marginTop: 8, maxWidth: 340 }}>Website-uri personalizate pe abonament lunar, pentru firme din România. Al tău după 12 plăți.</p>
-              <p style={{ marginTop: 14 }}><a href="mailto:salut@golunar.ro" style={{ display: "inline" }}>salut@golunar.ro</a></p>
+          <div className="fb-cta">
+            <div className="fb-card">
+              <div className="eyebrow">Dacă începi azi</div>
+              <h2 style={{ marginTop: 18 }}>Online pe <span>{launch}</span></h2>
+              <div className="fb-tl">
+                {[["ZIUA 1", "Brief"], ["ZIUA 4", "Design"], ["ZIUA 7", "Dezvoltare"], ["ZIUA 10", "Lansare"]].map(([d, l]) => (
+                  <div key={d}><b />{d}<br />{l}</div>
+                ))}
+              </div>
             </div>
-            <div><h6>Produs</h6><a href="#proces">Proces</a><a href="#portofoliu">Portofoliu</a><a href="#abonamente">Abonamente</a><Link href="/cont">Contul meu</Link></div>
-            <div><h6>Resurse</h6><a href="#resurse">Ghiduri</a><a href="#intrebari">Întrebări frecvente</a></div>
-            <div><h6>Legal</h6><Link href="/legal/termeni">Termeni și condiții</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></div>
+            <div className="fb-card hot">
+              <h2>Începe website-ul tău. <span>Fără investiție inițială.</span></h2>
+              <button className="fb-btn" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Discuție gratuită de 20 min</button>
+            </div>
           </div>
-          <div className="legal"><span>© {new Date().getFullYear()} LUNAR · golunar.ro</span><span>Serviciu exclusiv B2B. Prețuri finale, TVA inclus.</span></div>
+          <div className="fb-cols">
+            <div>
+              <a href="#top" className="logo"><i />LUNAR</a>
+              <p>Website-ul tău, mai bun lună de lună. Al tău după 12 plăți.</p>
+            </div>
+            <div><h6>Explorează</h6><a href="#proces">Proces</a><a href="#portofoliu">Portofoliu</a><a href="#abonamente">Abonamente</a><a href="#intrebari">Întrebări</a><a href="#resurse">Resurse</a></div>
+            <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><a href="#abonamente">Începe proiectul</a><Link href="/cont/cereri">Cere o îmbunătățire</Link></div>
+            <div><h6>Contact</h6><a href="mailto:salut@golunar.ro">salut@golunar.ro</a><a href="mailto:facturare@golunar.ro">facturare@golunar.ro</a></div>
+          </div>
+        </div>
+        <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span> LUNAR</div>
+        <div className="fb-legal">
+          <div className="wrap">
+            <span>© {new Date().getFullYear()} LUNAR · golunar.ro · Prețuri finale</span>
+            <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
+            <a href="#top">Înapoi sus ↑</a>
+          </div>
         </div>
       </footer>
 
