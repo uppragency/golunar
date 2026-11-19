@@ -335,7 +335,7 @@ export default function Landing() {
               <button className="btn btn-accent" style={{ width: "100%", justifyContent: "space-between" }} onClick={() => setCheckout(true)}>
                 <span className="ic"><Arrow /></span>Continuă spre plată<span style={{ width: 8 }} />
               </button>
-              <div className="secure"><span>Stripe</span>·<span>Card sau transfer bancar</span>·<span>e-Factura</span></div>
+              <div className="secure"><span>Transfer bancar</span>·<span>Factură în e-Factura</span>·<span>Fără card</span></div>
             </aside>
           </div>
           <div className="guar">

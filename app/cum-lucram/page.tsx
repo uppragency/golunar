@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 type Step = { when: string; title: string; you: string; we: string; out: string };
 
 const LAUNCH: Step[] = [
-  { when: "Ziua 0", title: "Comanda", you: "Alegi planul, completezi datele firmei și plătești prima lună, cu cardul sau prin transfer.", we: "Creăm contul tău în portal, contractul și calendarul celor 12 plăți. Domeniul se înregistrează pe firma ta.", out: "Acces în portal și contract semnat electronic." },
+  { when: "Ziua 0", title: "Comanda", you: "Alegi planul, completezi datele firmei și plătești prima lună prin transfer bancar.", we: "Creăm contul tău în portal, contractul și calendarul celor 12 plăți. Domeniul se înregistrează pe firma ta.", out: "Acces în portal și contract semnat electronic." },
   { when: "Ziua 1", title: "Brief-ul", you: "Completezi brief-ul de 5 minute: ce vinzi, cui, ce te diferențiază, ce site-uri îți plac. Încarci logo și poze, dacă ai.", we: "Citim brief-ul în aceeași zi și te sunăm 20 de minute dacă lipsește ceva. Pornește ceasul de 10 zile lucrătoare.", out: "Structura paginilor și lista de texte." },
   { when: "Ziua 2–3", title: "Texte și structură", you: "Nimic, dacă nu vrei. Poți răspunde la întrebări scurte pe email.", we: "Scriem textele pentru clienții tăi, nu pentru noi: ce problemă rezolvi, de ce tu, ce urmează după click. Alegem cuvintele cheie.", out: "Textele paginilor, gata de aprobat." },
   { when: "Ziua 4", title: "Designul", you: "Primești designul paginii principale pe telefon și desktop. Ai o rundă de feedback inclusă.", we: "Design personalizat pe brandul tău, gândit întâi pentru mobil, cu un singur scop pe pagină: cererea de ofertă.", out: "Design aprobat." },

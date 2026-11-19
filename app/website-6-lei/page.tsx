@@ -84,7 +84,7 @@ export default function LaunchOffer() {
         <h2>Cum funcționează</h2>
         <ol>
           <li><strong>Alegi planul Esențial</strong> pe pagina de abonamente. Codul {LAUNCH.code} apare deja aplicat în rezumat.</li>
-          <li><strong>Completezi datele firmei</strong> după CUI și plătești {LAUNCH.ron} lei, cu cardul sau prin transfer.</li>
+          <li><strong>Completezi datele firmei</strong> după CUI și plătești {LAUNCH.ron} lei prin transfer bancar.</li>
           <li><strong>Completezi brief-ul de 5 minute</strong>. În 10 zile lucrătoare website-ul tău e live.</li>
         </ol>
         <h2>De ce 6 lei?</h2>
