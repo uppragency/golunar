@@ -463,3 +463,4 @@ a.btn,a.btn-plain{display:inline-flex;align-items:center}
 .login-switch:hover{color:var(--text)}
 .lead-ok+.login-switch{display:block;margin:16px auto 0}
 .login-link{font-size:13px;color:var(--accent2);margin:-4px 0 6px}
+.auth-card .err{color:var(--bad);margin:0 0 6px}
