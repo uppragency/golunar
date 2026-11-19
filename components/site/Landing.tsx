@@ -246,7 +246,7 @@ export default function Landing() {
         <div className="wrap">
           <div className="sec-head reveal">
             <div><div className="eyebrow">Abonamente</div><h2 style={{ marginTop: 20 }}>Alege ritmul. <span className="dim">Noi construim restul.</span></h2></div>
-            <p>Toate prețurile includ TVA. Fără taxă de setup. Anulezi oricând, la finalul perioadei plătite.</p>
+            <p>Toate prețurile includ TVA. Fără taxă de setup. După perioada minimă a planului, anulezi oricând.</p>
           </div>
           <div className="cfg">
             <div>
@@ -307,7 +307,7 @@ export default function Landing() {
           <div className="guar">
             <div><b>10 zile lucrătoare</b><span>Sau luna următoare e gratuită.</span></div>
             <div><b>{cur === "EUR" ? "0 €" : "0 lei"} la start</b><span>Dezvoltarea e inclusă în abonament.</span></div>
-            <div><b>Anulezi oricând</b><span>Fără perioadă minimă. Se oprește la final de lună.</span></div>
+            <div><b>Perioadă minimă scurtă</b><span>3, 2 sau o lună, în funcție de plan. Apoi anulezi oricând.</span></div>
             <div><b>Domeniul e al tău</b><span>Din prima zi, înregistrat pe firma ta.</span></div>
           </div>
         </div>
@@ -412,7 +412,7 @@ function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag }: {
         <p className="lead">{lead}</p>
         <ul>{items.map((i) => (i.startsWith("+") ? <li className="plus" key={i}>{i.slice(1)}</li> : <li key={i}>{i}</li>))}</ul>
       </div>
-      <div className="pr"><span className="radio" /><div><b>{price}</b><br /><small>/ lună ({PRICE_NOTE})</small></div></div>
+      <div className="pr"><span className="radio" /><div><b>{price}</b><br /><small>/ lună ({PRICE_NOTE})</small><br /><small>Minim {PLANS[code].minMonths === 1 ? "o lună" : `${PLANS[code].minMonths} luni`}</small></div></div>
     </div>
   );
 }

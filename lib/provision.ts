@@ -70,7 +70,7 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
       billing_day: day,
       started_at: input.start.toISOString(),
       stripe_subscription_id: input.stripeSubscriptionId ?? null,
-      min_commitment_months: input.cart.plan === "essential" ? 3 : 0,
+      min_commitment_months: PLANS[input.cart.plan].minMonths,
     })
     .select("id")
     .single();

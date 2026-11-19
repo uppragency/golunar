@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 /** llms.txt: rezumat pentru asistenți AI (https://llmstxt.org). */
 export function GET() {
   const plans = (["essential", "growth", "partner"] as const)
-    .map((p) => `- Plan ${PLANS[p].name}: ${PLANS[p].ron} lei pe lună, TVA inclus (${PLANS[p].eur} EUR), ${PLANS[p].improvements} ${PLANS[p].improvements === 1 ? "îmbunătățire" : "îmbunătățiri"} pe lună`)
+    .map((p) => `- Plan ${PLANS[p].name}: ${PLANS[p].ron} lei pe lună, TVA inclus (${PLANS[p].eur} EUR), ${PLANS[p].improvements} ${PLANS[p].improvements === 1 ? "îmbunătățire" : "îmbunătățiri"} pe lună, perioadă minimă ${PLANS[p].minMonths === 1 ? "o lună" : `${PLANS[p].minMonths} luni`}`)
     .join("\n");
   const addons = Object.values(ADDONS).map((a) => `- ${a.name}: ${a.ron} lei pe lună`).join("\n");
   const faq = Object.values(FAQ).flat().map(([q, a]) => `- ${q} ${a}`).join("\n");

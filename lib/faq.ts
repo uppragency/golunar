@@ -12,7 +12,7 @@ export const FAQ: Record<string, [string, string][]> = {
     ["Ce se întâmplă dacă plata eșuează?", "Reîncercăm automat de 3 ori în 7 zile și te anunțăm pe email. După 14 zile fără plată, site-ul intră în mentenanță."],
   ],
   "Anulare și proprietate": [
-    ["Pot anula oricând?", "Da, fără perioadă minimă. Abonamentul se oprește la finalul perioadei deja plătite."],
+    ["Există o perioadă minimă?", "Da: 3 luni la planul Esențial, 2 luni la Creștere și o lună la Partener. După această perioadă anulezi oricând, iar abonamentul se oprește la finalul lunii deja plătite."],
     ["Când devine website-ul al meu?", "După 12 plăți lunare și încheierea primei perioade de 12 luni. Domeniul este al tău din prima zi."],
     ["Ce se întâmplă dacă plec înainte de 12 luni?", "Renunți la website fără alte costuri sau plătești ratele rămase până la 12, la valoarea lunară curentă, și preiei site-ul."],
     ["Primesc codul-sursă?", "Da, după transferul proprietății, la cerere, în maximum 15 zile lucrătoare. Componentele terțe rămân sub licențele lor."],

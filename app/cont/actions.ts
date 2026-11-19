@@ -69,8 +69,13 @@ export async function requestBankTransfer(): Promise<ActionState> {
 export async function cancelSubscription(): Promise<ActionState> {
   const ctx = await getPortalContext();
   if (!ctx.companyId || ctx.role !== "owner") return { error: "Doar owner-ul firmei poate anula abonamentul." };
-  const { data: sub } = await ctx.supabase.from("subscriptions").select("id, stripe_subscription_id, status").eq("company_id", ctx.companyId).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const { data: sub } = await ctx.supabase.from("subscriptions").select("id, stripe_subscription_id, status, min_commitment_months").eq("company_id", ctx.companyId).order("created_at", { ascending: false }).limit(1).maybeSingle();
   if (!sub || sub.status === "canceled") return { error: "Nu există un abonament activ." };
+  const min = sub.min_commitment_months ?? 0;
+  if (min > 1) {
+    const { count } = await ctx.supabase.from("installments").select("id", { count: "exact", head: true }).eq("subscription_id", sub.id).eq("status", "paid");
+    if ((count ?? 0) < min) return { error: `Planul tău are o perioadă minimă de ${min} luni. Poți anula după a ${min}-a plată (ai ${count ?? 0} din ${min}).` };
+  }
   const s = stripe();
   if (s && sub.stripe_subscription_id) {
     try {
