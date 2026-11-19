@@ -205,7 +205,7 @@ export default function Landing() {
             </div>
             <Pillar n="01" t="Performanță" d="Construit să fie găsit. Gândit să aducă cereri." m="bars" />
             <Pillar n="02" t="Abonament" d="Crearea site-ului inclusă. Un buget lunar previzibil." m="flat" />
-            <Pillar n="03" t="Îmbunătățire" d="Site-ul tău devine mai bun. În fiecare lună." m="rows" />
+            <Pillar n="03" t="Îmbunătățire" d="Site-ul tău devine mai bun lunar. Ceri modificări din panoul tău de client." m="rows" />
             <Pillar n="04" t="Proprietate" d="Website-ul e al tău din luna a 13-a." m="own" />
           </div>
         </div>
