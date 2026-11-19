@@ -537,7 +537,8 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .fb-cols a:not(.logo){display:block;font-size:15px;padding:5px 0;color:#D6D6DA;transition:color .2s,transform .3s var(--ease)}
 .fb-cols a:not(.logo):hover{color:#fff;transform:translateX(3px)}
 .fb-cols p{color:var(--mute);font-size:15px;line-height:1.55;margin-top:16px;max-width:300px}
-.fb-word{width:max-content;margin:30px auto -2.2vw;font-weight:600;letter-spacing:-.075em;line-height:.78;white-space:nowrap;user-select:none;font-size:19vw;background:linear-gradient(180deg,#fff 20%,rgba(255,255,255,.55) 70%,rgba(255,255,255,.05));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fb-word{display:flex;justify-content:center;gap:.2em;width:max-content;max-width:none;margin:30px auto -2.2vw;font-weight:600;letter-spacing:-.075em;line-height:.78;white-space:nowrap;user-select:none;font-size:19vw}
+.fb-word span{display:inline-block;padding-right:.04em;background:linear-gradient(180deg,#fff 20%,rgba(255,255,255,.55) 70%,rgba(255,255,255,.05));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .fb-word .go{opacity:.55}
 .fb-legal{position:relative;border-top:1px solid var(--line);background:rgba(7,7,8,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .fb-legal .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding:22px 0 28px}

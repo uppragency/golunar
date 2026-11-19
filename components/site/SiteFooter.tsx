@@ -29,7 +29,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
     if (!el) return;
     const fit = () => {
       el.style.fontSize = "100px";
-      el.style.fontSize = `${(100 * (window.innerWidth - 40)) / el.scrollWidth}px`;
+      el.style.fontSize = `${(100 * (document.documentElement.clientWidth - 40)) / el.scrollWidth}px`;
     };
     fit();
     document.fonts?.ready.then(fit);
@@ -72,7 +72,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div><h6>Contact</h6><a href="mailto:hello@golunar.ro">hello@golunar.ro</a></div>
           </div>
         </div>
-        <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span> LUNAR</div>
+        <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span><span>LUNAR</span></div>
         <div className="fb-legal">
           <div className="wrap">
             <span>© {new Date().getFullYear()} LUNAR · golunar.ro · Prețuri finale</span>
