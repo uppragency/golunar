@@ -468,3 +468,5 @@ a.btn,a.btn-plain{display:inline-flex;align-items:center}
 .sheet{overflow-x:hidden}
 .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px}
 .side a.logo{height:auto;padding:4px 10px 22px;color:var(--text);background:none}.side a.logo:hover{background:none;opacity:.85}
+.sheet>*,.grid2>*{min-width:0}
+.fld input,.fld select,.fld textarea{width:100%;min-width:0}
