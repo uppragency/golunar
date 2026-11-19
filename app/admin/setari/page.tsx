@@ -3,15 +3,17 @@ import { has } from "@/lib/env";
 import { Pill } from "@/components/app/charts";
 import BankForm from "@/components/app/BankForm";
 import { ConfirmAction } from "@/components/app/forms";
-import { deleteDemoData, saveBankSettings } from "@/app/admin/actions";
+import { deleteDemoData, saveBankSettings, saveRetention } from "@/app/admin/actions";
 
 export default async function SettingsPage() {
   const s = await requireAdmin();
-  const [{ data: bank }, { count: demo }, { data: leads }] = await Promise.all([
+  const [{ data: bank }, { count: demo }, { data: leads }, { data: ret }] = await Promise.all([
     s.supabase.from("app_settings").select("value").eq("key", "bank").maybeSingle(),
     s.supabase.from("companies").select("id", { count: "exact", head: true }).eq("is_demo", true),
     s.supabase.from("leads").select("*").order("created_at", { ascending: false }).limit(15),
+    s.supabase.from("app_settings").select("value").eq("key", "retention").maybeSingle(),
   ]);
+  const retention = (ret?.value ?? { enabled: true, percent: 50 }) as { enabled: boolean; percent: number };
   const rows: [string, boolean, string][] = [
     ["Supabase (bază de date, auth)", true, "Conectat"],
     ["Supabase service role (webhook-uri, checkout transfer)", has.serviceRole(), "SUPABASE_SERVICE_ROLE_KEY"],
@@ -46,6 +48,15 @@ export default async function SettingsPage() {
           <p className="muted" style={{ fontSize: 14, marginBottom: 14 }}>{demo ?? 0} firme demo populează panourile pentru previzualizare. Șterge-le înainte de primul client real.</p>
           {(demo ?? 0) > 0 && <ConfirmAction action={deleteDemoData} label="Șterge datele demo" className="btn-plain danger" confirm="Ștergi definitiv toate firmele demo și datele lor?" />}
         </div>
+      </div>
+      <div className="panel" style={{ marginTop: 12 }}>
+        <h3>Ofertă de retenție la anulare</h3>
+        <p className="muted" style={{ fontSize: 14, marginBottom: 14 }}>Când un client vrea să anuleze, după ce alege motivul, primește o reducere la rata următoare. Se aplică o singură dată pe abonament.</p>
+        <form action={saveRetention} className="inline-form">
+          <label className="check"><input type="checkbox" name="enabled" defaultChecked={retention.enabled} />Activă</label>
+          <select name="percent" defaultValue={String(retention.percent)} aria-label="Reducere">{[25, 30, 40, 50, 75, 100].map((v) => <option key={v} value={v}>{v === 100 ? "O lună gratuită" : `${v}% reducere`}</option>)}</select>
+          <button className="btn-plain sm">Salvează</button>
+        </form>
       </div>
     </div>
   );

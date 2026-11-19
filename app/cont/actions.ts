@@ -127,7 +127,68 @@ export async function saveBrief(_: ActionState, form: FormData): Promise<ActionS
     await sendEmail({ template: "admin_brief", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: ctx.user?.email ?? undefined,
       subject: `${prev?.submitted_at ? "Brief actualizat" : "Brief nou"}: ${c?.name ?? ""}`,
       html: templates.adminNotice(prev?.submitted_at ? "Brief actualizat" : "Brief trimis", { Firmă: c?.name, Scop: answers.goal, Pagini: answers.pages, Fișiere: String(files.length), Utilizator: ctx.user?.email }) });
+    if (!prev?.submitted_at && ctx.user?.email) {
+      const { data: lp } = await ctx.supabase.from("launch_projects").select("due_at").eq("company_id", ctx.companyId).maybeSingle();
+      const due = lp?.due_at ? new Date(lp.due_at).toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long" }) : "10 zile lucrătoare";
+      await sendEmail({ db: ctx.supabase, companyId: ctx.companyId, template: "stage_brief", to: ctx.user.email, subject: "Am primit brief-ul · LUNAR", html: templates.briefReceived(c?.name ?? "", due) });
+    }
   }
   revalidatePath("/cont", "layout");
   return { ok: submit ? "Brief trimis. Îl citim azi și revenim dacă lipsește ceva." : "Ciornă salvată." };
+}
+
+// ---------- aprobare design ----------
+export async function decideDesign(_: ActionState, form: FormData): Promise<ActionState> {
+  const ctx = await getPortalContext();
+  if (!ctx.companyId || !ctx.canEdit) return { error: "Nu ai drepturi." };
+  const decision = form.get("decision") === "approved" ? "approved" : "changes";
+  const feedback = String(form.get("feedback") || "").trim();
+  if (decision === "changes" && feedback.length < 5) return { error: "Scrie pe scurt ce ai vrea să schimbăm." };
+  const { error } = await ctx.supabase.rpc("portal_design_decide", { p_company: ctx.companyId, p_decision: decision, p_feedback: feedback });
+  if (error) return { error: "Nu am putut salva răspunsul. Încearcă din nou." };
+  const { data: c } = await ctx.supabase.from("companies").select("name").eq("id", ctx.companyId).single();
+  await sendEmail({ template: "admin_design", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: ctx.user?.email ?? undefined,
+    subject: `${decision === "approved" ? "Design aprobat" : "Ajustări cerute la design"}: ${c?.name ?? ""}`,
+    html: templates.adminNotice(decision === "approved" ? "Design aprobat" : "Ajustări cerute", { Firmă: c?.name, Mesaj: feedback || "—", Utilizator: ctx.user?.email }) });
+  revalidatePath("/cont", "layout");
+  return { ok: decision === "approved" ? "Mulțumim! Trecem la dezvoltare." : "Am primit ajustările. Revenim cu varianta nouă." };
+}
+
+// ---------- anulare cu motiv + ofertă de retenție ----------
+export async function cancelWithReason(_: ActionState, form: FormData): Promise<ActionState> {
+  const ctx = await getPortalContext();
+  if (!ctx.companyId || ctx.role !== "owner") return { error: "Doar owner-ul firmei poate anula abonamentul." };
+  const category = String(form.get("category") || "").trim();
+  const detail = String(form.get("detail") || "").trim().slice(0, 500);
+  if (!category) return { error: "Alege motivul anulării." };
+  const { data: sub } = await ctx.supabase.from("subscriptions").select("id, stripe_subscription_id, status, min_commitment_months").eq("company_id", ctx.companyId).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (!sub || sub.status === "canceled") return { error: "Nu există un abonament activ." };
+  const min = sub.min_commitment_months ?? 0;
+  if (min > 1) {
+    const { count } = await ctx.supabase.from("installments").select("id", { count: "exact", head: true }).eq("subscription_id", sub.id).eq("status", "paid");
+    if ((count ?? 0) < min) return { error: `Planul tău are o perioadă minimă de ${min} luni. Poți anula după a ${min}-a plată (ai ${count ?? 0} din ${min}).` };
+  }
+  const s = stripe();
+  if (s && sub.stripe_subscription_id) {
+    try { await s.subscriptions.update(sub.stripe_subscription_id, { cancel_at_period_end: true }); } catch { return { error: "Anularea nu a putut fi procesată. Scrie-ne la hello@golunar.ro." }; }
+  }
+  const { data: until, error } = await ctx.supabase.rpc("portal_cancel", { p_company: ctx.companyId, p_category: category, p_detail: detail });
+  if (error) return { error: "Anularea nu a putut fi procesată. Scrie-ne la hello@golunar.ro." };
+  await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, type: "billing", title: `Anulare abonament: ${category}` });
+  const { data: c } = await ctx.supabase.from("companies").select("name").eq("id", ctx.companyId).single();
+  await sendEmail({ template: "admin_cancel", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Anulare abonament: ${c?.name ?? ""}`, html: templates.adminNotice("Anulare abonament", { Firmă: c?.name, Motiv: category, Detalii: detail || "—", Utilizator: ctx.user?.email }) });
+  revalidatePath("/cont", "layout");
+  return { ok: `Abonamentul se oprește pe ${new Date(String(until)).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })}. Nu mai urmează alte plăți.` };
+}
+
+export async function acceptRetention(): Promise<ActionState> {
+  const ctx = await getPortalContext();
+  if (!ctx.companyId || ctx.role !== "owner") return { error: "Doar owner-ul firmei poate face această alegere." };
+  const { data, error } = await ctx.supabase.rpc("portal_retention_accept", { p_company: ctx.companyId });
+  if (error) return { error: "Oferta nu mai este disponibilă." };
+  const r = data as { number: number; percent: number };
+  const { data: c } = await ctx.supabase.from("companies").select("name").eq("id", ctx.companyId).single();
+  await sendEmail({ template: "admin_retention", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Client păstrat cu oferta de retenție: ${c?.name ?? ""}`, html: templates.adminNotice("Ofertă de retenție acceptată", { Firmă: c?.name, Reducere: `${r.percent}% la rata ${r.number}` }) });
+  revalidatePath("/cont", "layout");
+  return { ok: `Gata! Rata ${r.number} are ${r.percent}% reducere. Mulțumim că rămâi cu noi.` };
 }

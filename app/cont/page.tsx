@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DesignReview from "@/components/app/DesignReview";
 import { getPortalData } from "@/lib/portal-data";
 import { money, date, monthShort, num } from "@/lib/format";
 import { Pill, Ring, Spark } from "@/components/app/charts";
@@ -33,6 +34,8 @@ export default async function PortalHome() {
           <Link href="/cont/cereri" className="btn btn-accent"><span className="ic"><Plus /></span>Cere o îmbunătățire</Link>
         </div>
       </div>
+
+      {d.launch?.design_status === "pending" && d.launch.design_url && <DesignReview url={d.launch.design_url} />}
 
       {(d.awaitingPayment || !d.brief?.submitted_at || (site?.status !== "live" && site?.status !== "transferred")) && (
         <Onboarding d={d} />

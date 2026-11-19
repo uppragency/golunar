@@ -11,6 +11,7 @@ const NAV: NavItem[] = [
   { href: "/admin/clienti", label: "Clienți", icon: "users" },
   { href: "/admin/cereri", label: "Cereri", icon: "inbox" },
   { href: "/admin/lead-uri", label: "Lead-uri", icon: "chat" },
+  { href: "/admin/mesaje", label: "Mesaje", icon: "globe" },
   { href: "/admin/incasari", label: "Încasări", icon: "card" },
   { href: "/admin/tehnic", label: "Tehnic", icon: "shield" },
   { href: "/admin/reduceri", label: "Reduceri", icon: "pen" },

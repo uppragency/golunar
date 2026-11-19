@@ -5,7 +5,8 @@ import { date, money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { INST_PILL, PLAN_NAME, REQ_PILL, REQ_TYPE, SITE_PILL, SPV_PILL } from "@/lib/labels";
 import { BRIEF_KEYS } from "@/lib/brief";
-import { addNote, deleteNote, inviteMember, markInstallmentPaid, pinNote, setSiteStatus, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
+import ContactButtons from "@/components/app/ContactButtons";
+import { addNote, saveTags, deleteNote, inviteMember, markInstallmentPaid, pinNote, setSiteStatus, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
 import { buildTimeline } from "@/lib/timeline";
 import InviteForm from "@/components/app/InviteForm";
 import type { Currency } from "@/lib/plans";
@@ -28,9 +29,10 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
     db.from("referrals").select("*").eq("referrer_company_id", id).order("created_at", { ascending: false }),
     db.from("briefs").select("*").eq("company_id", id).maybeSingle(),
   ]);
-  const [{ data: notes }, { data: mails }] = await Promise.all([
+  const [{ data: notes }, { data: mails }, { data: contacts }] = await Promise.all([
     db.from("client_notes").select("*").eq("company_id", id).order("pinned", { ascending: false }).order("created_at", { ascending: false }),
     db.from("email_log").select("template, sent_at, status, to_email").eq("company_id", id).order("sent_at", { ascending: false }).limit(100),
+    db.from("contact_log").select("channel, subject, author_email, created_at").eq("company_id", id).order("created_at", { ascending: false }).limit(100),
   ]);
   const briefFiles = (brief?.files ?? []) as { path: string; name: string; size: number }[];
   const { data: signed } = briefFiles.length ? await db.storage.from("documents").createSignedUrls(briefFiles.map((f) => f.path), 3600) : { data: [] };
@@ -53,6 +55,14 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
         </div>
       </div>
 
+      <div className="panel crow">
+        <ContactButtons companyId={c.id} phone={c.phone} email={c.notify_email || c.billing_email} />
+        <form action={saveTags} className="tags-f">
+          <input type="hidden" name="company_id" value={c.id} />
+          <input name="tags" defaultValue={(c.tags ?? []).join(", ")} placeholder="Etichete: stomatologie, bucurești, potențial upgrade" aria-label="Etichete" />
+          <button className="btn-plain sm">Salvează etichetele</button>
+        </form>
+      </div>
       <div className="g g-4">
         <div className="panel kpi"><span className="l">Plan</span><b>{sub ? PLAN_NAME[sub.plan] : "—"}</b><span className="d" style={{ color: "var(--mute)" }}>{(items ?? []).map((i) => i.addon).join(", ") || "fără opțiuni"}</span></div>
         <div className="panel kpi"><span className="l">Rate plătite</span><b>{paid}/12</b><span className="d" style={{ color: "var(--mute)" }}>{sub?.payment_mode === "card" ? "Card" : "Transfer"} · {sub?.status}</span></div>
@@ -81,7 +91,7 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
         <div className="panel">
           <h3>Cronologie</h3>
           <div className="tl">
-            {buildTimeline({ company: c, subs: subs ?? [], inst: inst ?? [], reqs: reqs ?? [], mails: mails ?? [], brief, launch, notes: notes ?? [] }).slice(0, 40).map((e, k) => (
+            {buildTimeline({ company: c, subs: subs ?? [], inst: inst ?? [], reqs: reqs ?? [], mails: mails ?? [], brief, launch, notes: notes ?? [], contacts: contacts ?? [] }).slice(0, 40).map((e, k) => (
               <div className={`tl-i ${e.tone}`} key={k}>{e.title}<small>{date(e.at, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}{e.sub ? ` · ${e.sub}` : ""}</small></div>
             ))}
           </div>

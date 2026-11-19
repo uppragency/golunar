@@ -320,8 +320,14 @@ export async function moveStage(form: FormData) {
   revalidatePath("/admin", "layout");
 }
 
-/** Punct de extensie pentru emailurile automate pe etape (Lot 3). */
-async function onStageChange(_db: Awaited<ReturnType<typeof requireAdmin>>["supabase"], _companyId: string, _stage: string) {}
+/** Emailuri automate pe etape: la lansare, clientul primește confirmarea. Designul are propriul pas (sendDesign). */
+async function onStageChange(db: Awaited<ReturnType<typeof requireAdmin>>["supabase"], companyId: string, stage: string) {
+  if (stage !== "live") return;
+  const c = await companyContact(db, companyId);
+  const { data: w } = await db.from("websites").select("domain").eq("company_id", companyId).limit(1).maybeSingle();
+  if (!c?.to || !w?.domain) return;
+  await sendEmail({ db, companyId, template: "stage_live", to: c.to, subject: `${w.domain} este online · LUNAR`, html: templates.siteLive(c.first, w.domain) });
+}
 
 export async function setPause(form: FormData) {
   const s = await requireAdmin();
@@ -426,4 +432,74 @@ export async function sendLeadOffer(form: FormData) {
     html: templates.leadOffer(lead.name.split(" ")[0], PLAN_DEFS[plan].name, percent, months, url, code) });
   await s.supabase.from("leads").update({ status: "contacted", status_at: new Date().toISOString(), note: `Ofertă ${code}: ${percent}% ${PLAN_DEFS[plan].name}, expiră ${ends.slice(0, 10)}` }).eq("id", lead.id);
   revalidatePath("/admin/lead-uri");
+}
+
+// ---------- Lot 3 ----------
+export async function sendDesign(form: FormData) {
+  const s = await requireAdmin();
+  const id = String(form.get("id"));
+  const url = String(form.get("url") || "").trim();
+  if (!/^https?:\/\/\S+$/.test(url)) return;
+  const { data: lp } = await s.supabase.from("launch_projects").update({ design_url: url.slice(0, 500), design_status: "pending", design_sent_at: new Date().toISOString(), design_feedback: null, design_decided_at: null }).eq("id", id).select("company_id").single();
+  if (!lp) return;
+  const c = await companyContact(s.supabase, lp.company_id);
+  if (c?.to) await sendEmail({ db: s.supabase, companyId: c.id, template: "stage_design", to: c.to, subject: "Designul website-ului tău e gata · LUNAR", html: templates.designReady(c.first) });
+  revalidatePath("/admin/lansari");
+}
+
+export async function saveTags(form: FormData) {
+  const s = await requireAdmin();
+  const tags = [...new Set(String(form.get("tags") || "").split(",").map((t) => t.trim().toLowerCase().replace(/[^\p{L}\p{N} -]/gu, "").slice(0, 30)).filter(Boolean))].slice(0, 12);
+  await s.supabase.from("companies").update({ tags }).eq("id", String(form.get("company_id")));
+  revalidatePath("/admin", "layout");
+}
+
+export async function logContact(companyId: string, channel: "whatsapp" | "phone" | "email", subject?: string) {
+  const s = await requireAdmin();
+  await s.supabase.from("contact_log").insert({ company_id: companyId, channel, subject: subject?.slice(0, 300) ?? null, author_email: s.user!.email });
+  revalidatePath(`/admin/clienti/${companyId}`);
+}
+
+export async function saveRetention(form: FormData) {
+  const s = await requireAdmin();
+  const percent = Math.max(10, Math.min(100, Number(form.get("percent") || 50)));
+  await s.supabase.from("app_settings").upsert({ key: "retention", value: { enabled: form.get("enabled") === "on", percent }, updated_at: new Date().toISOString() });
+  revalidatePath("/admin/setari");
+}
+
+export async function sendBroadcast(_: ActionState, form: FormData): Promise<ActionState> {
+  const s = await requireAdmin();
+  const audience = String(form.get("audience") || "active");
+  const subject = String(form.get("subject") || "").trim().slice(0, 150);
+  const body = String(form.get("body") || "").trim().slice(0, 8000);
+  if (subject.length < 3 || body.length < 10) return { error: "Completează subiectul și mesajul." };
+  if (form.get("confirm") !== "on") return { error: "Bifează confirmarea înainte de trimitere." };
+  const { recipients } = await broadcastAudience(s.supabase, audience);
+  if (!recipients.length) return { error: "Niciun destinatar pentru filtrul ales." };
+  const html = templates.broadcast(subject, body);
+  let sent = 0;
+  for (const r of recipients) {
+    const id = await sendEmail({ db: s.supabase, companyId: r.id, template: "broadcast", to: r.to, subject: `${subject} · LUNAR`, html });
+    if (id) { sent++; await s.supabase.from("contact_log").insert({ company_id: r.id, channel: "broadcast", subject, author_email: s.user!.email }); }
+  }
+  revalidatePath("/admin/mesaje");
+  return { ok: `Trimis către ${sent} din ${recipients.length} clienți.` };
+}
+
+async function broadcastAudience(db: Awaited<ReturnType<typeof requireAdmin>>["supabase"], audience: string) {
+  const [{ data: cos }, { data: subs }] = await Promise.all([
+    db.from("companies").select("id, name, tags, notify_email, billing_email, is_demo"),
+    db.from("subscriptions").select("company_id, plan, status, created_at").order("created_at", { ascending: false }),
+  ]);
+  const last = new Map<string, { plan: string; status: string }>();
+  for (const x of subs ?? []) if (!last.has(x.company_id)) last.set(x.company_id, x);
+  const recipients = (cos ?? []).filter((c) => !c.is_demo && (c.notify_email || c.billing_email)).filter((c) => {
+    const sub = last.get(c.id);
+    const active = sub && ["active", "past_due"].includes(sub.status);
+    if (audience === "active") return active;
+    if (audience.startsWith("plan:")) return active && sub!.plan === audience.slice(5);
+    if (audience.startsWith("tag:")) return (c.tags as string[] ?? []).includes(audience.slice(4));
+    return false;
+  }).map((c) => ({ id: c.id as string, name: c.name as string, to: (c.notify_email || c.billing_email) as string }));
+  return { recipients };
 }

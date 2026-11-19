@@ -1274,3 +1274,26 @@ html,body{overflow-x:clip}
 .board{grid-template-columns:repeat(5,minmax(196px,1fr))}
 .job-pause{flex-basis:100%;flex-wrap:nowrap}
 .job-pause input{height:32px}
+/* portal: anulare + design */
+.cancel{margin-top:12px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.cancel-r{display:flex;flex-direction:column;gap:6px}
+.cancel-r label{display:flex;gap:8px;align-items:center;color:var(--mute);cursor:pointer}
+.cancel textarea,.design-f textarea{width:100%;min-height:72px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--text);padding:10px 12px;font:inherit;font-size:14px}
+.cancel-a{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.offer-box{border:1px solid rgba(255,91,31,.45);background:rgba(255,91,31,.06);border-radius:16px;padding:16px}
+.design-r{margin-bottom:12px;border-color:rgba(255,91,31,.45);background:linear-gradient(180deg,rgba(255,91,31,.08),transparent)}
+.design-f{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.crow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:14px 18px}
+.contact{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.contact-mail{display:inline-flex;gap:6px}
+.contact select,.tags-f input{height:32px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--text);padding:0 12px;font-size:13px}
+.tags-f{display:flex;gap:6px;flex:1;min-width:280px;max-width:560px}
+.tags-f input{flex:1;min-width:0}
+.dsg{display:flex;flex-direction:column;gap:6px}
+.tagpill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mute);margin:2px 4px 0 0}
+.bc{display:flex;flex-direction:column;gap:12px}
+.bc label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mute)}
+.bc label.check{flex-direction:row;align-items:center;gap:8px}
+.bc input:not([type=checkbox]),.bc select,.bc textarea{border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--text);padding:10px 12px;font:inherit;font-size:14px}
+.cohort{grid-template-columns:repeat(3,1fr)}
+.bc .btn{justify-content:center}

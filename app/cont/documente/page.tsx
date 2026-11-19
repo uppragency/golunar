@@ -1,7 +1,6 @@
 import { getPortalData } from "@/lib/portal-data";
 import { date, money } from "@/lib/format";
-import { ConfirmAction } from "@/components/app/forms";
-import { cancelSubscription } from "@/app/cont/actions";
+import CancelFlow from "@/components/app/CancelFlow";
 import { Arrow } from "@/components/site/visuals";
 
 export default async function DocsPage({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
@@ -58,8 +57,7 @@ export default async function DocsPage({ searchParams }: { searchParams: Promise
           )}
           {d.ctx.role === "owner" && !canceled && (
             <div style={{ marginTop: 10 }}>
-              <ConfirmAction action={cancelSubscription} label="Anulează abonamentul" className="btn-plain" style={{ width: "100%", color: "var(--mute)" }}
-                confirm={owned ? "Anulezi abonamentul de îngrijire la finalul perioadei plătite?" : `Anulezi abonamentul la finalul perioadei plătite? Fără răscumpărare (${money(total, cur)}), website-ul nu se transferă.`} />
+              <CancelFlow retention={d.retention} />
             </div>
           )}
           {canceled && <p className="muted" style={{ fontSize: 13, marginTop: 14 }}>Abonamentul se oprește {d.sub?.cancel_at ? `pe ${date(d.sub.cancel_at)}` : "la finalul perioadei plătite"}.</p>}

@@ -246,6 +246,45 @@ export const templates = {
       cta: "Comandă cu reducerea",
       ctaUrl: url,
     }),
+  broadcast: (subject: string, body: string) =>
+    layout({
+      preheader: body.slice(0, 120),
+      eyebrow: "Noutăți LUNAR",
+      title: subject,
+      body: body.split(/\n{2,}/).map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join(""),
+      cta: "Intră în portal",
+      ctaUrl: `${SITE_URL}/cont`,
+    }),
+  briefReceived: (name: string, due: string) =>
+    layout({
+      preheader: `Am primit brief-ul. Lansarea e programată până pe ${due}.`,
+      eyebrow: "Brief primit",
+      title: "Am primit brief-ul.",
+      titleDim: `Lansare până pe ${due}.`,
+      body: `<p>Mulțumim, ${esc(name)}. Ceasul de 10 zile lucrătoare a pornit. Următorul pas: îți trimitem propunerea de design spre aprobare, direct în portal.</p><p>Dacă ne lipsește ceva, te contactăm noi.</p>`,
+      cta: "Vezi progresul",
+      ctaUrl: `${SITE_URL}/cont`,
+    }),
+  designReady: (name: string) =>
+    layout({
+      preheader: "Designul website-ului tău e gata. Aprobă-l sau cere ajustări din portal.",
+      eyebrow: "Design",
+      title: "Designul e gata.",
+      titleDim: "Spune-ne ce crezi.",
+      body: `<p>Bună, ${esc(name)}. Propunerea de design te așteaptă în portal. O aprobi dintr-un click sau scrii ce ai vrea să schimbăm.</p><p>Aprobarea pornește dezvoltarea.</p>`,
+      cta: "Vezi designul",
+      ctaUrl: `${SITE_URL}/cont`,
+    }),
+  siteLive: (name: string, domain: string) =>
+    layout({
+      preheader: `${domain} este online.`,
+      eyebrow: "Lansare",
+      title: "Website-ul tău e online.",
+      titleDim: domain,
+      body: `<p>Felicitări, ${esc(name)}! <b style="color:#F5F5F6">${esc(domain)}</b> este live. De acum îl monitorizăm la fiecare 10 minute și îl îmbunătățim lunar.</p><p>Ai o idee de îmbunătățire? O trimiți din portal.</p>`,
+      cta: `Deschide ${domain}`,
+      ctaUrl: `https://${domain}`,
+    }),
   paymentFailed: (amount: string) =>
     layout({
       preheader: "Plata lunară nu a trecut. Actualizează cardul în 1 minut.",

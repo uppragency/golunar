@@ -67,7 +67,7 @@ export default async function AdminHome() {
           <div className="kv"><span>Ore lucrate luna aceasta</span><b>{num(d.requests.filter((r) => r.month_bucket?.startsWith(new Date().toISOString().slice(0, 7))).reduce((a, r) => a + Number(r.hours_spent ?? 0), 0), 1)} h</b></div>
         </div>
       </div>
-      <div className="g g-2" style={{ marginTop: 12 }}>
+      <div className="g g-3" style={{ marginTop: 12 }}>
         <div className="panel">
           <h3>Oferta 4,99 lei · câți clienți rămân</h3>
           {d.golunar && d.golunar.orders ? (
@@ -79,6 +79,15 @@ export default async function AdminHome() {
               <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>Procent din clienții la care rata respectivă a ajuns la scadență. Încasat total: {money(Math.round(d.golunar.revenue), "RON")}.</p>
             </>
           ) : <div className="empty">Încă nu sunt comenzi cu GOLUNAR.</div>}
+        </div>
+        <div className="panel">
+          <h3>Prognoză încasări</h3>
+          {d.forecast.map((f) => <div className="kv" key={f.days}><span>Următoarele {f.days} de zile</span><b>{money(Math.round(f.amount), "RON")}</b></div>)}
+          <div className="kv"><span>Restanțe de recuperat</span><b style={{ color: d.overdueLei ? "#FF8A80" : undefined }}>{money(Math.round(d.overdueLei), "RON")}</b></div>
+          <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>Din ratele programate ale abonamentelor active, fără cele care se opresc.</p>
+          <h3 style={{ marginTop: 22 }}>Motive de anulare</h3>
+          {d.cancelReasons.length ? d.cancelReasons.map(([r, n]) => <div className="kv" key={r}><span>{r}</span><b>{n}</b></div>) : <div className="kv"><span>Nicio anulare cu motiv încă</span><b>—</b></div>}
+          <div className="kv"><span>Clienți păstrați cu oferta de retenție</span><b>{d.retained}</b></div>
         </div>
         <div className="panel">
           <h3>Venit recurent pe plan</h3>

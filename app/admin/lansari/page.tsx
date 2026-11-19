@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getOps, STAGES, type Stage } from "@/lib/admin-ops";
 import { date } from "@/lib/format";
-import { moveStage, sendBriefReminder, setPause, toggleChecklist } from "@/app/admin/actions";
+import { moveStage, sendBriefReminder, sendDesign, setPause, toggleChecklist } from "@/app/admin/actions";
 import { CHECKLIST } from "@/lib/checklist";
 
 export const metadata = { title: "Producție" };
@@ -46,6 +46,18 @@ export default async function ProductionPage() {
                       <div className="job-bar"><i style={{ width: `${Math.min(100, (p.used / 10) * 100)}%` }} /></div>
                       <div className="job-meta">Ziua {p.used}/10 · în etapă de {p.stageSince} {p.stageSince === 1 ? "zi" : "zile"}{p.freeMonth ? " · lună gratuită acordată" : ""}</div>
                     </>
+                  )}
+                  {p.stage === "design" && (
+                    <div className="dsg">
+                      {p.designStatus === "pending" && <div className="job-meta">Trimis spre aprobare{p.designSentAt ? ` pe ${date(p.designSentAt, { day: "numeric", month: "short" })}` : ""} · așteptăm clientul</div>}
+                      {p.designStatus === "approved" && <div className="job-meta" style={{ color: "#3DD68C" }}>Design aprobat de client ✓</div>}
+                      {p.designStatus === "changes" && <div className="job-meta" style={{ color: "#F5B83D" }}>Ajustări cerute: „{p.designFeedback}”</div>}
+                      <form action={sendDesign} className="job-pause">
+                        <input type="hidden" name="id" value={p.id} />
+                        <input name="url" type="url" required placeholder="Link design (Figma, preview)" defaultValue={p.designUrl ?? ""} aria-label="Link design" />
+                        <button className="btn-plain sm">{p.designStatus ? "Retrimite" : "Trimite"}</button>
+                      </form>
+                    </div>
                   )}
                   {p.stage === "qa" && (
                     <div className="chk">

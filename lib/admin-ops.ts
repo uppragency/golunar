@@ -39,12 +39,12 @@ export const getOps = cache(async () => {
   const d = await getAdminData();
   const db = d.s.supabase;
   const [companies, briefs, leads, codes, emails, subs, inst] = await Promise.all([
-    db.from("companies").select("id, name, cui, is_demo, currency, bank_reference, legal_rep, phone, billing_email, notify_email, referred_by, created_at"),
+    db.from("companies").select("id, name, cui, is_demo, currency, bank_reference, legal_rep, phone, billing_email, notify_email, referred_by, created_at, tags"),
     db.from("briefs").select("company_id, submitted_at"),
     db.from("leads").select("*").order("created_at", { ascending: false }).limit(500),
     db.from("discount_codes").select("*"),
     db.from("email_log").select("company_id, template, sent_at, status").in("status", ["sent"]).order("sent_at", { ascending: false }).limit(2000),
-    db.from("subscriptions").select("id, company_id, plan, status, payment_mode, currency, created_at, started_at, canceled_at, cancel_reason, discount_code_id"),
+    db.from("subscriptions").select("id, company_id, plan, status, payment_mode, currency, created_at, started_at, canceled_at, cancel_at, cancel_reason, cancel_category, retention_accepted_at, discount_code_id"),
     db.from("installments").select("id, company_id, subscription_id, number, due_date, amount_net, amount_plan, amount_addons, amount_discount, currency, status, paid_at"),
   ]);
   const C = new Map((companies.data ?? []).map((c) => [c.id, c]));
@@ -87,7 +87,7 @@ export const getOps = cache(async () => {
       return {
         id: l.id as string, companyId: l.company_id as string, name: (l.companies as { name: string } | null)?.name ?? "—", domain: (l.websites as { domain: string } | null)?.domain ?? "—",
         stage: (l.stage === "brief" && brief ? "design" : l.stage) as Stage, brief, due: l.due_at as string | null, left, used, tone,
-        paused: l.sla_paused as boolean, checklist: ((l.checklist as Record<string, boolean>) ?? {}), reason: l.paused_reason as string | null, freeMonth: l.free_month_applied_at as string | null,
+        paused: l.sla_paused as boolean, checklist: ((l.checklist as Record<string, boolean>) ?? {}), designUrl: l.design_url as string | null, designStatus: l.design_status as string | null, designFeedback: l.design_feedback as string | null, designSentAt: l.design_sent_at as string | null, reason: l.paused_reason as string | null, freeMonth: l.free_month_applied_at as string | null,
         stageSince: daysSince(l.stage_changed_at), paidAt: firstPaid.get(l.company_id) ?? null,
         briefHours: brief ? 0 : hoursSince(firstPaid.get(l.company_id)),
         briefReminders: sentTo(l.company_id, "brief_reminder_1").length + sentTo(l.company_id, "brief_reminder_2").length + sentTo(l.company_id, "brief_reminder_manual").length,
@@ -194,11 +194,22 @@ export const getOps = cache(async () => {
     return { ...c, per, incl, over, to: nextPlan[c.plan]!, offered: mails.some((m) => m.company_id === c.id && m.template === "upgrade_offer") };
   }).filter((c) => c.per[0] > c.incl || c.over >= 2);
 
+  // prognoză încasări din ratele programate ale abonamentelor active (lei, convertit din euro)
+  const activeSubs = new Set((subs.data ?? []).filter((x) => ["active", "past_due"].includes(x.status) && !C.get(x.company_id)?.is_demo && !x.cancel_at).map((x) => x.id));
+  const inDays = (dd: string) => (+new Date(dd) - +today) / 864e5;
+  const lei = (i: (typeof I)[number]) => i.amount_net * (i.currency === "EUR" ? 5.09 : 1);
+  const open = I.filter((i) => i.status !== "paid" && activeSubs.has(i.subscription_id));
+  const forecast = [30, 60, 90].map((n) => ({ days: n, amount: open.filter((i) => inDays(i.due_date) >= -0.5 && inDays(i.due_date) <= n).reduce((a, i) => a + lei(i), 0) }));
+  const overdueLei = open.filter((i) => inDays(i.due_date) < -0.5).reduce((a, i) => a + lei(i), 0);
+  const cancelReasons = new Map<string, number>();
+  for (const x of subs.data ?? []) if ((x.cancel_at || x.status === "canceled") && x.cancel_category) cancelReasons.set(x.cancel_category, (cancelReasons.get(x.cancel_category) ?? 0) + 1);
+  const retained = (subs.data ?? []).filter((x) => x.retention_accepted_at).length;
+
   const newRequests = d.requests.filter((r) => r.status === "new");
   const freshBriefs = production.filter((p) => p.brief && hoursSince(p.brief) <= 72 && p.stage === "design");
 
   return {
-    ...d, sites, overdue, nearOwnership, referralValue, upgrades, newRequests, freshBriefs, orders, expired, production, missingBrief, improvements, codeStats, golunar, leads: L,
+    ...d, forecast, overdueLei, cancelReasons: [...cancelReasons.entries()].sort((a, b) => b[1] - a[1]), retained, sites, overdue, nearOwnership, referralValue, upgrades, newRequests, freshBriefs, orders, expired, production, missingBrief, improvements, codeStats, golunar, leads: L,
     sources: [...bySource.entries()].map(([k, v]) => ({ source: k, ...v })).sort((a, b) => b.leads - a.leads),
     company: C, mails, installmentsAll: I, subsAll: subs.data ?? [],
   };
