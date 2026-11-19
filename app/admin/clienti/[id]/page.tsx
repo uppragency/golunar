@@ -8,6 +8,8 @@ import { BRIEF_KEYS } from "@/lib/brief";
 import ContactButtons from "@/components/app/ContactButtons";
 import { addNote, saveTags, deleteNote, inviteMember, markInstallmentPaid, pinNote, setSiteStatus, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
 import { buildTimeline } from "@/lib/timeline";
+import { getOps } from "@/lib/admin-ops";
+import { completeHandover, deleteAsset, saveBrandKit, uploadAsset } from "@/app/admin/actions";
 import InviteForm from "@/components/app/InviteForm";
 import type { Currency } from "@/lib/plans";
 
@@ -34,6 +36,15 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
     db.from("email_log").select("template, sent_at, status, to_email").eq("company_id", id).order("sent_at", { ascending: false }).limit(100),
     db.from("contact_log").select("channel, subject, author_email, created_at").eq("company_id", id).order("created_at", { ascending: false }).limit(100),
   ]);
+  const ops = await getOps();
+  const hs = ops.health.get(id);
+  const oldP = ops.oldPrice.find((x) => x.id === id);
+  const dups = ops.duplicates.filter((x) => x.a.id === id || x.b.id === id);
+  const canHandover = ops.handover.some((x) => x.id === id);
+  const { data: assetList } = await db.storage.from("documents").list(`${id}/assets`, { limit: 100, sortBy: { column: "created_at", order: "desc" } });
+  const assets = (assetList ?? []).filter((f) => f.name && !f.name.startsWith("."));
+  const { data: assetUrls } = assets.length ? await db.storage.from("documents").createSignedUrls(assets.map((f) => `${id}/assets/${f.name}`), 3600) : { data: [] };
+  const brand = (c?.brand ?? {}) as { colors?: string; fonts?: string; tone?: string; notes?: string; links?: string };
   const briefFiles = (brief?.files ?? []) as { path: string; name: string; size: number }[];
   const { data: signed } = briefFiles.length ? await db.storage.from("documents").createSignedUrls(briefFiles.map((f) => f.path), 3600) : { data: [] };
   const { data: refBy } = c?.referred_by ? await db.from("companies").select("id, name").eq("id", c.referred_by).maybeSingle() : { data: null };
@@ -63,6 +74,14 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
           <button className="btn-plain sm">Salvează etichetele</button>
         </form>
       </div>
+      {(hs || oldP || dups.length > 0 || canHandover) && (
+        <div className="alerts">
+          {hs && <div className={`alert ${hs.score >= 80 ? "ok" : hs.score >= 60 ? "warn" : "bad"}`}><b>Sănătate {hs.score}/100</b><span>{hs.reasons.length ? hs.reasons.join(" · ") : "plăți la zi, activ în portal, site online"}</span></div>}
+          {oldP && <div className="alert acc"><b>Preț istoric</b><span>Plătește {money(oldP.planPrice!, oldP.currency)} pe lună pentru {PLAN_NAME[oldP.plan]}; prețul actual de listă este {money(oldP.listPrice, oldP.currency)}. Prețul lui rămâne cel de la comandă.</span></div>}
+          {dups.map((x) => { const other = x.a.id === id ? x.b : x.a; return <div className="alert warn" key={other.id}><b>Posibilă dublură</b><span>{x.why} cu <Link href={`/admin/clienti/${other.id}`}>{other.name}</Link></span></div>; })}
+          {canHandover && <div className="alert acc"><b>12/12 rate plătite</b><span>Predă website-ul: marchează transferul, clientul primește emailul și procesul-verbal în portal.</span><form action={completeHandover}><input type="hidden" name="company_id" value={c.id} /><button className="btn-plain sm acc">Predă website-ul</button></form></div>}
+        </div>
+      )}
       <div className="g g-4">
         <div className="panel kpi"><span className="l">Plan</span><b>{sub ? PLAN_NAME[sub.plan] : "—"}</b><span className="d" style={{ color: "var(--mute)" }}>{(items ?? []).map((i) => i.addon).join(", ") || "fără opțiuni"}</span></div>
         <div className="panel kpi"><span className="l">Rate plătite</span><b>{paid}/12</b><span className="d" style={{ color: "var(--mute)" }}>{sub?.payment_mode === "card" ? "Card" : "Transfer"} · {sub?.status}</span></div>
@@ -203,6 +222,44 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
               </div>
             </form>
           ))}
+        </div>
+      </div>
+      <div className="g g-2" style={{ marginTop: 12 }}>
+        <div className="panel">
+          <h3>Bibliotecă de materiale <span className="muted" style={{ fontWeight: 400, fontSize: 12 }}>{assets.length + briefFiles.length} fișiere</span></h3>
+          <form action={uploadAsset} className="note-f" style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <input type="hidden" name="company_id" value={c.id} />
+            <input type="file" name="files" multiple aria-label="Fișiere" style={{ flex: 1, minWidth: 200, fontSize: 13 }} />
+            <button className="btn-plain sm">Încarcă</button>
+          </form>
+          <div className="assets">
+            {assets.map((f, i) => (
+              <div className="asset" key={f.name}>
+                <a href={assetUrls?.[i]?.signedUrl ?? "#"} target="_blank" rel="noreferrer">{/\.(png|jpe?g|webp|gif|svg)$/i.test(f.name) ? <img src={assetUrls?.[i]?.signedUrl ?? ""} alt="" /> : <span className="mono">{f.name.split(".").pop()?.toUpperCase()}</span>}</a>
+                <small title={f.name}>{f.name.replace(/^\d+-/, "")}</small>
+                <form action={deleteAsset}><input type="hidden" name="company_id" value={c.id} /><input type="hidden" name="path" value={`${c.id}/assets/${f.name}`} /><button aria-label="Șterge">×</button></form>
+              </div>
+            ))}
+            {briefFiles.map((f, i) => (
+              <div className="asset" key={f.path}>
+                <a href={signed?.[i]?.signedUrl ?? "#"} target="_blank" rel="noreferrer">{/\.(png|jpe?g|webp|gif|svg)$/i.test(f.name) ? <img src={signed?.[i]?.signedUrl ?? ""} alt="" /> : <span className="mono">{f.name.split(".").pop()?.toUpperCase()}</span>}</a>
+                <small title={f.name}>{f.name} · brief</small>
+              </div>
+            ))}
+          </div>
+          {!assets.length && !briefFiles.length && <div className="empty sm">Niciun fișier încă. Logo, poze și documente se adaugă aici.</div>}
+        </div>
+        <div className="panel">
+          <h3>Identitate și ton</h3>
+          <form action={saveBrandKit} className="bc">
+            <input type="hidden" name="company_id" value={c.id} />
+            <label>Culori<input name="colors" defaultValue={brand.colors ?? ""} placeholder="#0B3D91 principal, #F2A900 accent" /></label>
+            <label>Fonturi<input name="fonts" defaultValue={brand.fonts ?? ""} placeholder="Titluri: Inter Bold · Text: Inter" /></label>
+            <label>Tonul comunicării<input name="tone" defaultValue={brand.tone ?? ""} placeholder="Cald, profesionist, fără termeni tehnici" /></label>
+            <label>Linkuri utile<input name="links" defaultValue={brand.links ?? ""} placeholder="Instagram, Google Business, Drive cu poze" /></label>
+            <label>Note<textarea name="notes" rows={3} defaultValue={brand.notes ?? ""} placeholder="Ce îi place, ce să evităm, prețuri, servicii principale" /></label>
+            <button className="btn-plain sm">Salvează</button>
+          </form>
         </div>
       </div>
       <div className="panel" style={{ marginTop: 12 }}>

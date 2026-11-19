@@ -3,10 +3,11 @@ import Link from "next/link";
 import PageShell from "@/components/site/PageShell";
 import BankDetails from "@/components/site/BankDetails";
 import { Arrow } from "@/components/site/visuals";
+import TrackPurchase from "@/components/site/TrackPurchase";
 
 export const metadata: Metadata = { title: "Comanda a fost înregistrată", robots: { index: false, follow: false } };
 
-export default async function ThankYou({ searchParams }: { searchParams: Promise<{ ref?: string; suma?: string; lunar?: string; plan?: string; email?: string; cont?: string }> }) {
+export default async function ThankYou({ searchParams }: { searchParams: Promise<{ ref?: string; suma?: string; lunar?: string; plan?: string; email?: string; cont?: string; v?: string; m?: string; cur?: string; pc?: string }> }) {
   const q = await searchParams;
   const ref = /^LNR-\d{3,6}$/.test(q.ref ?? "") ? q.ref! : null;
   const amount = (q.suma ?? "").slice(0, 30) || null;
@@ -23,6 +24,7 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
       lede={`Plătește prima rată prin transfer bancar și intră în contul tău de client${email ? ` cu ${email}` : ""}. Ți-am trimis aceleași informații și pe email.`}
       cta={false}
     >
+      {ref && <TrackPurchase id={ref} value={Number(q.v) || 0} monthly={Number(q.m) || 0} currency={q.cur === "EUR" ? "EUR" : "RON"} plan={["essential", "growth", "partner"].includes(q.pc ?? "") ? q.pc! : "essential"} />}
       <div className="wide-block">
         <div className="ty-grid">
           <div className="card ty-card">

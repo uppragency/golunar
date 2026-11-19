@@ -7,11 +7,12 @@ import { deleteDemoData, saveBankSettings, saveRetention } from "@/app/admin/act
 
 export default async function SettingsPage() {
   const s = await requireAdmin();
-  const [{ data: bank }, { count: demo }, { data: leads }, { data: ret }] = await Promise.all([
+  const [{ data: bank }, { count: demo }, { data: leads }, { data: ret }, { data: logins }] = await Promise.all([
     s.supabase.from("app_settings").select("value").eq("key", "bank").maybeSingle(),
     s.supabase.from("companies").select("id", { count: "exact", head: true }).eq("is_demo", true),
     s.supabase.from("leads").select("*").order("created_at", { ascending: false }).limit(15),
     s.supabase.from("app_settings").select("value").eq("key", "retention").maybeSingle(),
+    s.supabase.from("admin_logins").select("*").order("created_at", { ascending: false }).limit(30),
   ]);
   const retention = (ret?.value ?? { enabled: true, percent: 50 }) as { enabled: boolean; percent: number };
   const rows: [string, boolean, string][] = [
@@ -57,6 +58,13 @@ export default async function SettingsPage() {
           <select name="percent" defaultValue={String(retention.percent)} aria-label="Reducere">{[25, 30, 40, 50, 75, 100].map((v) => <option key={v} value={v}>{v === 100 ? "O lună gratuită" : `${v}% reducere`}</option>)}</select>
           <button className="btn-plain sm">Salvează</button>
         </form>
+      </div>
+      <div className="panel" style={{ marginTop: 12 }}>
+        <h3>Jurnal de acces admin</h3>
+        <p className="muted" style={{ fontSize: 13, marginBottom: 10 }}>Fiecare intrare în admin (o dată la 12 ore per browser). La un dispozitiv nou primești alertă pe email.</p>
+        {(logins ?? []).length ? (logins ?? []).map((l) => (
+          <div className="kv" key={l.id}><span>{l.email?.split("@")[0]} · {l.device}{l.new_device ? " · dispozitiv nou" : ""}<small style={{ display: "block", color: "var(--mute)" }}>{l.ip ?? "IP necunoscut"}</small></span><b style={{ fontWeight: 400 }}>{new Date(l.created_at).toLocaleString("ro-RO", { timeZone: "Europe/Bucharest", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</b></div>
+        )) : <div className="empty sm">Nicio intrare înregistrată încă.</div>}
       </div>
     </div>
   );

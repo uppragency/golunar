@@ -285,6 +285,26 @@ export const templates = {
       cta: `Deschide ${domain}`,
       ctaUrl: `https://${domain}`,
     }),
+  anniversary: (name: string, months: number, domain: string | null) =>
+    layout({
+      preheader: `${months === 12 ? "Un an" : "Șase luni"} împreună. Mulțumim!`,
+      eyebrow: months === 12 ? "Un an împreună" : "Șase luni împreună",
+      title: `Mulțumim pentru ${months === 12 ? "primul an" : "primele 6 luni"}.`,
+      titleDim: "Continuăm să-l facem mai bun.",
+      body: `<p>Bună, ${esc(name)}. Azi se împlinesc ${months} luni de când lucrăm împreună${domain ? ` la ${esc(domain)}` : ""}. Îți mulțumim pentru încredere.</p><p>${months === 12 ? "Website-ul este acum al tău. Îți trimitem separat procesul-verbal de predare." : "Ai o idee pentru site? Trimite-o din portal: îmbunătățirile lunare sunt incluse în abonament."}</p>`,
+      cta: "Intră în portal",
+      ctaUrl: `${SITE_URL}/cont`,
+    }),
+  handover: (name: string, domain: string | null) =>
+    layout({
+      preheader: "Website-ul este acum al tău. Procesul-verbal de predare e în portal.",
+      eyebrow: "Proprietate",
+      title: "Website-ul este al tău.",
+      titleDim: domain ?? "",
+      body: `<p>Felicitări, ${esc(name)}! Ai finalizat cele 12 plăți, iar website-ul${domain ? ` ${esc(domain)}` : ""} este acum proprietatea firmei tale.</p><p>În portal găsești procesul-verbal de predare. Codul-sursă și fișierele le primești la cerere, în cel mult 15 zile lucrătoare. Poți continua cu LUNAR pentru găzduire, mentenanță și îmbunătățiri.</p>`,
+      cta: "Vezi procesul-verbal",
+      ctaUrl: `${SITE_URL}/cont/predare`,
+    }),
   paymentFailed: (amount: string) =>
     layout({
       preheader: "Plata lunară nu a trecut. Actualizează cardul în 1 minut.",

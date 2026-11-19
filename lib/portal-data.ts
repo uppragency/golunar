@@ -3,7 +3,7 @@ import { cache } from "react";
 import { getPortalContext } from "@/lib/session";
 import { PLANS, ADDONS, type Currency, type PlanCode } from "@/lib/plans";
 
-export type Installment = { id: string; number: number; due_date: string; amount_plan: number; amount_addons: number; amount_discount: number; amount_net: number; vat_rate: number; currency: Currency; status: "scheduled" | "paid" | "failed" | "overdue"; paid_at: string | null; method: string | null };
+export type Installment = { id: string; number: number; due_date: string; amount_plan: number; amount_addons: number; amount_discount: number; amount_net: number; vat_rate: number; currency: Currency; status: "scheduled" | "paid" | "failed" | "overdue"; paid_at: string | null; method: string | null; payment_notified_at?: string | null };
 
 export const getPortalData = cache(async () => {
   const ctx = await getPortalContext();

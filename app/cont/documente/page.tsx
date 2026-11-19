@@ -29,7 +29,7 @@ export default async function DocsPage({ searchParams }: { searchParams: Promise
                   <b>{doc.title}</b>
                   <span>{locked ? (doc.kind === "source" ? "La cerere, după transfer · max. 15 zile lucrătoare" : `Disponibil după rata ${doc.locked_until_installment}`) : doc.signed_at ? `Acceptat ${date(doc.signed_at)}${doc.pages ? ` · ${doc.pages} pagini` : ""}` : "În pregătire"}</span>
                 </div>
-                {locked ? <button className="btn-plain" disabled>Blocat</button> : doc.pdf_path ? <a className="btn-plain" href={`/api/files/${doc.id}`}>Descarcă</a> : <button className="btn-plain" disabled title="PDF-ul se generează în curând">În curând</button>}
+                {locked ? <button className="btn-plain" disabled>Blocat</button> : doc.kind === "handover" && d.ownership?.transferred_at ? <a className="btn-plain" href="/cont/predare">Deschide</a> : doc.pdf_path ? <a className="btn-plain" href={`/api/files/${doc.id}`}>Descarcă</a> : <button className="btn-plain" disabled title="PDF-ul se generează în curând">În curând</button>}
               </div>
             );
           })}

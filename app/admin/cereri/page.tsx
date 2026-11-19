@@ -13,11 +13,19 @@ function Sla({ created }: { created: string }) {
 
 export default async function RequestsAdmin() {
   const d = await getAdminData();
+  const { data: att } = await d.s.supabase.from("requests").select("id, body, attachments").in("status", ["new", "in_progress"]);
+  const files = (att ?? []).flatMap((r) => ((r.attachments as { path: string; name: string }[]) ?? []).map((f) => ({ ...f, id: r.id })));
+  const { data: urls } = files.length ? await d.s.supabase.storage.from("documents").createSignedUrls(files.map((f) => f.path), 3600) : { data: [] };
+  const filesOf = (id: string) => files.map((f, i) => ({ ...f, url: urls?.[i]?.signedUrl })).filter((f) => f.id === id);
+  const bodyOf = new Map((att ?? []).map((r) => [r.id, r.body as string | null]));
   const open = d.requests.filter((r) => r.status === "new" || r.status === "in_progress");
   const done = d.requests.filter((r) => !(r.status === "new" || r.status === "in_progress")).slice(0, 30);
   const Row = ({ r }: { r: (typeof d.requests)[number] }) => (
     <div className="req" style={{ gridTemplateColumns: "1fr auto" }}>
-      <div>{(r.companies as unknown as { name: string } | null)?.name} · {r.title}<Sla created={r.created_at} /><small>{REQ_TYPE[r.type]} · {date(r.created_at, { day: "numeric", month: "short" })}</small></div>
+      <div>{(r.companies as unknown as { name: string } | null)?.name} · {r.title}<Sla created={r.created_at} /><small>{REQ_TYPE[r.type]} · {date(r.created_at, { day: "numeric", month: "short" })}</small>
+        {bodyOf.get(r.id) && <p className="lead-m" style={{ marginTop: 6 }}>{bodyOf.get(r.id)}</p>}
+        {filesOf(r.id).length > 0 && <div className="rq-files">{filesOf(r.id).map((f) => <a key={f.path} href={f.url ?? "#"} target="_blank" rel="noreferrer">{f.name}</a>)}</div>}
+      </div>
       <form action={updateRequest} className="inline-form">
         <input type="hidden" name="id" value={r.id} />
         <select name="status" defaultValue={r.status} aria-label="Status">{Object.entries(REQ_PILL).map(([k, v]) => <option key={k} value={k}>{v[1]}</option>)}</select>

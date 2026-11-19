@@ -10,6 +10,7 @@ function apply(v: "granted" | "denied") {
   const w = window as unknown as { gtag?: (...a: unknown[]) => void; dataLayer?: unknown[] };
   w.gtag?.("consent", "update", { ad_storage: v, analytics_storage: v, ad_user_data: v, ad_personalization: v });
   w.dataLayer?.push({ event: "consent_update", consent: v });
+  window.dispatchEvent(new Event("lunar:consent"));
 }
 
 export default function CookieBanner() {

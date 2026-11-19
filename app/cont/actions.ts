@@ -19,11 +19,18 @@ export async function createRequest(_: ActionState, form: FormData): Promise<Act
   if (!ctx.companyId || !ctx.canEdit) return { error: "Nu ai drepturi să trimiți cereri." };
   const parsed = RequestSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Date invalide." };
-  const { error } = await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, ...parsed.data });
+  let attachments: { path: string; name: string; size: number }[] = [];
+  try {
+    attachments = (JSON.parse(String(form.get("attachments") || "[]")) as typeof attachments)
+      .filter((f) => typeof f.path === "string" && f.path.startsWith(`${ctx.companyId}/requests/`)).slice(0, 5);
+  } catch {}
+  const page = String(form.get("page") || "").trim().slice(0, 300);
+  const body = [page ? `Pagina: ${page}` : "", parsed.data.body].filter(Boolean).join("\n\n").slice(0, 5000);
+  const { error } = await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, ...parsed.data, body, attachments });
   if (error) return { error: error.message.includes("îmbunătățirile") ? error.message : "Cererea nu a putut fi salvată." };
   if (ctx.user?.email) await sendEmail({ template: "request_received", to: ctx.user.email, subject: "Am primit cererea ta · LUNAR", html: templates.requestReceived(parsed.data.title) });
   await sendEmail({ template: "admin_request", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Cerere nouă: ${parsed.data.title}`,
-    html: templates.adminNotice("Cerere nouă de la client", { Tip: parsed.data.type, Titlu: parsed.data.title, Detalii: parsed.data.body, Utilizator: ctx.user?.email }) });
+    html: templates.adminNotice("Cerere nouă de la client", { Tip: parsed.data.type, Titlu: parsed.data.title, Pagina: page, Detalii: parsed.data.body, Atașamente: attachments.length ? String(attachments.length) : "", Utilizator: ctx.user?.email }) });
   revalidatePath("/cont", "layout");
   return { ok: "Cerere trimisă. Primești confirmarea pe email." };
 }
@@ -191,4 +198,36 @@ export async function acceptRetention(): Promise<ActionState> {
   await sendEmail({ template: "admin_retention", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Client păstrat cu oferta de retenție: ${c?.name ?? ""}`, html: templates.adminNotice("Ofertă de retenție acceptată", { Firmă: c?.name, Reducere: `${r.percent}% la rata ${r.number}` }) });
   revalidatePath("/cont", "layout");
   return { ok: `Gata! Rata ${r.number} are ${r.percent}% reducere. Mulțumim că rămâi cu noi.` };
+}
+
+// ---------- plată cu un click: „Am plătit” ----------
+export async function notifyPayment(installmentId: string): Promise<ActionState> {
+  const ctx = await getPortalContext();
+  if (!ctx.companyId) return { error: "Nu ai drepturi." };
+  const { error } = await ctx.supabase.rpc("portal_notify_payment", { p_company: ctx.companyId, p_installment: installmentId });
+  if (error) return { error: "Nu am putut trimite confirmarea." };
+  const { data: c } = await ctx.supabase.from("companies").select("name, bank_reference").eq("id", ctx.companyId).single();
+  const { data: i } = await ctx.supabase.from("installments").select("number, amount_net, currency").eq("id", installmentId).single();
+  await sendEmail({ template: "admin_payment_notified", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Plată anunțată: ${c?.name ?? ""}`,
+    html: templates.adminNotice("Clientul a anunțat plata", { Firmă: c?.name, Referință: c?.bank_reference, Rata: i ? `${i.number}/12` : "", Suma: i ? `${Number(i.amount_net).toFixed(2)} ${i.currency === "EUR" ? "€" : "lei"}` : "", Utilizator: ctx.user?.email }) });
+  revalidatePath("/cont", "layout");
+  return { ok: "Mulțumim! Confirmăm plata după ce apare în extras, de obicei în aceeași zi lucrătoare." };
+}
+
+// ---------- magazin de opțiuni ----------
+export async function activateAddon(_: ActionState, form: FormData): Promise<ActionState> {
+  const ctx = await getPortalContext();
+  if (!ctx.companyId || ctx.role !== "owner") return { error: "Doar owner-ul firmei poate activa opțiuni." };
+  const addon = String(form.get("addon"));
+  const qty = Number(form.get("qty") || 1);
+  const { data, error } = await ctx.supabase.rpc("portal_addon_activate", { p_company: ctx.companyId, p_addon: addon, p_qty: qty });
+  if (error) return { error: error.message.includes("exists") ? "Opțiunea este deja activă." : "Opțiunea nu a putut fi activată. Scrie-ne la hello@golunar.ro." };
+  const r = data as { price: number; currency: string; installments: number };
+  const { data: c } = await ctx.supabase.from("companies").select("name").eq("id", ctx.companyId).single();
+  const names: Record<string, string> = { brand: "Identitate vizuală", local: "Vizibilitate locală Google", lang: "Limbă suplimentară" };
+  await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, type: "billing", title: `Opțiune activată: ${names[addon] ?? addon}${addon === "lang" ? ` × ${qty}` : ""}` });
+  await sendEmail({ template: "admin_addon", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Opțiune activată: ${names[addon]} · ${c?.name ?? ""}`,
+    html: templates.adminNotice("Client a activat o opțiune", { Firmă: c?.name, Opțiune: names[addon], Cantitate: String(qty), Preț: `${r.price} ${r.currency === "EUR" ? "€" : "lei"} / lună`, Rate: String(r.installments) }) });
+  revalidatePath("/cont", "layout");
+  return { ok: `${names[addon]} este activă de la rata următoare. Te contactăm pentru detalii.` };
 }

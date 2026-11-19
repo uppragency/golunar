@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/session";
 import { getOps } from "@/lib/admin-ops";
+import DeleteDiscount from "@/components/app/DeleteDiscount";
 import { money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { SaveForm } from "@/components/app/forms";
@@ -74,7 +75,7 @@ export default async function DiscountsPage() {
                     <td>{c.redemptions}{c.max_redemptions ? ` / ${c.max_redemptions}` : ""}</td>
                     <td style={{ fontSize: 12.5 }}>{(() => { const x = stat.get(c.id); if (!x || !x.orders) return <span className="muted">—</span>; return <>{x.orders} comenzi · {x.converted} plătite<br /><span className="muted">{x.stayed} active · {x.canceled} anulate · {money(Math.round(x.revenue), "RON")}</span></>; })()}</td>
                     <td><Pill tone={!c.active ? "bad" : expired ? "warn" : "ok"}>{!c.active ? "Oprit" : expired ? "Epuizat" : "Activ"}</Pill></td>
-                    <td><form action={toggleDiscount}><input type="hidden" name="id" value={c.id} /><input type="hidden" name="active" value={String(!c.active)} /><button className="btn-plain sm">{c.active ? "Oprește" : "Pornește"}</button></form></td>
+                    <td><form action={toggleDiscount}><input type="hidden" name="id" value={c.id} /><input type="hidden" name="active" value={String(!c.active)} /><button className="btn-plain sm">{c.active ? "Oprește" : "Pornește"}</button></form>{String(c.code).toUpperCase() !== "GOLUNAR" && <div style={{ marginTop: 6 }}><DeleteDiscount id={c.id} code={String(c.code).toUpperCase()} used={c.redemptions} /></div>}</td>
                   </tr>
                 );
               })}

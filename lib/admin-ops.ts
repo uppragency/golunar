@@ -45,7 +45,7 @@ export const getOps = cache(async () => {
     db.from("discount_codes").select("*"),
     db.from("email_log").select("company_id, template, sent_at, status").in("status", ["sent"]).order("sent_at", { ascending: false }).limit(2000),
     db.from("subscriptions").select("id, company_id, plan, status, payment_mode, currency, created_at, started_at, canceled_at, cancel_at, cancel_reason, cancel_category, retention_accepted_at, discount_code_id"),
-    db.from("installments").select("id, company_id, subscription_id, number, due_date, amount_net, amount_plan, amount_addons, amount_discount, currency, status, paid_at"),
+    db.from("installments").select("id, company_id, subscription_id, number, due_date, amount_net, amount_plan, amount_addons, amount_discount, currency, status, paid_at, payment_notified_at"),
   ]);
   const C = new Map((companies.data ?? []).map((c) => [c.id, c]));
   const briefAt = new Map((briefs.data ?? []).map((b) => [b.company_id, b.submitted_at as string | null]));
@@ -205,11 +205,102 @@ export const getOps = cache(async () => {
   for (const x of subs.data ?? []) if ((x.cancel_at || x.status === "canceled") && x.cancel_category) cancelReasons.set(x.cancel_category, (cancelReasons.get(x.cancel_category) ?? 0) + 1);
   const retained = (subs.data ?? []).filter((x) => x.retention_accepted_at).length;
 
+  // ---------- Lot 4 ----------
+  const [loginsQ, transfersAll, ownQ] = await Promise.all([
+    db.rpc("admin_member_logins"),
+    db.from("bank_transfers").select("id, received_at, payer_name, reference, amount, currency, matched_installment_id, match_status, confirmed_at").order("received_at", { ascending: false }).limit(500),
+    db.from("ownership").select("company_id, transferred_at, handover_sent_at"),
+  ]);
+  const lastLogin = new Map(((loginsQ.data ?? []) as { company_id: string; last_sign_in: string | null }[]).map((x) => [x.company_id, x.last_sign_in]));
+  const ownMap = new Map((ownQ.data ?? []).map((o) => [o.company_id, o]));
+
+  // scor de sănătate 0–100
+  const health = new Map<string, { score: number; reasons: string[] }>();
+  for (const c of d.clients.filter((x) => !x.isDemo || true)) {
+    if (c.status === "Anulat") continue;
+    const reasons: string[] = [];
+    let sc = 100;
+    const od = overdue.filter((o) => o.companyId === c.id);
+    if (od.length) { const late = Math.max(...od.map((o) => o.late)); sc -= late >= 10 ? 40 : 25; reasons.push(`rată restantă de ${late} zile`); }
+    const sub = (subs.data ?? []).find((x) => x.company_id === c.id && x.cancel_at);
+    if (sub) { sc -= 45; reasons.push("a cerut anularea"); }
+    const ll = lastLogin.get(c.id);
+    const loginDays = ll ? daysSince(ll) : null;
+    if (loginDays == null || loginDays > 45) { sc -= 15; reasons.push(loginDays == null ? "nu a intrat în portal" : `ultima intrare în portal acum ${loginDays} zile`); }
+    const lastReq = d.requests.filter((r) => r.company_id === c.id).map((r) => r.created_at).sort().at(-1);
+    if (c.paid >= 2 && (!lastReq || daysSince(lastReq) > 60)) { sc -= 10; reasons.push("nicio cerere în 60 de zile"); }
+    const site = sites.find((w) => w.company_id === c.id);
+    if (site?.down) { sc -= 20; reasons.push("site căzut"); }
+    else if (site?.uptime_90d != null && +site.uptime_90d < 99) { sc -= 10; reasons.push(`uptime ${(+site.uptime_90d).toFixed(1)}%`); }
+    const prod = production.find((p) => p.companyId === c.id);
+    if (prod && !prod.brief && prod.briefHours > 96) { sc -= 15; reasons.push("brief lipsă de peste 4 zile"); }
+    if (prod?.tone === "bad") { sc -= 10; reasons.push("lansare întârziată"); }
+    health.set(c.id, { score: Math.max(0, sc), reasons });
+  }
+  const atRisk = d.clients.filter((c) => !c.isDemo && (health.get(c.id)?.score ?? 100) < 60).map((c) => ({ ...c, health: health.get(c.id)! })).sort((a, b) => a.health.score - b.health.score);
+
+  // aniversări: 6 și 12 luni (fereastră de 7 zile)
+  const anniversaries = d.clients.filter((c) => !c.isDemo && c.status !== "Anulat" && c.startedAt).flatMap((c) => {
+    const start = new Date(c.startedAt!);
+    return [6, 12].map((m) => {
+      const at = new Date(start); at.setMonth(at.getMonth() + m);
+      const delta = Math.round((+at - +today) / 864e5);
+      const sent = mails.some((x) => x.company_id === c.id && x.template === `anniversary_${m}`);
+      return { id: c.id, name: c.name, months: m, at: at.toISOString().slice(0, 10), delta, sent };
+    }).filter((a) => a.delta >= -7 && a.delta <= 7 && !a.sent);
+  });
+
+  // dubluri: același email, telefon sau nume normalizat între firme
+  const norm = (x: string | null | undefined) => (x ?? "").toLowerCase().replace(/\b(s\.?r\.?l\.?|s\.?a\.?|pfa|ii|if)\b/g, "").replace(/[^\p{L}\p{N}]/gu, "");
+  const phoneN = (x: string | null | undefined) => (x ?? "").replace(/\D/g, "").slice(-9);
+  const cos = [...C.values()].filter((c) => !c.is_demo);
+  const duplicates: { a: { id: string; name: string }; b: { id: string; name: string }; why: string }[] = [];
+  for (let i = 0; i < cos.length; i++) for (let j = i + 1; j < cos.length; j++) {
+    const a = cos[i], b = cos[j];
+    const why: string[] = [];
+    const ea = (a.notify_email || a.billing_email || "").toLowerCase(), eb = (b.notify_email || b.billing_email || "").toLowerCase();
+    if (ea && ea === eb) why.push("același email");
+    if (phoneN(a.phone).length === 9 && phoneN(a.phone) === phoneN(b.phone)) why.push("același telefon");
+    if (norm(a.name).length > 3 && norm(a.name) === norm(b.name)) why.push("același nume");
+    if (why.length) duplicates.push({ a: { id: a.id, name: a.name }, b: { id: b.id, name: b.name }, why: why.join(", ") });
+  }
+
+  // plăți duble: transferuri identice sau mai multe transferuri potrivite pe aceeași rată
+  const tx = transfersAll.data ?? [];
+  const doublePayments: { key: string; label: string; detail: string }[] = [];
+  const byInst = new Map<string, typeof tx>();
+  for (const t of tx) if (t.matched_installment_id) byInst.set(t.matched_installment_id, [...(byInst.get(t.matched_installment_id) ?? []), t]);
+  for (const [iid, list] of byInst) if (list.length > 1) {
+    const inst = I.find((i) => i.id === iid);
+    doublePayments.push({ key: `i${iid}`, label: `${C.get(inst?.company_id ?? "")?.name ?? "—"} · rata ${inst?.number ?? "?"}`, detail: `${list.length} transferuri potrivite pe aceeași rată` });
+  }
+  const seen = new Map<string, (typeof tx)[number]>();
+  for (const t of tx) {
+    const k = `${(t.payer_name ?? "").toLowerCase()}|${t.amount}|${t.currency}`;
+    const prev = seen.get(k);
+    if (prev && Math.abs(+new Date(prev.received_at) - +new Date(t.received_at)) <= 3 * 864e5) doublePayments.push({ key: `t${t.id}`, label: `${t.payer_name} · ${(+t.amount).toFixed(2)} ${t.currency === "EUR" ? "€" : "lei"}`, detail: `două transferuri identice în 3 zile (${t.received_at}, ${prev.received_at})` });
+    seen.set(k, t);
+  }
+
+  // preț vechi: rata următoare are alt preț de plan decât lista actuală
+  const oldPrice = d.clients.filter((c) => !c.isDemo && c.mrrEur > 0).map((c) => {
+    const nxt = I.filter((i) => i.company_id === c.id && i.status !== "paid" && i.number > 1).sort((a, b) => a.number - b.number)[0];
+    const planPrice = nxt ? Number(nxt.amount_plan) : null;
+    const list = c.currency === "EUR" ? PLANS[c.plan].eur : PLANS[c.plan].ron;
+    return { ...c, planPrice, listPrice: list };
+  }).filter((c) => c.planPrice != null && Math.abs(c.planPrice - c.listPrice) > 0.5);
+
+  // predare la proprietate: 12 rate plătite, transfer neefectuat
+  const handover = d.clients.filter((c) => c.paid >= 12 && !ownMap.get(c.id)?.transferred_at && !c.isDemo);
+
+  // plăți anunțate de client („Am plătit”)
+  const notified = I.filter((i) => i.status !== "paid" && (i as { payment_notified_at?: string | null }).payment_notified_at).map((i) => ({ id: i.id, companyId: i.company_id, name: C.get(i.company_id)?.name ?? "—", number: i.number, amount: i.amount_net, currency: i.currency as Currency }));
+
   const newRequests = d.requests.filter((r) => r.status === "new");
   const freshBriefs = production.filter((p) => p.brief && hoursSince(p.brief) <= 72 && p.stage === "design");
 
   return {
-    ...d, forecast, overdueLei, cancelReasons: [...cancelReasons.entries()].sort((a, b) => b[1] - a[1]), retained, sites, overdue, nearOwnership, referralValue, upgrades, newRequests, freshBriefs, orders, expired, production, missingBrief, improvements, codeStats, golunar, leads: L,
+    ...d, health, atRisk, anniversaries, duplicates, doublePayments, oldPrice, handover, notified, lastLogin, forecast, overdueLei, cancelReasons: [...cancelReasons.entries()].sort((a, b) => b[1] - a[1]), retained, sites, overdue, nearOwnership, referralValue, upgrades, newRequests, freshBriefs, orders, expired, production, missingBrief, improvements, codeStats, golunar, leads: L,
     sources: [...bySource.entries()].map(([k, v]) => ({ source: k, ...v })).sort((a, b) => b.leads - a.leads),
     company: C, mails, installmentsAll: I, subsAll: subs.data ?? [],
   };

@@ -1,5 +1,5 @@
 import { getPortalData } from "@/lib/portal-data";
-import { date } from "@/lib/format";
+import { date, money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import CopyField from "@/components/app/CopyField";
 import { SITE_URL } from "@/lib/env";
@@ -18,6 +18,11 @@ export default async function ReferralPage() {
   const list = refs ?? [];
   const link = `${SITE_URL}/?ref=${d.company.referral_code}`;
   const earned = list.filter((r) => r.status === "rewarded").length;
+  const clients = list.filter((r) => r.status === "converted" || r.status === "rewarded").length;
+  const monthly = Number(d.open[0]?.amount_plan ?? d.installments.at(-1)?.amount_plan ?? 0);
+  const saved = list.filter((r) => r.status === "rewarded").length * monthly;
+  const freeNext = d.installments.filter((i) => i.status !== "paid" && Number(i.amount_net) === 0);
+  const msg = encodeURIComponent(`Îți recomand LUNAR: website făcut pentru firma ta, pe abonament lunar, fără avans. Devine al tău după 12 plăți. ${link}`);
   return (
     <div>
       <div className="topbar">
@@ -27,16 +32,27 @@ export default async function ReferralPage() {
         <div className="panel">
           <h3>Linkul tău</h3>
           <CopyField value={link} />
+          <div className="share">
+            <a className="btn-plain sm" href={`https://wa.me/?text=${msg}`} target="_blank" rel="noopener">WhatsApp</a>
+            <a className="btn-plain sm" href={`mailto:?subject=${encodeURIComponent("Îți recomand LUNAR pentru website")}&body=${msg}`}>Email</a>
+            <a className="btn-plain sm" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`} target="_blank" rel="noopener">LinkedIn</a>
+            <a className="btn-plain sm" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`} target="_blank" rel="noopener">Facebook</a>
+          </div>
           <div className="kv" style={{ marginTop: 14 }}><span>Codul tău</span><b style={{ fontFamily: "var(--mono)" }}>{d.company.referral_code}</b></div>
-          <div className="kv"><span>Recomandări</span><b>{list.length}</b></div>
-          <div className="kv"><span>Luni gratuite câștigate</span><b>{earned}</b></div>
+          <div className="ref-stats">
+            <div><b>{list.length}</b><span>recomandări</span></div>
+            <div><b>{clients}</b><span>clienți noi</span></div>
+            <div><b>{earned}</b><span>luni gratuite</span></div>
+            <div><b>{money(saved, d.currency)}</b><span>economisit</span></div>
+          </div>
+          {freeNext.length > 0 && <p className="okmsg" style={{ marginTop: 12 }}>Următoarea lună gratuită: rata {freeNext[0].number}, scadentă pe {date(freeNext[0].due_date)}.</p>}
         </div>
         <div className="panel">
           <h3>Cum funcționează</h3>
           <ol className="steps-list">
             <li>Trimiți linkul unui antreprenor care are nevoie de un website.</li>
             <li>Acesta comandă un abonament LUNAR în 90 de zile de la primul click.</li>
-            <li>După prima lui plată, următoarea ta rată e gratuită.</li>
+            <li>După prima lui plată, următoarea ta rată devine automat gratuită.</li>
           </ol>
           <p className="muted" style={{ fontSize: 13, marginTop: 12 }}>Lunile gratuite se cumulează și nu expiră cât timp abonamentul tău e activ.</p>
         </div>

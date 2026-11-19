@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DesignReview from "@/components/app/DesignReview";
+import { monthlySuggestions } from "@/lib/suggestions";
 import { getPortalData } from "@/lib/portal-data";
 import { money, date, monthShort, num } from "@/lib/format";
 import { Pill, Ring, Spark } from "@/components/app/charts";
@@ -105,6 +106,28 @@ export default async function PortalHome() {
             )}
           </div>
         </div>
+
+        {site?.status === "live" && (() => {
+          const ideas = monthlySuggestions({
+            pages: (d.brief?.answers?.pages ?? "").split(",").map((x) => x.trim()).filter(Boolean),
+            goal: d.brief?.answers?.goal ?? "", hasLocal: (d.items ?? []).some((i: { addon: string }) => i.addon === "local"),
+            psi: site?.psi_mobile ?? null, requested: d.requests.map((r) => r.title), month: new Date().toISOString().slice(0, 7), seed: d.company.id,
+          });
+          return ideas.length ? (
+            <div className="panel ideas">
+              <h3>Idei pentru luna aceasta <span className="muted" style={{ fontWeight: 400, fontSize: 13 }}>{Math.max(0, d.quota - d.usedThisMonth)} {d.quota - d.usedThisMonth === 1 ? "îmbunătățire inclusă rămasă" : "îmbunătățiri incluse rămase"}</span></h3>
+              <div className="ideas-g">
+                {ideas.map((x) => (
+                  <div className="idea" key={x.id}>
+                    <b>{x.title}</b>
+                    <p>{x.why}</p>
+                    <Link className="btn-plain sm" href={`/cont/cereri?titlu=${encodeURIComponent(x.title)}&detalii=${encodeURIComponent(x.body)}`}>Vreau asta →</Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null;
+        })()}
 
         <div className="g g-2">
           <div className="panel">

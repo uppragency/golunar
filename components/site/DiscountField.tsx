@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/track";
 import { useEffect, useRef, useState } from "react";
 import { LAUNCH, toDiscount, type Discount } from "@/lib/discount";
 import type { PlanCode } from "@/lib/plans";
@@ -31,6 +32,7 @@ export function DiscountField({ plan, value, onChange, tone = "dark", initial }:
         setErr(j.error || "Codul nu este valid.");
       } else {
         onChange(toDiscount(j));
+        track("discount_applied", { code: String(j.code ?? "").toUpperCase() });
       }
     } catch {
       setErr("Nu am putut verifica codul.");

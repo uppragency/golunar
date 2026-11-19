@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/track";
 import { useState } from "react";
 import type { PlanCode } from "@/lib/plans";
 import { Arrow } from "./visuals";
@@ -19,6 +20,7 @@ export function LeadModal({ open, onClose, plan }: { open: boolean; onClose: () 
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Mesajul nu a putut fi trimis");
       setOk(true);
+      track("generate_lead", { lead_source: "discutie-gratuita", plan: plan ?? null });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Eroare");
     } finally {

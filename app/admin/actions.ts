@@ -141,6 +141,7 @@ async function markPaid(db: Awaited<ReturnType<typeof requireAdmin>>["supabase"]
   await db.from("invoices").insert({ company_id: inst.company_id, installment_id: installmentId, smartbill_series: series, smartbill_number: number, issued_at: new Date().toISOString().slice(0, 10),
     period_label: new Date(inst.due_date).toLocaleDateString("ro-RO", { month: "long", year: "numeric" }), total: gross, currency: inst.currency, payment_label: method, spv_status: spv });
   if (inst.number === 1) {
+    await rewardReferrer(db, inst.company_id);
     const { data: site } = await db.from("websites").select("id").eq("company_id", inst.company_id).limit(1).maybeSingle();
     if (site) await startLaunch(db, site.id, inst.company_id);
   }
@@ -502,4 +503,95 @@ async function broadcastAudience(db: Awaited<ReturnType<typeof requireAdmin>>["s
     return false;
   }).map((c) => ({ id: c.id as string, name: c.name as string, to: (c.notify_email || c.billing_email) as string }));
   return { recipients };
+}
+
+// ---------- Lot 4 ----------
+export async function deleteDiscount(form: FormData) {
+  const s = await requireAdmin();
+  const id = String(form.get("id"));
+  if (form.get("confirm") !== "STERGE") return;
+  await s.supabase.from("discount_codes").delete().eq("id", id);
+  revalidatePath("/admin/reduceri");
+}
+
+export async function sendAnniversary(form: FormData) {
+  const s = await requireAdmin();
+  const months = Number(form.get("months")) === 12 ? 12 : 6;
+  const c = await companyContact(s.supabase, String(form.get("company_id")));
+  if (!c?.to) return;
+  const { data: w } = await s.supabase.from("websites").select("domain").eq("company_id", c.id).limit(1).maybeSingle();
+  await sendEmail({ db: s.supabase, companyId: c.id, template: `anniversary_${months}`, to: c.to, subject: `${months === 12 ? "Un an" : "Șase luni"} împreună · LUNAR`, html: templates.anniversary(c.first, months, w?.domain ?? null) });
+  revalidatePath("/admin", "layout");
+}
+
+export async function completeHandover(form: FormData) {
+  const s = await requireAdmin();
+  const companyId = String(form.get("company_id"));
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: w } = await s.supabase.from("websites").select("id, domain").eq("company_id", companyId).limit(1).maybeSingle();
+  if (!w) return;
+  await s.supabase.from("ownership").upsert({ website_id: w.id, company_id: companyId, transferred_at: today, handover_sent_at: new Date().toISOString() }, { onConflict: "website_id" });
+  await s.supabase.from("websites").update({ status: "transferred" }).eq("id", w.id);
+  const c = await companyContact(s.supabase, companyId);
+  if (c?.to) await sendEmail({ db: s.supabase, companyId, template: "handover", to: c.to, subject: `${w.domain} este al tău · LUNAR`, html: templates.handover(c.first, w.domain) });
+  revalidatePath("/admin", "layout");
+}
+
+export async function saveBrandKit(form: FormData) {
+  const s = await requireAdmin();
+  const str = (k: string, n = 300) => String(form.get(k) || "").trim().slice(0, n);
+  const brand = { colors: str("colors"), fonts: str("fonts"), tone: str("tone", 600), notes: str("notes", 2000), links: str("links", 1000) };
+  await s.supabase.from("companies").update({ brand }).eq("id", String(form.get("company_id")));
+  revalidatePath(`/admin/clienti/${form.get("company_id")}`);
+}
+
+export async function uploadAsset(form: FormData) {
+  const s = await requireAdmin();
+  const companyId = String(form.get("company_id"));
+  const files = form.getAll("files").filter((f): f is File => f instanceof File && f.size > 0).slice(0, 10);
+  for (const f of files) {
+    if (f.size > 20 * 1024 * 1024) continue;
+    const safe = f.name.normalize("NFKD").replace(/[^\w.-]+/g, "-").slice(-80);
+    await s.supabase.storage.from("documents").upload(`${companyId}/assets/${Date.now()}-${safe}`, f, { contentType: f.type || undefined, upsert: false });
+  }
+  revalidatePath(`/admin/clienti/${companyId}`);
+}
+
+export async function deleteAsset(form: FormData) {
+  const s = await requireAdmin();
+  const companyId = String(form.get("company_id")), path = String(form.get("path"));
+  if (!path.startsWith(`${companyId}/assets/`)) return;
+  await s.supabase.storage.from("documents").remove([path]);
+  revalidatePath(`/admin/clienti/${companyId}`);
+}
+
+/** Jurnal de acces: o intrare la 12 ore per browser; alertă pe email la dispozitiv nou. */
+export async function recordAdminVisit() {
+  const s = await requireAdmin();
+  const { cookies: ck, headers: hd } = await import("next/headers");
+  const store = await ck();
+  if (store.get("lunar_adm_seen")) return;
+  const h = await hd();
+  const ua = (h.get("user-agent") || "").slice(0, 300);
+  const ip = (h.get("x-forwarded-for") || "").split(",")[0].trim().slice(0, 64) || null;
+  const device = `${/iPhone|iPad/.test(ua) ? "iOS" : /Android/.test(ua) ? "Android" : /Mac OS/.test(ua) ? "macOS" : /Windows/.test(ua) ? "Windows" : "Altul"} · ${/Edg\//.test(ua) ? "Edge" : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : /Firefox\//.test(ua) ? "Firefox" : "Browser"}`;
+  const { count } = await s.supabase.from("admin_logins").select("id", { count: "exact", head: true }).eq("user_id", s.user!.id).eq("device", device);
+  const isNew = (count ?? 0) === 0;
+  await s.supabase.from("admin_logins").insert({ user_id: s.user!.id, email: s.user!.email, ip, user_agent: ua, device, new_device: isNew });
+  store.set("lunar_adm_seen", "1", { httpOnly: true, sameSite: "lax", secure: true, path: "/", maxAge: 60 * 60 * 12 });
+  const { count: total } = await s.supabase.from("admin_logins").select("id", { count: "exact", head: true }).eq("user_id", s.user!.id);
+  if (isNew && (total ?? 0) > 1 && s.user!.email) {
+    await sendEmail({ template: "admin_new_device", to: s.user!.email, subject: "Autentificare în admin de pe un dispozitiv nou · LUNAR",
+      html: templates.adminNotice("Autentificare nouă în admin", { Cont: s.user!.email, Dispozitiv: device, IP: ip, Ora: new Date().toLocaleString("ro-RO", { timeZone: "Europe/Bucharest" }), "Nu ai fost tu?": "Schimbă parola imediat din Admin → Parolă." }) });
+  }
+}
+
+/** Recomandare: la prima plată a clientului adus, următoarea rată a celui care a recomandat devine gratuită. */
+async function rewardReferrer(db: Awaited<ReturnType<typeof requireAdmin>>["supabase"], companyId: string) {
+  const { data: ref } = await db.from("referrals").select("id, referrer_company_id").eq("referred_company_id", companyId).eq("status", "converted").limit(1).maybeSingle();
+  if (!ref) return;
+  const { data: nxt } = await db.from("installments").select("id, due_date, amount_plan, amount_addons").eq("company_id", ref.referrer_company_id).neq("status", "paid").gt("number", 1).order("number").limit(1).maybeSingle();
+  if (!nxt) return;
+  await db.from("installments").update({ amount_discount: Number(nxt.amount_plan) + Number(nxt.amount_addons) }).eq("id", nxt.id);
+  await db.from("referrals").update({ status: "rewarded", reward_month: String(nxt.due_date).slice(0, 7) + "-01" }).eq("id", ref.id);
 }

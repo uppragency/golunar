@@ -2,6 +2,8 @@ import { getPortalData } from "@/lib/portal-data";
 import { date, dateNum, money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { INST_PILL, SPV_PILL } from "@/lib/labels";
+import PayNow from "@/components/app/PayNow";
+import { PAYEE } from "@/lib/bank";
 
 export default async function BillingPage() {
   const d = await getPortalData();
@@ -17,6 +19,13 @@ export default async function BillingPage() {
         <div className="panel kpi"><span className="l">Rămas în {new Date().getFullYear()}</span><b>{money(d.sum(d.remainingYear), cur)}</b><span className="d" style={{ color: "var(--mute)" }}>{d.remainingYear.length} {d.remainingYear.length === 1 ? "rată" : "rate"}</span></div>
         <div className="panel kpi"><span className="l">Restanțe</span><b>{money(d.sum(d.overdue), cur)}</b><span className={`d${d.overdue.length ? " n" : ""}`}>{d.overdue.length ? `${d.overdue.length} ${d.overdue.length === 1 ? "rată" : "rate"}` : "La zi"}</span></div>
       </div>
+      {(() => {
+        const nxt = d.installments.find((i) => i.status !== "paid" && Number(i.amount_net) > 0);
+        if (!nxt || d.sub?.payment_mode === "card") return null;
+        const soon = (+new Date(nxt.due_date) - Date.now()) / 864e5 <= 14;
+        if (!soon && nxt.number > 1) return null;
+        return <div style={{ marginTop: 12 }}><PayNow installmentId={nxt.id} number={nxt.number} amount={money(nxt.amount_net, cur, 2)} due={date(nxt.due_date)} payee={PAYEE.name} iban={PAYEE.iban} bank={PAYEE.bank} details={`${d.company.bank_reference} rata ${nxt.number}`} notified={Boolean(nxt.payment_notified_at)} /></div>;
+      })()}
       <div className="panel" style={{ marginTop: 12 }}>
         <h3>Calendar plăți · primele 12 luni</h3>
         <div className="tbl"><table>

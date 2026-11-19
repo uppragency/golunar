@@ -12,7 +12,10 @@ export default function RefCapture() {
     if (ref && /^[A-Z0-9]{4,12}$/.test(ref)) {
       document.cookie = `lunar_ref=${ref}; Max-Age=${DAY * 90}; Path=/; SameSite=Lax; Secure`;
     }
-    if (!document.cookie.split("; ").some((c) => c.startsWith("lunar_src="))) {
+    // Sursa vizitei e cookie de analiză: se salvează doar cu acordul vizitatorului.
+    const consent = () => { try { return localStorage.getItem("lunar-consent") === "granted"; } catch { return false; } };
+    const saveSrc = () => {
+    if (!consent() || document.cookie.split("; ").some((c) => c.startsWith("lunar_src="))) return;
       let host = "";
       try { host = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, "") : ""; } catch {}
       if (host === location.hostname.replace(/^www\./, "")) host = "";
@@ -25,7 +28,10 @@ export default function RefCapture() {
         l: location.pathname.slice(0, 80),
       };
       document.cookie = `lunar_src=${encodeURIComponent(JSON.stringify(src))}; Max-Age=${DAY * 90}; Path=/; SameSite=Lax; Secure`;
-    }
+    };
+    saveSrc();
+    window.addEventListener("lunar:consent", saveSrc);
+    return () => window.removeEventListener("lunar:consent", saveSrc);
   }, []);
   return null;
 }

@@ -10,6 +10,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: { serverActions: { bodySizeLimit: "4mb" } },
   async redirects() {
     return [{ source: "/website-6-lei", destination: "/website-4-99-lei", permanent: true }];
   },

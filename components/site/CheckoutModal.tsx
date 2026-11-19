@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/track";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
@@ -38,6 +39,11 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
   const today = schedule[0].total;
   const yearTotal = schedule.reduce((a, r) => a + r.total, 0);
   const dfmt = (d: Date) => d.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" });
+
+  useEffect(() => {
+    if (open) track("begin_checkout", { plan: cart.plan, currency: cur });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;

@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       html: templates.bankOrder(d.contact, amount, res.bank_reference, PAYEE.iban, d.email) });
     await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: d.email, subject: `Comandă nouă (transfer): ${d.name}`,
       html: templates.adminNotice("Comandă nouă prin transfer bancar", { Firmă: d.name, CUI: d.cui, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), "Prima rată": amount, Reducere: discount ? `${discount.code} · ${money(firstDisc, d.currency)} × ${discount.months}` : "", Email: d.email, Telefon: d.phone, Referință: res.bank_reference }) });
-    const q = new URLSearchParams({ ref: res.bank_reference, suma: amount, lunar: money(net, d.currency), plan: PLANS[d.cart.plan].name, email: d.email, cont: res.has_account ? "1" : "0" });
+    const q = new URLSearchParams({ ref: res.bank_reference, suma: amount, lunar: money(net, d.currency), plan: PLANS[d.cart.plan].name, email: d.email, cont: res.has_account ? "1" : "0", v: String(res.firstAmount), m: String(net), cur: d.currency, pc: d.cart.plan });
     return NextResponse.json({ ok: true, redirect: `/comanda/multumim?${q}` });
   } catch (e) {
     console.error("[checkout] bank order", e);
