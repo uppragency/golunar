@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { LOGO_MARK } from "@/lib/logo-data";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_TYPE = "image/png";
@@ -21,9 +22,7 @@ export async function ogImage({ kicker, title, dim, foot = "golunar.ro" }: { kic
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "64px 72px", background: "#0B0B0C", color: "#F5F5F6", fontFamily: "Geist", position: "relative" }}>
         <div style={{ position: "absolute", left: 300, top: 380, width: 900, height: 900, borderRadius: 9999, background: "radial-gradient(circle at 50% 30%, rgba(255,91,31,0.45), rgba(255,91,31,0) 60%)", display: "flex" }} />
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 9999, background: "#FF5B1F", display: "flex", position: "relative" }}>
-            <div style={{ position: "absolute", left: 8, top: 7, width: 11, height: 11, borderRadius: 9999, background: "#fff", display: "flex" }} />
-          </div>
+          <img src={LOGO_MARK} width={44} height={44} alt="" />
           <div style={{ fontSize: 36, fontWeight: 600, letterSpacing: -1.5 }}>LUNAR</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>

@@ -59,7 +59,7 @@ export function layout({ preheader, title, titleDim, eyebrow = "LUNAR", body, ct
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0B0B0C">${esc(preheader)}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0B0B0C" style="background:#0B0B0C;background-image:radial-gradient(60% 40% at 50% 0%,rgba(255,91,31,.16),transparent 70%)"><tr><td align="center" style="padding:40px 14px 32px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px">
-<tr><td style="padding:0 8px 22px"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle"><img src="https://golunar.ro/email/mark.png" width="20" height="20" alt="" style="display:block;border:0;border-radius:50%"></td><td valign="middle" style="padding-left:9px;font-family:${FONT};font-size:20px;font-weight:700;letter-spacing:-0.8px;color:#F5F5F6">LUNAR</td></tr></table></td></tr>
+<tr><td style="padding:0 8px 22px"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle"><img src="https://golunar.ro/email/mark.png" width="26" height="26" alt="LUNAR" style="display:block;border:0"></td><td valign="middle" style="padding-left:9px;font-family:${FONT};font-size:20px;font-weight:700;letter-spacing:-0.8px;color:#F5F5F6">LUNAR</td></tr></table></td></tr>
 <tr><td bgcolor="#18181B" style="background:#18181B;background-image:linear-gradient(160deg,#1F1F23,#18181B);border:1px solid #27272A;border-radius:28px;overflow:hidden"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr><td height="4" bgcolor="#FF5B1F" style="height:4px;line-height:4px;font-size:0;background:#FF5B1F;background-image:linear-gradient(90deg,#FF5B1F,#FF7A45,#FFB08A)">&nbsp;</td></tr>
 <tr><td class="px" style="padding:36px 40px 0"><p style="margin:0;font-family:${MONO};font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8C8C93"><span style="color:#FF5B1F">&#9679;</span>&nbsp; ${esc(eyebrow)}</p>
@@ -163,6 +163,68 @@ export const templates = {
 <p style="margin-top:16px;color:#8C8C93;font-size:12px">Facturile sunt emise de UPPRMARKETING S.R.L., CIF 52762670, J2025081624004.</p>`,
       cta: "Creează parola contului",
       ctaUrl: `${SITE_URL}/login?mode=signup${email ? `&email=${encodeURIComponent(email)}` : ""}`,
+    }),
+  orderReminder: (name: string, amount: string, reference: string, iban: string, daysLeft: number, last: boolean) =>
+    layout({
+      preheader: `Comanda ${reference} așteaptă plata: ${amount}.`,
+      eyebrow: "Comandă",
+      title: last ? `Comanda ${reference} expiră în ${daysLeft} ${daysLeft === 1 ? "zi" : "zile"}.` : `Comanda ${reference} așteaptă plata.`,
+      titleDim: `De plată: ${amount}.`,
+      body: `<p>Bună, ${esc(name)}. Nu am primit încă plata primei rate. Website-ul intră în lucru imediat ce confirmăm transferul.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin:12px 0">
+<tr><td style="padding:7px 0;color:#8C8C93">Beneficiar</td><td align="right"><b style="color:#F5F5F6">UPPRMARKETING S.R.L.</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">IBAN</td><td align="right"><b style="color:#F5F5F6;font-family:${MONO}">${esc(iban)}</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Suma</td><td align="right"><b style="color:#F5F5F6">${esc(amount)}</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Detalii plată</td><td align="right"><b style="color:#FF7A45;font-family:${MONO}">Comanda ${esc(reference)}</b></td></tr></table>
+<p>${last ? "Dacă nu primim plata, comanda se anulează automat. Poți plasa oricând una nouă." : "Ai întrebări? Răspunde la acest email."}</p>`,
+      cta: "Vezi datele de plată",
+      ctaUrl: `${SITE_URL}/cont`,
+    }),
+  orderExpired: (name: string, reference: string) =>
+    layout({
+      preheader: `Comanda ${reference} a fost anulată.`,
+      eyebrow: "Comandă",
+      title: `Comanda ${reference} a expirat.`,
+      titleDim: "Nu ai nimic de plătit.",
+      body: `<p>Bună, ${esc(name)}. Nu am primit plata în 10 zile, așa că am anulat comanda. Dacă vrei în continuare website-ul, plasezi o comandă nouă în 2 minute.</p>`,
+      cta: "Comandă din nou",
+      ctaUrl: `${SITE_URL}/?comanda=1`,
+    }),
+  briefReminder: (name: string, second: boolean) =>
+    layout({
+      preheader: "Completează brief-ul ca să pornim lansarea în 10 zile lucrătoare.",
+      eyebrow: "Brief",
+      title: second ? "Website-ul tău așteaptă brief-ul." : "Un pas până pornim lucrul.",
+      titleDim: "Durează 5 minute.",
+      body: `<p>Bună, ${esc(name)}. Plata e confirmată, dar nu am primit încă brief-ul. Termenul de 10 zile lucrătoare pornește din ziua în care îl trimiți.</p><p>Ai nevoie de ajutor? Răspunde la acest email și îl completăm împreună la telefon.</p>`,
+      cta: "Completează brief-ul",
+      ctaUrl: `${SITE_URL}/cont/brief`,
+    }),
+  freeMonth: (name: string, number: number, due: string, domain: string | null) =>
+    layout({
+      preheader: "Am întârziat lansarea. Următoarea lună e gratuită.",
+      eyebrow: "Garanție",
+      title: "Am întârziat lansarea.",
+      titleDim: "Următoarea lună e gratuită.",
+      body: `<p>Bună, ${esc(name)}. Ne-am angajat la 10 zile lucrătoare${domain ? ` pentru ${esc(domain)}` : ""} și am depășit termenul. Conform garanției, <b style="color:#F5F5F6">rata ${number}, scadentă pe ${esc(due)}, este 0 lei</b>.</p><p>Lucrăm în continuare și te anunțăm imediat ce website-ul e online.</p>`,
+      cta: "Vezi plățile",
+      ctaUrl: `${SITE_URL}/cont/plati`,
+    }),
+  overdue: (name: string, number: number, amount: string, reference: string, iban: string, due: string, last: boolean) =>
+    layout({
+      preheader: `Rata ${number} (${amount}) era scadentă pe ${due}.`,
+      eyebrow: "Plată",
+      title: `Rata ${number} din 12 este restantă.`,
+      titleDim: `De plată: ${amount}.`,
+      body: `<p>Bună, ${esc(name)}. Rata ${number}, scadentă pe ${esc(due)}, nu a fost încă încasată. Dacă ai plătit deja, ignoră acest mesaj.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin:12px 0">
+<tr><td style="padding:7px 0;color:#8C8C93">Beneficiar</td><td align="right"><b style="color:#F5F5F6">UPPRMARKETING S.R.L.</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">IBAN</td><td align="right"><b style="color:#F5F5F6;font-family:${MONO}">${esc(iban)}</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Suma</td><td align="right"><b style="color:#F5F5F6">${esc(amount)}</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Detalii plată</td><td align="right"><b style="color:#FF7A45;font-family:${MONO}">${esc(reference)} rata ${number}</b></td></tr></table>
+<p>${last ? "Fără plată, website-ul poate fi suspendat temporar. Scrie-ne dacă ai nevoie de câteva zile în plus." : "Ai întrebări? Răspunde la acest email."}</p>`,
+      cta: "Vezi plățile",
+      ctaUrl: `${SITE_URL}/cont/plati`,
     }),
   paymentFailed: (amount: string) =>
     layout({

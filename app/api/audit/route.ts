@@ -4,7 +4,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeUrl, runAudit, topIssues } from "@/lib/audit";
 import { auditReport, sendEmail, templates } from "@/lib/email";
-import { getRef } from "@/lib/ref";
+import { getRef, getSource } from "@/lib/ref";
 
 export const maxDuration = 60;
 
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
   const { error } = await supabase.rpc("submit_lead", {
     p_name: d.name, p_email: d.email, p_phone: "", p_company: "", p_message: `Audit: ${result.finalUrl}`,
     p_plan: "", p_source: "audit", p_ref: ref ?? "",
-    p_meta: { url: result.finalUrl, psi: result.psi, scores: s, failed: result.checks.filter((c) => !c.ok).map((c) => c.id) },
+    p_meta: { src: await getSource(), url: result.finalUrl, psi: result.psi, scores: s, failed: result.checks.filter((c) => !c.ok).map((c) => c.id) },
   });
   if (error) console.error("[audit] lead", error.message);
 

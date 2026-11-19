@@ -10,6 +10,7 @@ import { createSmartbillInvoice } from "@/lib/smartbill";
 import { sendEmail, templates } from "@/lib/email";
 import { money } from "@/lib/format";
 import type { Currency } from "@/lib/plans";
+import { PAYEE } from "@/lib/bank";
 
 export type ActionState = { ok?: string; error?: string } | null;
 
@@ -273,4 +274,66 @@ export async function toggleDiscount(form: FormData) {
   const s = await requireAdmin();
   await s.supabase.from("discount_codes").update({ active: form.get("active") === "true" }).eq("id", String(form.get("id")));
   revalidatePath("/admin/reduceri");
+}
+
+// ---------- Lot 1: comenzi, producție, brief, lead-uri ----------
+
+async function companyContact(db: Awaited<ReturnType<typeof requireAdmin>>["supabase"], companyId: string) {
+  const { data } = await db.from("companies").select("id, name, legal_rep, bank_reference, notify_email, billing_email, currency").eq("id", companyId).single();
+  return data ? { ...data, to: (data.notify_email || data.billing_email) as string | null, first: (data.legal_rep || "").trim().split(/\s+/).pop() || data.name } : null;
+}
+
+export async function sendOrderReminder(form: FormData) {
+  const s = await requireAdmin();
+  const c = await companyContact(s.supabase, String(form.get("company_id")));
+  const amount = Number(form.get("amount") || 0);
+  if (!c?.to) return;
+  await sendEmail({ db: s.supabase, companyId: c.id, template: "order_reminder_manual", to: c.to, subject: `Comanda ${c.bank_reference} așteaptă plata · LUNAR`,
+    html: templates.orderReminder(c.first, money(amount, c.currency as Currency, 2), c.bank_reference, PAYEE.iban, Number(form.get("days_left") || 0), false) });
+  revalidatePath("/admin", "layout");
+}
+
+export async function cancelOrder(form: FormData) {
+  const s = await requireAdmin();
+  await s.supabase.from("subscriptions").update({ status: "canceled", canceled_at: new Date().toISOString(), cancel_reason: "Comandă anulată manual" }).eq("id", String(form.get("sub_id"))).eq("status", "incomplete");
+  revalidatePath("/admin", "layout");
+}
+
+export async function moveStage(form: FormData) {
+  const s = await requireAdmin();
+  const id = String(form.get("id"));
+  const stage = String(form.get("stage"));
+  if (!["brief", "design", "build", "qa", "live"].includes(stage)) return;
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: lp } = await s.supabase.from("launch_projects").update({ stage, completed_at: stage === "live" ? today : null }).eq("id", id).select("website_id, company_id").single();
+  if (lp && stage === "live") await s.supabase.from("websites").update({ status: "live", launched_at: today }).eq("id", lp.website_id);
+  if (lp) await onStageChange(s.supabase, lp.company_id, stage);
+  revalidatePath("/admin", "layout");
+}
+
+/** Punct de extensie pentru emailurile automate pe etape (Lot 3). */
+async function onStageChange(_db: Awaited<ReturnType<typeof requireAdmin>>["supabase"], _companyId: string, _stage: string) {}
+
+export async function setPause(form: FormData) {
+  const s = await requireAdmin();
+  const paused = form.get("paused") === "1";
+  const reason = String(form.get("reason") || "").slice(0, 200) || null;
+  await s.supabase.from("launch_projects").update({ sla_paused: paused, paused_reason: paused ? reason ?? "Așteptăm clientul" : null }).eq("id", String(form.get("id")));
+  revalidatePath("/admin", "layout");
+}
+
+export async function sendBriefReminder(form: FormData) {
+  const s = await requireAdmin();
+  const c = await companyContact(s.supabase, String(form.get("company_id")));
+  if (!c?.to) return;
+  await sendEmail({ db: s.supabase, companyId: c.id, template: "brief_reminder_manual", to: c.to, subject: "Completează brief-ul website-ului · LUNAR", html: templates.briefReminder(c.first, false) });
+  revalidatePath("/admin", "layout");
+}
+
+export async function updateLead(form: FormData) {
+  const s = await requireAdmin();
+  const status = String(form.get("status"));
+  if (!["new", "contacted", "won", "lost"].includes(status)) return;
+  await s.supabase.from("leads").update({ status, status_at: new Date().toISOString(), note: String(form.get("note") || "").slice(0, 2000) || null }).eq("id", String(form.get("id")));
+  revalidatePath("/admin/lead-uri");
 }

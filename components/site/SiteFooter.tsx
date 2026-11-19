@@ -66,7 +66,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
           </div>
           <div className="fb-cols">
             <div>
-              <Link href="/" className="logo"><i />LUNAR</Link>
+              <Link href="/" className="logo logo-mark" aria-label="LUNAR, pagina principală"><i /></Link>
               <p>Website-ul tău, mai bun lună de lună. Al tău după 12 plăți.</p>
               <a className="fb-mail" href="mailto:hello@golunar.ro">hello@golunar.ro</a>
             </div>

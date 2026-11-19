@@ -1,30 +1,68 @@
-import { getAdminData } from "@/lib/admin-data";
-import { STAGE } from "@/lib/labels";
-import { updateLaunch } from "@/app/admin/actions";
+import Link from "next/link";
+import { getOps, STAGES, type Stage } from "@/lib/admin-ops";
+import { date } from "@/lib/format";
+import { moveStage, sendBriefReminder, setPause } from "@/app/admin/actions";
 
-export default async function LaunchesPage() {
-  const d = await getAdminData();
+export const metadata = { title: "Producție" };
+
+const next: Record<Stage, Stage | null> = { brief: "design", design: "build", build: "qa", qa: "live", live: null };
+const prev: Record<Stage, Stage | null> = { brief: null, design: "brief", build: "design", qa: "build", live: "qa" };
+const label = (s: Stage | null) => STAGES.find((x) => x.key === s)?.label ?? "";
+
+export default async function ProductionPage() {
+  const d = await getOps();
+  const late = d.production.filter((p) => p.tone === "bad").length;
+  const soon = d.production.filter((p) => p.tone === "warn").length;
   return (
     <div>
-      <div className="topbar"><div><h1>Lansări în curs</h1><p>SLA: 10 zile lucrătoare. Ceasul se oprește când așteptăm clientul.</p></div></div>
-      <div className="panel">
-        {d.launches.length ? d.launches.map((l) => {
-          const risk = l.day_counter >= 8 || l.sla_paused;
+      <div className="topbar">
+        <div><h1>Producție</h1><p>10 zile lucrătoare de la brief-ul complet. Galben: 3 zile rămase. Roșu: termen depășit, luna următoare devine gratuită automat.</p></div>
+        <div className="tb-r"><span className="pill bad"><span className="d" />{late} întârziate</span><span className="pill warn"><span className="d" />{soon} aproape de termen</span></div>
+      </div>
+      <div className="board">
+        {STAGES.map((st) => {
+          const items = d.production.filter((p) => p.stage === st.key);
           return (
-            <div className="prj" key={l.id} style={{ gridTemplateColumns: "1fr 140px auto" }}>
-              <div>{l.companies?.name}<small>{l.websites?.domain} · ziua {l.day_counter}/10 · {STAGE[l.stage]}{l.sla_paused ? ` · pauză: ${l.paused_reason ?? "așteaptă clientul"}` : ""}</small></div>
-              <div className="pb"><i className={risk ? "w" : ""} style={{ width: `${Math.min(100, l.day_counter * 10)}%` }} /></div>
-              <form action={updateLaunch} className="inline-form">
-                <input type="hidden" name="id" value={l.id} />
-                <select name="stage" defaultValue={l.stage} aria-label="Etapă">{Object.entries(STAGE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-                <input name="day_counter" type="number" min={0} max={30} defaultValue={l.day_counter} style={{ width: 64 }} aria-label="Ziua" />
-                <label style={{ fontSize: 12, color: "var(--mute)", display: "flex", gap: 4, alignItems: "center" }}><input type="checkbox" name="sla_paused" defaultChecked={l.sla_paused} />Pauză</label>
-                <input name="paused_reason" defaultValue={l.paused_reason ?? ""} placeholder="Motiv" style={{ width: 140 }} />
-                <button className="btn-plain sm">Salvează</button>
-              </form>
-            </div>
+            <section className="col" key={st.key}>
+              <h3>{st.label}<span>{items.length}</span></h3>
+              {items.map((p) => (
+                <article className={`job ${p.tone}`} key={p.id}>
+                  <Link href={`/admin/clienti/${p.companyId}`}><b>{p.name}</b></Link>
+                  <small>{p.domain}</small>
+                  {p.stage === "brief" ? (
+                    <>
+                      <div className="job-meta">{p.paidAt ? `Plătit acum ${Math.floor(p.briefHours / 24)} ${Math.floor(p.briefHours / 24) === 1 ? "zi" : "zile"}` : "Plată neconfirmată"} · {p.briefReminders} reamintiri</div>
+                      <div className="job-meta">Termenul pornește la trimiterea brief-ului.</div>
+                      <form action={sendBriefReminder}><input type="hidden" name="company_id" value={p.companyId} /><button className="btn-plain sm">Trimite reamintire</button></form>
+                    </>
+                  ) : p.stage === "live" ? (
+                    <div className="job-meta">Lansat · {p.used} zile lucrătoare{p.freeMonth ? " · lună gratuită acordată" : ""}</div>
+                  ) : (
+                    <>
+                      <div className="job-meta">
+                        {p.paused ? `Pauză: ${p.reason}` : p.left! < 0 ? `Depășit cu ${-p.left!} ${p.left === -1 ? "zi" : "zile"}` : `${p.left} ${p.left === 1 ? "zi rămasă" : "zile rămase"}`} · termen {p.due ? date(p.due, { day: "numeric", month: "short" }) : "—"}
+                      </div>
+                      <div className="job-bar"><i style={{ width: `${Math.min(100, (p.used / 10) * 100)}%` }} /></div>
+                      <div className="job-meta">Ziua {p.used}/10 · în etapă de {p.stageSince} {p.stageSince === 1 ? "zi" : "zile"}{p.freeMonth ? " · lună gratuită acordată" : ""}</div>
+                    </>
+                  )}
+                  <div className="job-act">
+                    {prev[p.stage] && p.stage !== "design" && <form action={moveStage}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="stage" value={prev[p.stage]!} /><button className="btn-plain sm" title={`Înapoi la ${label(prev[p.stage])}`}>←</button></form>}
+                    {next[p.stage] && p.stage !== "brief" && <form action={moveStage}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="stage" value={next[p.stage]!} /><button className="btn-plain sm acc">{label(next[p.stage])} →</button></form>}
+                    {p.stage !== "brief" && p.stage !== "live" && (
+                      <form action={setPause} className="job-pause">
+                        <input type="hidden" name="id" value={p.id} /><input type="hidden" name="paused" value={p.paused ? "0" : "1"} />
+                        {!p.paused && <input name="reason" placeholder="Motiv pauză" aria-label="Motiv pauză" />}
+                        <button className="btn-plain sm">{p.paused ? "Reia" : "Pauză"}</button>
+                      </form>
+                    )}
+                  </div>
+                </article>
+              ))}
+              {!items.length && <div className="empty sm">—</div>}
+            </section>
           );
-        }) : <div className="empty">Nicio lansare în curs.</div>}
+        })}
       </div>
     </div>
   );

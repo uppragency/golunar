@@ -3,6 +3,13 @@ import { date } from "@/lib/format";
 import { REQ_PILL, REQ_TYPE } from "@/lib/labels";
 import { updateRequest } from "@/app/admin/actions";
 import { Pill } from "@/components/app/charts";
+import { businessDays } from "@/lib/admin-ops";
+
+function Sla({ created }: { created: string }) {
+  const bd = businessDays(new Date(created), new Date());
+  const tone = bd >= 2 ? "bad" : bd >= 1 ? "warn" : "";
+  return <span className={`sla ${tone}`}>{bd >= 2 ? "peste 48h" : bd === 1 ? "24–48h" : "sub 24h"}</span>;
+}
 
 export default async function RequestsAdmin() {
   const d = await getAdminData();
@@ -10,7 +17,7 @@ export default async function RequestsAdmin() {
   const done = d.requests.filter((r) => !(r.status === "new" || r.status === "in_progress")).slice(0, 30);
   const Row = ({ r }: { r: (typeof d.requests)[number] }) => (
     <div className="req" style={{ gridTemplateColumns: "1fr auto" }}>
-      <div>{(r.companies as unknown as { name: string } | null)?.name} · {r.title}<small>{REQ_TYPE[r.type]} · {date(r.created_at, { day: "numeric", month: "short" })}</small></div>
+      <div>{(r.companies as unknown as { name: string } | null)?.name} · {r.title}<Sla created={r.created_at} /><small>{REQ_TYPE[r.type]} · {date(r.created_at, { day: "numeric", month: "short" })}</small></div>
       <form action={updateRequest} className="inline-form">
         <input type="hidden" name="id" value={r.id} />
         <select name="status" defaultValue={r.status} aria-label="Status">{Object.entries(REQ_PILL).map(([k, v]) => <option key={k} value={k}>{v[1]}</option>)}</select>

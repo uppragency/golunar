@@ -139,16 +139,10 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
   return { companyId: company.id as string, subscriptionId: sub.id as string, bankReference: company.bank_reference as string, created: true };
 }
 
+/** Proiectul de lansare. Termenul (10 zile lucrătoare) e setat în baza de date când brief-ul e trimis. */
 export async function startLaunch(db: SupabaseClient, websiteId: string, companyId: string) {
-  const due = new Date();
-  let n = 10;
-  while (n > 0) {
-    due.setDate(due.getDate() + 1);
-    const w = due.getDay();
-    if (w && w !== 6) n--;
-  }
   await db.from("launch_projects").upsert(
-    { website_id: websiteId, company_id: companyId, day_counter: 1, stage: "brief", started_at: iso(new Date()), due_at: iso(due) },
+    { website_id: websiteId, company_id: companyId, day_counter: 1, stage: "brief" },
     { onConflict: "website_id", ignoreDuplicates: true },
   );
   await db.from("websites").update({ status: "building" }).eq("id", websiteId).eq("status", "onboarding");

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail, templates } from "@/lib/email";
-import { getRef } from "@/lib/ref";
+import { getRef, getSource } from "@/lib/ref";
 
 const Lead = z.object({
   name: z.string().trim().min(2).max(120),
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   const ref = await getRef();
   const { error } = await supabase.rpc("submit_lead", {
     p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: d.message,
-    p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: {},
+    p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource() },
   });
   if (error) console.error("[lead]", error.message);
   await sendEmail({

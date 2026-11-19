@@ -14,7 +14,7 @@ export const organizationLd = {
   name: "LUNAR",
   alternateName: "GO LUNAR",
   url: SITE_URL,
-  logo: { "@type": "ImageObject", url: `${SITE_URL}/email/mark.png`, width: 96, height: 96 },
+  logo: { "@type": "ImageObject", url: `${SITE_URL}/logo-512.png`, width: 512, height: 512 },
   email: "hello@golunar.ro",
   description: "Website-uri personalizate pe abonament lunar pentru firme din România: lansare în 10 zile lucrătoare, hosting și îmbunătățiri incluse, proprietate după 12 plăți.",
   areaServed: { "@type": "Country", name: "România" },

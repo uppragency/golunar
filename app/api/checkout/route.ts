@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PLANS, cartLines } from "@/lib/plans";
 import { money } from "@/lib/format";
 import { sendEmail, templates } from "@/lib/email";
-import { getRef } from "@/lib/ref";
+import { getRef, getSource } from "@/lib/ref";
 import { provisionBankOrder } from "@/lib/provision-bank";
 import { PAYEE } from "@/lib/bank";
 import { discountFor, type Discount } from "@/lib/discount";
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
   const ref = await getRef();
   await session.rpc("submit_lead", {
     p_name: d.contact, p_email: d.email, p_phone: d.phone, p_company: `${d.name} (${d.cui})`, p_plan: d.cart.plan,
-    p_message: `Checkout ${d.paymentMode} · ${money(net, d.currency)}/lună${discount ? ` · cod ${discount.code}` : ""} · domeniu ${d.domain || "—"}`, p_source: "checkout", p_ref: ref ?? "", p_meta: {},
+    p_message: `Checkout ${d.paymentMode} · ${money(net, d.currency)}/lună${discount ? ` · cod ${discount.code}` : ""} · domeniu ${d.domain || "—"}`, p_source: "checkout", p_ref: ref ?? "", p_meta: { src: await getSource(), cui: d.cui, discount: discount?.code ?? null },
   });
 
   // Momentan acceptăm doar transfer bancar.

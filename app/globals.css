@@ -1194,3 +1194,50 @@ html,body{overflow-x:clip}
 .fb-track .m span{color:var(--mute)}
 .fb-track .m em{color:#fff;font-weight:500;font-size:13px}
 @media (max-width:480px){.fb-track{margin:40px 26px 28px}.fb-track .m em{font-size:12px}}
+/* ---------- admin Lot 1 ---------- */
+.filters a{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--mute);display:inline-flex;align-items:center}
+.filters a.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn-plain.sm.acc{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-plain.sm.danger{color:#FF8A80;border-color:rgba(255,92,92,.35)}
+.empty.sm{padding:14px;font-size:13px}
+.ord{display:grid;grid-template-columns:1fr auto auto;gap:10px 18px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+.ord:first-child{border-top:0;padding-top:4px}
+.ord-main b,.ord-amt b{font-weight:500}
+.ord small{display:block;color:var(--mute);font-size:12.5px;margin-top:3px}
+.ord-amt{text-align:right}
+.ord-act{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.board{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.board .col{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;gap:10px;min-height:200px}
+.board h3{display:flex;justify-content:space-between;font-size:13px;font-weight:500;margin:2px 4px 4px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
+.board h3 span{color:var(--text)}
+.job{background:var(--card,#17171A);border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.job.ok{border-left-color:#3DD68C}.job.warn{border-left-color:#F5B83D}.job.bad{border-left-color:#FF5C5C;background:rgba(255,92,92,.05)}
+.job b{font-weight:500}.job small{color:var(--mute);font-size:12px;margin-top:-4px}
+.job-meta{font-size:12px;color:var(--mute);line-height:1.45}
+.job.bad .job-meta:first-of-type{color:#FF8A80}
+.job-bar{height:4px;border-radius:4px;background:var(--line2);overflow:hidden}.job-bar i{display:block;height:100%;background:var(--accent)}
+.job-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.job-pause{display:flex;gap:6px;flex:1;min-width:0}
+.job-pause input{flex:1;min-width:0;height:32px;font-size:12px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text)}
+.lead{padding:16px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.lead:first-child{border-top:0;padding-top:4px}
+.lead-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.lead-h b{font-weight:500}.lead-h small{display:block;color:var(--mute);font-size:12.5px;margin-top:3px}
+.lead-c{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute)}
+.lead-c a{color:var(--text);text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:3px}
+.lead-m{margin:0;font-size:13.5px;color:var(--mute);line-height:1.55;white-space:pre-wrap}
+.impr{font-family:var(--mono);font-size:12.5px}.impr.full{color:#F5B83D}.impr.over{color:#FF8A80}
+.sla{font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mute);margin-left:8px;white-space:nowrap}
+.sla.warn{color:#F5B83D;border-color:rgba(245,184,61,.4)}.sla.bad{color:#FF8A80;border-color:rgba(255,92,92,.4)}
+.cohort{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+.cohort div{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;font-size:12px;color:var(--mute)}
+.cohort b{display:block;color:var(--text);font-size:16px;font-weight:500;margin-top:2px}
+@media (max-width:760px){.ord{grid-template-columns:1fr auto}.ord .pill{grid-column:1/-1;justify-self:start}.cohort{grid-template-columns:repeat(3,1fr)}}
+/* logo final: iconiță + LUNAR; la hover iconița face o rotație completă, textul devine portocaliu */
+.logo{transition:color .35s ease}
+.logo i{width:24px;height:24px;border-radius:0;background:url(/logo-mark.svg) center/contain no-repeat;flex:none;transition:transform .9s cubic-bezier(.65,0,.35,1)}
+.logo:hover{color:#ED4D12}
+.logo:hover i{transform:rotate(360deg)}
+.side a.logo:hover{color:#ED4D12;opacity:1}
+.logo-mark i{width:44px;height:44px}
+@media (prefers-reduced-motion:reduce){.logo i{transition:none}.logo:hover i{transform:none}}

@@ -123,6 +123,17 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
         </div>
         <div className="panel">
           <h3>Cereri <Link href="/admin/cereri">Toate →</Link></h3>
+          {(() => {
+            const bucket = `${new Date().toISOString().slice(0, 7)}-01`;
+            const used = (reqs ?? []).filter((r) => r.type === "improvement" && r.month_bucket === bucket && r.status !== "rejected").length;
+            const incl = sub && ["active", "past_due"].includes(sub.status) ? ({ essential: 1, growth: 2, partner: 4 } as Record<string, number>)[sub.plan] : 0;
+            return (
+              <div className="kv" style={{ marginBottom: 8 }}>
+                <span>Îmbunătățiri luna aceasta</span>
+                <b className={`impr${used > incl ? " over" : used === incl && incl ? " full" : ""}`}>{used} din {incl}{used > incl ? " · peste plan" : ""}</b>
+              </div>
+            );
+          })()}
           {(reqs ?? []).length ? (reqs ?? []).slice(0, 8).map((r) => (
             <div className="req" key={r.id}><div>{r.title}<small>{REQ_TYPE[r.type]} · {date(r.created_at, { day: "numeric", month: "short" })}</small></div><Pill tone={REQ_PILL[r.status][0]}>{REQ_PILL[r.status][1]}</Pill></div>
           )) : <div className="empty">Nicio cerere.</div>}

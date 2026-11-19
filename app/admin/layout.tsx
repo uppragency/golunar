@@ -6,11 +6,13 @@ export const metadata: Metadata = { title: "Admin", robots: { index: false } };
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Prezentare", icon: "chart" },
+  { href: "/admin/comenzi", label: "Comenzi", icon: "doc" },
+  { href: "/admin/lansari", label: "Producție", icon: "star" },
   { href: "/admin/clienti", label: "Clienți", icon: "users" },
-  { href: "/admin/incasari", label: "Încasări", icon: "card" },
-  { href: "/admin/lansari", label: "Lansări", icon: "star" },
   { href: "/admin/cereri", label: "Cereri", icon: "inbox" },
-  { href: "/admin/reduceri", label: "Reduceri", icon: "card" },
+  { href: "/admin/lead-uri", label: "Lead-uri", icon: "chat" },
+  { href: "/admin/incasari", label: "Încasări", icon: "card" },
+  { href: "/admin/reduceri", label: "Reduceri", icon: "pen" },
   { href: "/admin/setari", label: "Setări", icon: "building" },
 ];
 
