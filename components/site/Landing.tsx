@@ -42,7 +42,7 @@ const FAQ: Record<string, [string, string][]> = {
     ["Primesc codul-sursă?", "Da, după transferul proprietății, la cerere, în maximum 15 zile lucrătoare. Componentele terțe rămân sub licențele lor."],
   ],
   "Livrare și suport": [
-    ["Ce se întâmplă dacă lansarea întârzie?", "Dacă întârzierea ne aparține, îți returnăm integral abonamentul perioadei afectate. Zilele în care așteptăm materiale de la tine nu se numără."],
+    ["Ce se întâmplă dacă lansarea întârzie?", "Dacă lansarea depășește 10 zile lucrătoare din vina noastră, luna următoare de abonament e gratuită. Nu returnăm bani, compensăm cu o lună fără plată. Zilele în care așteptăm materiale de la tine nu se numără."],
     ["Ce înseamnă o îmbunătățire?", "O modificare delimitată: conținut, o secțiune nouă, o ajustare de navigare sau o integrare. Cererile mari se împart, cu acordul tău."],
     ["Se reportează îmbunătățirile nefolosite?", "Nu. Fiecare lună are propriul număr de îmbunătățiri."],
     ["Garantați poziții în Google?", "Nu. Nimeni nu poate garanta poziții, trafic sau mențiuni în răspunsurile AI. Garantăm munca, raportarea și transparența."],
@@ -74,6 +74,10 @@ export default function Landing() {
 
   const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
   const p = (eur: number, ron: number) => fmt(cur === "EUR" ? eur : ron, cur);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("discutie")) setLead(true);
+  }, []);
 
   useEffect(() => {
     setLaunch(addWorkdays(new Date(), 10).toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long" }));
@@ -230,7 +234,7 @@ export default function Landing() {
                 <div className="m" style={{ left: l }} key={s}><span>{s}</span><b /><em>{e}</em></div>
               ))}
             </div>
-            <span className="pill acc"><span className="d" />Garanție: abonament rambursat la întârziere</span>
+            <span className="pill acc"><span className="d" />Lansare la timp sau luna următoare gratuită</span>
           </div>
         </div>
       </section>
@@ -324,7 +328,7 @@ export default function Landing() {
             </aside>
           </div>
           <div className="guar">
-            <div><b>10 zile lucrătoare</b><span>Sau îți returnăm abonamentul perioadei afectate.</span></div>
+            <div><b>10 zile lucrătoare</b><span>Sau luna următoare e gratuită.</span></div>
             <div><b>{cur === "EUR" ? "0 €" : "0 lei"} la start</b><span>Dezvoltarea e inclusă în abonament.</span></div>
             <div><b>Anulezi oricând</b><span>Fără perioadă minimă. Se oprește la final de lună.</span></div>
             <div><b>Domeniul e al tău</b><span>Din prima zi, înregistrat pe firma ta.</span></div>

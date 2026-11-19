@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Arrow } from "./visuals";
 import { LeadModal } from "./LeadModal";
 import { RESOURCES } from "@/lib/resources";
+import { CITY_LINKS, INDUSTRY_LINKS } from "@/lib/landing-links";
 
 function addWorkdays(d: Date, n: number) {
   const x = new Date(d);
@@ -46,6 +47,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div className="fb-card">
               <div className="eyebrow">Dacă începi azi</div>
               <h2 style={{ marginTop: 18 }}>Online pe <span>{launch}</span></h2>
+              <p className="fb-guar">Garanție: dacă întârziem lansarea, luna următoare e gratuită.</p>
               <div className="fb-tl">
                 {[["ZIUA 1", "Brief"], ["ZIUA 4", "Design"], ["ZIUA 7", "Dezvoltare"], ["ZIUA 10", "Lansare"]].map(([d, l]) => (
                   <div key={d}><b />{d}<br />{l}</div>
@@ -61,15 +63,27 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div>
               <Link href="/" className="logo"><i />LUNAR</Link>
               <p>Website-ul tău, mai bun lună de lună. Al tău după 12 plăți.</p>
+              <a className="fb-mail" href="mailto:hello@golunar.ro">hello@golunar.ro</a>
             </div>
-            <div><h6>Explorează</h6><Link href="/#proces">Proces</Link><Link href="/#portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link></div>
+            <div>
+              <h6>Explorează</h6>
+              <Link href="/#proces">Proces</Link><Link href="/#portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
+              <Link href="/cum-lucram">Cum lucrăm</Link><Link href="/audit">Audit SEO gratuit</Link><Link href="/status">Status servicii</Link>
+            </div>
             <div>
               <h6>Resurse</h6>
               {RESOURCES.map((r) => <Link key={r.slug} href={`/resurse/${r.slug}`}>{r.title.split(":")[0]}</Link>)}
               <Link href="/resurse">Toate resursele →</Link>
             </div>
-            <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><Link href="/#abonamente">Începe proiectul</Link><Link href="/cont/cereri">Cere o îmbunătățire</Link></div>
-            <div><h6>Contact</h6><a href="mailto:hello@golunar.ro">hello@golunar.ro</a></div>
+            <div>
+              <h6>Website pentru</h6>
+              {INDUSTRY_LINKS.map(([slug, label]) => <Link key={slug} href={`/${slug}`}>{label}</Link>)}
+            </div>
+            <div>
+              <h6>Creare site</h6>
+              {CITY_LINKS.map(([slug, label]) => <Link key={slug} href={`/${slug}`}>{label}</Link>)}
+            </div>
+            <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><Link href="/#abonamente">Începe proiectul</Link><Link href="/cont/cereri">Cere o îmbunătățire</Link><Link href="/cont/recomanda">Recomandă și câștigă</Link></div>
           </div>
         </div>
         <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span><span>LUNAR</span></div>

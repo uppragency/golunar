@@ -58,6 +58,13 @@ export default async function PortalHome() {
         <div className="g g-2">
           <div className="panel">
             <h3>Drumul spre proprietate <Link href="/cont/plati">Calendar plăți →</Link></h3>
+            <div className="own-bar" role="progressbar" aria-valuemin={0} aria-valuemax={12} aria-valuenow={Math.min(12, paid.length)} aria-label="Plăți efectuate din 12">
+              <div className="own-head">
+                <b>{Math.min(12, paid.length)} din 12 plăți</b>
+                <span>{d.ownership?.transferred_at || paid.length >= 12 ? "Website-ul este al tău" : `Al tău în ${new Date(d.installments.at(-1)?.due_date ?? Date.now()).toLocaleDateString("ro-RO", { month: "long", year: "numeric" })}`}</span>
+              </div>
+              <div className="own-track"><i style={{ width: `${Math.min(100, (paid.length / 12) * 100)}%` }} /></div>
+            </div>
             <div className="ring-wrap">
               <Ring paid={paid.length} />
               <div style={{ flex: 1 }}>

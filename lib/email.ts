@@ -73,6 +73,67 @@ ${btn}
 </table></td></tr></table></body></html>`;
 }
 
+const row = (k: string, v: string, sub = "") => `<tr><td style="padding:9px 0;border-top:1px solid #232327;color:#8C8C93">${esc(k)}</td><td align="right" style="padding:9px 0;border-top:1px solid #232327;color:#F5F5F6;font-weight:500">${v}${sub ? ` <span style="color:#8C8C93;font-weight:400">${sub}</span>` : ""}</td></tr>`;
+const tbl = (rows: string) => `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin:6px 0 4px">${rows}</table>`;
+const delta = (a?: number | null, b?: number | null) => (a != null && b ? `${a >= b ? "+" : ""}${Math.round(((a - b) / b) * 100)}%` : "");
+
+export type MonthlyReport = {
+  monthLabel: string; name: string; domain?: string | null; uptime?: number | null;
+  cur?: { visitors: number; leads: number; pos: number | null; calls: number | null } | null;
+  prev?: { visitors: number; leads: number; pos: number | null; calls: number | null } | null;
+  delivered: { title: string; date: string }[]; paid: number; ownerLabel: string; refLink: string;
+};
+
+export function monthlyReport(r: MonthlyReport) {
+  const n = (v: number) => v.toLocaleString("ro-RO");
+  const metrics = r.cur
+    ? tbl(row("Vizitatori", n(r.cur.visitors), delta(r.cur.visitors, r.prev?.visitors)) + row("Cereri din formular", n(r.cur.leads), delta(r.cur.leads, r.prev?.leads)) +
+        (r.cur.pos != null ? row("Poziție medie Google", r.cur.pos.toLocaleString("ro-RO", { maximumFractionDigits: 1 })) : "") +
+        (r.cur.calls != null ? row("Apeluri din Google Maps", n(r.cur.calls)) : "") +
+        (r.uptime != null ? row("Disponibilitate (90 zile)", `${r.uptime.toLocaleString("ro-RO", { maximumFractionDigits: 2 })}%`) : ""))
+    : `<p style="color:#8C8C93">Statisticile apar din prima lună completă după lansare.</p>`;
+  const done = r.delivered.length
+    ? `<ul style="margin:6px 0 0;padding-left:18px">${r.delivered.map((d) => `<li style="margin:4px 0">${esc(d.title)}</li>`).join("")}</ul>`
+    : `<p style="color:#8C8C93;margin:6px 0 0">Nicio îmbunătățire cerută luna aceasta. Ai una sau mai multe incluse lunar: cere-o din portal.</p>`;
+  const pct = Math.min(100, Math.round((Math.min(12, r.paid) / 12) * 100));
+  return layout({
+    preheader: `Raportul LUNAR pentru ${r.monthLabel}${r.domain ? ` · ${r.domain}` : ""}.`,
+    eyebrow: `Raport · ${r.monthLabel}`,
+    title: `Raportul lunii ${r.monthLabel}.`,
+    titleDim: r.domain || undefined,
+    body: `<p>Bună, ${esc(r.name)}. Iată ce a făcut website-ul tău luna trecută.</p>
+<p style="margin:22px 0 0;font-family:${MONO};font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#5E5E65">Rezultate</p>${metrics}
+<p style="margin:22px 0 0;font-family:${MONO};font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#5E5E65">Îmbunătățiri livrate</p>${done}
+<p style="margin:22px 0 8px;font-family:${MONO};font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#5E5E65">Drumul spre proprietate</p>
+<p style="margin:0 0 8px;color:#F5F5F6"><b>${Math.min(12, r.paid)} din 12 plăți</b> <span style="color:#8C8C93">· ${esc(r.ownerLabel)}</span></p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="background:#232327;border-radius:99px;height:8px;font-size:0;line-height:0"><table role="presentation" width="${pct}%" cellpadding="0" cellspacing="0"><tr><td style="background:#FF5B1F;border-radius:99px;height:8px;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr></table>
+<p style="margin:22px 0 0;color:#8C8C93;font-size:13px">Recomandă LUNAR și primești o lună gratuită pentru fiecare client nou: <a href="${r.refLink}" style="color:#FF7A45">${esc(r.refLink.replace(/^https?:\/\//, ""))}</a></p>`,
+    cta: "Deschide portalul",
+    ctaUrl: `${SITE_URL}/cont`,
+  });
+}
+
+export type AuditEmail = { url: string; scores: { label: string; value: number | null }[]; issues: string[]; lcp?: string; cls?: string; tbt?: string };
+
+export function auditReport(a: AuditEmail) {
+  const color = (v: number | null) => (v == null ? "#8C8C93" : v >= 90 ? "#3DD68C" : v >= 50 ? "#FFB020" : "#FF5B5B");
+  const cells = a.scores.map((s) => `<td align="center" style="padding:14px 6px;border:1px solid #232327;border-radius:14px"><div style="font-family:${FONT};font-size:28px;font-weight:600;color:${color(s.value)}">${s.value ?? "—"}</div><div style="font-family:${MONO};font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#8C8C93;margin-top:4px">${esc(s.label)}</div></td>`).join('<td width="6"></td>');
+  const issues = a.issues.length ? `<ul style="margin:6px 0 0;padding-left:18px">${a.issues.map((i) => `<li style="margin:5px 0">${esc(i)}</li>`).join("")}</ul>` : `<p style="color:#8C8C93">Nicio problemă majoră detectată automat.</p>`;
+  return layout({
+    preheader: `Auditul gratuit pentru ${a.url}: scoruri și ce merită reparat întâi.`,
+    eyebrow: "Audit gratuit",
+    title: "Auditul site-ului tău.",
+    titleDim: a.url.replace(/^https?:\/\//, "").replace(/\/$/, ""),
+    body: `<p>Am testat versiunea pentru mobil, cea pe care o văd majoritatea clienților tăi.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:14px 0"><tr>${cells}</tr></table>
+${tbl((a.lcp ? row("Încărcarea conținutului principal (LCP)", esc(a.lcp)) : "") + (a.tbt ? row("Timp de blocare (TBT)", esc(a.tbt)) : "") + (a.cls ? row("Stabilitate vizuală (CLS)", esc(a.cls)) : ""))}
+<p style="margin:22px 0 0;font-family:${MONO};font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#5E5E65">Ce aș repara întâi</p>${issues}
+<p style="margin:22px 0 0">Vrei să discutăm rezultatele? O discuție de 20 de minute, gratuită, fără obligații.</p>`,
+    cta: "Programează discuția",
+    ctaUrl: `${SITE_URL}/?discutie=1`,
+  });
+}
+
 export const templates = {
   welcome: (name: string) =>
     layout({

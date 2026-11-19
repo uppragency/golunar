@@ -15,6 +15,7 @@ const NAV: NavItem[] = [
   { href: "/cont/facturare", label: "Date facturare", short: "Facturare", icon: "building" },
   { href: "/cont/documente", label: "Contract și documente", short: "Contract", icon: "shield" },
   { href: "/cont/cereri", label: "Cereri și suport", short: "Cereri", icon: "chat" },
+  { href: "/cont/recomanda", label: "Recomandă și câștigă", short: "Recomandă", icon: "star" },
 ];
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {

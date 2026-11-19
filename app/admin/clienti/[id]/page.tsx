@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/session";
 import { date, money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { INST_PILL, PLAN_NAME, REQ_PILL, REQ_TYPE, SITE_PILL, SPV_PILL } from "@/lib/labels";
-import { inviteMember, markInstallmentPaid, setViewAs, startLaunchAction, updateWebsite } from "@/app/admin/actions";
+import { inviteMember, markInstallmentPaid, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
 import InviteForm from "@/components/app/InviteForm";
 import type { Currency } from "@/lib/plans";
 
@@ -12,7 +12,7 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const s = await requireAdmin();
   const db = s.supabase;
-  const [{ data: c }, { data: subs }, { data: items }, { data: inst }, { data: inv }, { data: site }, { data: reqs }, { data: members }, { data: invites }, { data: launch }] = await Promise.all([
+  const [{ data: c }, { data: subs }, { data: items }, { data: inst }, { data: inv }, { data: site }, { data: reqs }, { data: members }, { data: invites }, { data: launch }, { data: refs } ] = await Promise.all([
     db.from("companies").select("*").eq("id", id).maybeSingle(),
     db.from("subscriptions").select("*").eq("company_id", id).order("created_at", { ascending: false }),
     db.from("subscription_items").select("*").eq("company_id", id),
@@ -23,7 +23,9 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
     db.from("members").select("user_id, role, created_at").eq("company_id", id),
     db.from("invites").select("email, role, accepted_at").eq("company_id", id),
     db.from("launch_projects").select("*").eq("company_id", id).maybeSingle(),
+    db.from("referrals").select("*").eq("referrer_company_id", id).order("created_at", { ascending: false }),
   ]);
+  const { data: refBy } = c?.referred_by ? await db.from("companies").select("id, name").eq("id", c.referred_by).maybeSingle() : { data: null };
   if (!c) notFound();
   const sub = subs?.[0];
   const cur = (sub?.currency ?? c.currency) as Currency;
@@ -109,6 +111,7 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
                 <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="dns_auth_ok" defaultChecked={site.dns_auth_ok} />SPF/DKIM/DMARC</label>
                 <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="search_console" defaultChecked={site.search_console} />Search Console</label>
                 <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="business_profile" defaultChecked={site.business_profile} />Business Profile</label>
+                <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="show_on_status" defaultChecked={site.show_on_status} />Public pe /status (acord client)</label>
               </div>
               <button className="btn-plain">Salvează website</button>
             </form>
@@ -125,6 +128,20 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
           <div className="kv"><span>Telefon</span><b>{c.phone ?? "—"}</b></div>
           <div className="kv"><span>Adresă</span><b style={{ whiteSpace: "normal", textAlign: "right" }}>{c.address ?? "—"}</b></div>
           <div className="kv"><span>Stripe</span><b className="mono">{c.stripe_customer_id ?? "—"}</b></div>
+          <h3 style={{ marginTop: 24 }}>Recomandări</h3>
+          <div className="kv"><span>Cod</span><b className="mono">{c.referral_code}</b></div>
+          <div className="kv"><span>Adus de</span><b>{refBy ? <Link href={`/admin/clienti/${refBy.id}`}>{refBy.name}</Link> : "—"}</b></div>
+          {(refs ?? []).map((r) => (
+            <form key={r.id} action={updateReferral} className="req form-dark" style={{ gap: 8, flexWrap: "wrap" }}>
+              <input type="hidden" name="id" value={r.id} />
+              <div>{r.referred_name ?? "Recomandare"}<small>{date(r.created_at, { day: "numeric", month: "short" })}</small></div>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <select name="status" defaultValue={r.status}>{["pending", "converted", "rewarded", "rejected"].map((v) => <option key={v}>{v}</option>)}</select>
+                <input name="reward_month" type="month" defaultValue={r.reward_month ? String(r.reward_month).slice(0, 7) : ""} aria-label="Luna gratuită" />
+                <button className="btn-plain sm">OK</button>
+              </div>
+            </form>
+          ))}
         </div>
       </div>
     </div>

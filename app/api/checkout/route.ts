@@ -9,6 +9,7 @@ import { ADDONS, PLANS, cartLines } from "@/lib/plans";
 import { provision } from "@/lib/provision";
 import { money } from "@/lib/format";
 import { sendEmail, templates } from "@/lib/email";
+import { getRef } from "@/lib/ref";
 
 const Body = z.object({
   cui: z.string().trim().min(2).max(14),
@@ -43,9 +44,10 @@ export async function POST(req: Request) {
 
   // Always keep the order as a lead, so nothing is lost if a downstream service fails.
   const session = await createClient();
-  await session.from("leads").insert({
-    name: d.contact, email: d.email, phone: d.phone || null, company: `${d.name} (${d.cui})`, plan: d.cart.plan,
-    message: `Checkout ${d.paymentMode} · ${money(net, d.currency)}/lună · domeniu ${d.domain || "—"}`, source: "checkout",
+  const ref = await getRef();
+  await session.rpc("submit_lead", {
+    p_name: d.contact, p_email: d.email, p_phone: d.phone, p_company: `${d.name} (${d.cui})`, p_plan: d.cart.plan,
+    p_message: `Checkout ${d.paymentMode} · ${money(net, d.currency)}/lună · domeniu ${d.domain || "—"}`, p_source: "checkout", p_ref: ref ?? "", p_meta: {},
   });
 
   const db = createAdminClient();
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
     ];
     const meta = {
       cui: d.cui, name: d.name.slice(0, 200), reg_com: d.regCom, address: d.address.slice(0, 300), contact: d.contact, email: d.email,
-      phone: d.phone, domain: d.domain, vat_payer: String(d.vatPayer), currency: d.currency, cart: JSON.stringify(d.cart), ip: ip || "",
+      phone: d.phone, domain: d.domain, vat_payer: String(d.vatPayer), currency: d.currency, cart: JSON.stringify(d.cart), ip: ip || "", ref: ref ?? "",
     };
     const checkout = await s.checkout.sessions.create({
       mode: "subscription",
@@ -99,7 +101,7 @@ export async function POST(req: Request) {
     try {
       const res = await provision(db, {
         company: { cui: d.cui, name: d.name, regCom: d.regCom, address: d.address, vatPayer: d.vatPayer, contact: d.contact, email: d.email, phone: d.phone },
-        domain: d.domain, cart: d.cart, currency: d.currency, mode: "bank_transfer", start: new Date(), firstPaid: false, ip,
+        domain: d.domain, cart: d.cart, currency: d.currency, mode: "bank_transfer", start: new Date(), firstPaid: false, ip, ref,
       });
       const { data: bank } = await db.from("app_settings").select("value").eq("key", "bank").maybeSingle();
       const iban = (bank?.value as Record<string, string> | undefined)?.[d.currency === "EUR" ? "iban_eur" : "iban_ron"] || "";

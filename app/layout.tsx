@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import VercelAnalytics from "@/components/VercelAnalytics";
+import RefCapture from "@/components/RefCapture";
 import { SITE_URL } from "@/lib/env";
 
 const geist = Geist({ subsets: ["latin", "latin-ext"], weight: ["300", "400", "500", "600", "700"], variable: "--font-geist", display: "swap" });
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <VercelAnalytics />
+        <RefCapture />
       </body>
     </html>
   );

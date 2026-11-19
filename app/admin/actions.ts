@@ -102,6 +102,7 @@ export async function updateWebsite(form: FormData) {
     email_provider: str("email_provider"), ga4_id: str("ga4_id"), vercel_project_id: str("vercel_project_id"),
     preview_title: str("preview_title"), preview_subtitle: str("preview_subtitle"),
     dns_auth_ok: form.get("dns_auth_ok") === "on", search_console: form.get("search_console") === "on", business_profile: form.get("business_profile") === "on",
+    show_on_status: form.get("show_on_status") === "on",
   }).eq("id", id);
   revalidatePath("/admin", "layout");
 }
@@ -218,4 +219,14 @@ export async function deleteDemoData(): Promise<ActionState> {
   await s.supabase.from("bank_transfers").delete().is("matched_installment_id", null).in("payer_name", ["FORMA FITNESS SRL"]);
   revalidatePath("/admin", "layout");
   return { ok: `${count ?? 0} firme demo șterse.` };
+}
+
+export async function updateReferral(form: FormData) {
+  const s = await requireAdmin();
+  const id = String(form.get("id"));
+  const status = String(form.get("status"));
+  if (!["pending", "converted", "rewarded", "rejected"].includes(status)) return;
+  const month = String(form.get("reward_month") ?? "").trim();
+  await s.supabase.from("referrals").update({ status, reward_month: month ? `${month.slice(0, 7)}-01` : null }).eq("id", id);
+  revalidatePath("/admin", "layout");
 }

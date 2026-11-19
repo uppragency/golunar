@@ -13,6 +13,7 @@ export type ProvisionInput = {
   stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;
   ip?: string | null;
+  ref?: string | null;
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -121,6 +122,8 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
     { company_id: company.id, kind: "source", title: "Cod-sursă și fișiere", locked_until_installment: 12 },
   ]);
 
+  if (input.ref) await attachReferral(db, company.id, input.ref, input.company.name);
+
   const { error: invErr } = await db.rpc("invite_member", { p_email: input.company.email, p_company: company.id, p_role: "owner" });
   if (invErr) console.error("[provision] invite", invErr.message);
 
@@ -140,4 +143,14 @@ export async function startLaunch(db: SupabaseClient, websiteId: string, company
     { onConflict: "website_id", ignoreDuplicates: true },
   );
   await db.from("websites").update({ status: "building" }).eq("id", websiteId).eq("status", "onboarding");
+}
+
+/** Leagă clientul nou de firma care l-a recomandat. Recompensa (o lună gratuită) se acordă din admin după prima plată. */
+async function attachReferral(db: SupabaseClient, companyId: string, code: string, name: string) {
+  const { data: referrer } = await db.from("companies").select("id").eq("referral_code", code.toUpperCase()).eq("is_demo", false).maybeSingle();
+  if (!referrer || referrer.id === companyId) return;
+  await db.from("companies").update({ referred_by: referrer.id }).eq("id", companyId).is("referred_by", null);
+  const { data: pending } = await db.from("referrals").select("id").eq("referrer_company_id", referrer.id).eq("status", "pending").is("referred_company_id", null).order("created_at", { ascending: false }).limit(1);
+  if (pending?.[0]) await db.from("referrals").update({ referred_company_id: companyId, referred_name: name, status: "converted" }).eq("id", pending[0].id);
+  else await db.from("referrals").insert({ referrer_company_id: referrer.id, referred_company_id: companyId, referred_name: name, status: "converted" });
 }

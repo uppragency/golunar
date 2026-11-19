@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail, templates } from "@/lib/email";
+import { getRef } from "@/lib/ref";
 
 const Lead = z.object({
   name: z.string().trim().min(2).max(120),
@@ -19,13 +20,17 @@ export async function POST(req: Request) {
   const d = parsed.data;
   if (d.website) return NextResponse.json({ ok: true }); // bot
   const supabase = await createClient();
-  const { error } = await supabase.from("leads").insert({ name: d.name, email: d.email, phone: d.phone || null, company: d.company || null, message: d.message || null, plan: d.plan ?? null, source: "discutie-gratuita" });
+  const ref = await getRef();
+  const { error } = await supabase.rpc("submit_lead", {
+    p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: d.message,
+    p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: {},
+  });
   if (error) console.error("[lead]", error.message);
   await sendEmail({
     template: "admin_lead",
     to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro",
     subject: `Discuție nouă: ${d.company || d.name}`,
-    html: templates.adminNotice("Cerere de discuție gratuită", { Nume: d.name, Firmă: d.company, Email: d.email, Telefon: d.phone, Plan: d.plan, Mesaj: d.message }),
+    html: templates.adminNotice("Cerere de discuție gratuită", { Nume: d.name, Firmă: d.company, Email: d.email, Telefon: d.phone, Plan: d.plan, Mesaj: d.message, Recomandare: ref ?? "" }),
     replyTo: d.email,
   });
   return NextResponse.json({ ok: true });
