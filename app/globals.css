@@ -637,3 +637,4 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .quiz .result h3{margin:0 0 8px;font-size:24px}
 @media (max-width:900px){.calc{grid-template-columns:1fr}.r-hero{padding-top:120px}.r-cta{padding:28px}}
 @media (max-width:600px){.calc .row2{grid-template-columns:1fr}.calc .bar-row{grid-template-columns:84px 1fr auto;font-size:13px}.article p,.article li{font-size:17px}}
+@media (max-width:900px){.res.hub{grid-template-columns:1fr}.res.hub a{min-height:0;gap:18px}}
