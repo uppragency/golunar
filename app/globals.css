@@ -1079,3 +1079,25 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 @media (max-width:600px){.guar-grid{grid-template-columns:1fr}}
 /* checkout: un singur scroll pentru tot pop-up-ul */
 .sheet .s{max-height:none!important;overflow:visible!important;position:static!important}
+
+/* ---------- lumini portocalii difuze în spatele secțiunilor închise ---------- */
+#de-ce,#proces,#comparatie,#portal{position:relative;isolation:isolate;overflow:hidden}
+#de-ce::before,#de-ce::after,#proces::before,#proces::after,#comparatie::before,#comparatie::after,#portal::before{content:"";position:absolute;z-index:-1;border-radius:50%;pointer-events:none;filter:blur(80px);opacity:.85;animation:blob 22s ease-in-out infinite alternate}
+#de-ce::before{width:620px;height:620px;left:-180px;top:8%;background:radial-gradient(circle,rgba(255,91,31,.55),rgba(255,91,31,0) 65%)}
+#de-ce::after{width:520px;height:520px;right:-160px;bottom:-6%;background:radial-gradient(circle,rgba(255,138,76,.45),rgba(255,138,76,0) 65%);animation-delay:-8s}
+#proces::before{width:560px;height:560px;right:-140px;top:-4%;background:radial-gradient(circle,rgba(255,91,31,.5),rgba(255,91,31,0) 65%);animation-delay:-4s}
+#proces::after{width:460px;height:460px;left:12%;bottom:-12%;background:radial-gradient(circle,rgba(255,170,120,.35),rgba(255,170,120,0) 65%);animation-delay:-12s}
+#comparatie::before{width:640px;height:640px;left:-200px;bottom:0;background:radial-gradient(circle,rgba(255,91,31,.5),rgba(255,91,31,0) 65%);animation-delay:-6s}
+#comparatie::after{width:500px;height:500px;right:-120px;top:10%;background:radial-gradient(circle,rgba(255,120,60,.4),rgba(255,120,60,0) 65%);animation-delay:-15s}
+#portal::before{width:700px;height:500px;left:50%;top:40%;margin-left:-350px;background:radial-gradient(circle,rgba(255,91,31,.35),rgba(255,91,31,0) 65%);animation-delay:-10s}
+@keyframes blob{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,-40px) scale(1.12)}100%{transform:translate(-40px,50px) scale(.95)}}
+@media (max-width:760px){#de-ce::before,#proces::before,#comparatie::before{width:380px;height:380px}#de-ce::after,#proces::after,#comparatie::after{width:320px;height:320px}}
+@media (prefers-reduced-motion:reduce){#de-ce::before,#de-ce::after,#proces::before,#proces::after,#comparatie::before,#comparatie::after,#portal::before{animation:none}}
+.cmp-detail{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+.cmp-detail>div{padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+.cmp-detail>div.lunar{border-color:rgba(255,91,31,.45);background:rgba(255,91,31,.08)}
+.cmp-detail b{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:400}
+.cmp-detail .lunar b{color:var(--accent2)}
+.cmp-detail p{margin:6px 0 0!important}
+.guar-card .co-feat{margin-top:6px;font-size:14px}
+.guar-note{font-size:13px!important;color:var(--accent2)!important}

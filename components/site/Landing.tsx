@@ -7,7 +7,7 @@ import { FAQ } from "@/lib/faq";
 import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDiscount, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
 import PromoBar from "./PromoBar";
-import { CompareSection, Guarantees, PartnersStrip, PortalPreview, WhySection } from "./HomeSections";
+import { PartnersStrip, PortalPreview, WhySection } from "./HomeSections";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
@@ -280,7 +280,6 @@ export default function Landing() {
         </div>
       </section>
 
-      <CompareSection onOrder={orderNow} />
       <PortalPreview onOrder={orderNow} />
 
       <section className="sec light dots-ink" id="abonamente">
@@ -357,8 +356,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
-      <Guarantees />
 
       <section className="sec faq-wrap" id="intrebari" style={{ paddingTop: 40 }}>
         <div className="wrap">

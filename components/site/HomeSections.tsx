@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Arrow } from "./visuals";
 import { PARTNERS, PARTNERS_TITLE } from "@/lib/partners";
+import { COMP } from "@/lib/compare";
+import { GUAR } from "@/lib/guarantees";
 
 /* ---------- parteneri ---------- */
 export function PartnersStrip() {
@@ -61,19 +63,6 @@ export function WhySection({ onOrder }: { onOrder: () => void }) {
 }
 
 /* ---------- comparație ---------- */
-type Cell = { t: string; win?: boolean };
-const COMP: { k: string; lunar: Cell; agency: Cell; ai: Cell }[] = [
-  { k: "Cost la început", lunar: { t: "6 lei prima lună", win: true }, agency: { t: "Mii de lei în avans" }, ai: { t: "Abonament + ore din timpul tău" } },
-  { k: "Timp până la lansare", lunar: { t: "10 zile lucrătoare, garantat", win: true }, agency: { t: "Săptămâni sau luni" }, ai: { t: "Depinde cât timp ai tu" } },
-  { k: "Design", lunar: { t: "Personalizat pentru brandul tău", win: true }, agency: { t: "Personalizat" }, ai: { t: "Șablon, seamănă cu alte site-uri" } },
-  { k: "Texte pentru clienți", lunar: { t: "Scrise de noi, orientate spre cereri", win: true }, agency: { t: "Uneori, cost separat" }, ai: { t: "Generice, le corectezi singur" } },
-  { k: "Modificări după lansare", lunar: { t: "Incluse lunar", win: true }, agency: { t: "Plătite separat" }, ai: { t: "Le faci singur" } },
-  { k: "Hosting, SSL, backup", lunar: { t: "Incluse și monitorizate", win: true }, agency: { t: "De obicei separat" }, ai: { t: "Inclus, fără monitorizare" } },
-  { k: "SEO și viteză", lunar: { t: "Configurate din prima zi", win: true }, agency: { t: "Variază" }, ai: { t: "De bază" } },
-  { k: "Proprietate", lunar: { t: "Al tău după 12 plăți", win: true }, agency: { t: "Al tău după plata integrală" }, ai: { t: "Rămâi pe platformă" } },
-  { k: "Suport", lunar: { t: "Răspuns în 48 de ore, din portal", win: true }, agency: { t: "Când au timp" }, ai: { t: "Ticket la platformă" } },
-];
-
 export function CompareSection({ onOrder }: { onOrder: () => void }) {
   return (
     <section className="sec compare" id="comparatie">
@@ -196,15 +185,6 @@ export function PortalPreview({ onOrder }: { onOrder: () => void }) {
 }
 
 /* ---------- garanții ---------- */
-const GUAR: [string, string][] = [
-  ["Lansare în 10 zile lucrătoare", "Dacă întârziem din vina noastră, luna următoare de abonament e gratuită."],
-  ["Fără avans", "Începi cu 6 lei în prima lună. Nicio taxă de creare."],
-  ["Al tău după 12 plăți", "Domeniul e pe firma ta din prima zi. După 12 plăți, primești și site-ul."],
-  ["Anulezi după perioada minimă", "3 luni la Esențial, 2 la Creștere, o lună la Partener. Fără penalități după."],
-  ["Preț fix, TVA inclus", "Hosting, SSL, backup, mentenanță și îmbunătățiri, într-un singur preț."],
-  ["Răspuns în 48 de ore", "Orice cerere din portal primește răspuns în maximum 48 de ore lucrătoare."],
-];
-
 export function Guarantees() {
   return (
     <section className="sec guar" id="garantii">
