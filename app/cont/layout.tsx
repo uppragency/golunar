@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Shell, { type NavItem } from "@/components/app/Shell";
 import { getPortalData } from "@/lib/portal-data";
 import { clearViewAs } from "@/app/admin/actions";
@@ -18,6 +19,7 @@ const NAV: NavItem[] = [
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const d = await getPortalData();
+  if (!d.ready && d.ctx.isAdmin) redirect("/admin");
   if (!d.ready) {
     return (
       <main className="auth-wrap dots">
