@@ -7,6 +7,7 @@ import { FAQ } from "@/lib/faq";
 import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDiscount, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
 import PromoBar from "./PromoBar";
+import { CompareSection, Guarantees, PartnersStrip, PortalPreview, WhySection } from "./HomeSections";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
@@ -226,6 +227,9 @@ export default function Landing() {
         </div>
       </header>
 
+      <PartnersStrip />
+      <WhySection onOrder={orderNow} />
+
       <section className="sec" id="proces">
         <div className="wrap">
           <div className="sec-head reveal">
@@ -275,6 +279,9 @@ export default function Landing() {
           <button aria-label="Proiectul următor" onClick={() => slide(1)} disabled={railEdge.end}><Arrow /></button>
         </div>
       </section>
+
+      <CompareSection onOrder={orderNow} />
+      <PortalPreview onOrder={orderNow} />
 
       <section className="sec light dots-ink" id="abonamente">
         <div className="wrap">
@@ -350,6 +357,8 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      <Guarantees />
 
       <section className="sec faq-wrap" id="intrebari" style={{ paddingTop: 40 }}>
         <div className="wrap">

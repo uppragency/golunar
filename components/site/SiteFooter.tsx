@@ -6,6 +6,7 @@ import { Arrow } from "./visuals";
 import { LeadModal } from "./LeadModal";
 import { RESOURCES } from "@/lib/resources";
 import { CITY_LINKS, INDUSTRY_LINKS } from "@/lib/landing-links";
+import { PAYEE } from "@/lib/bank";
 
 function addWorkdays(d: Date, n: number) {
   const x = new Date(d);
@@ -94,7 +95,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
         <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span><span>LUNAR</span></div>
         <div className="fb-legal">
           <div className="wrap">
-            <span>© {new Date().getFullYear()} LUNAR · golunar.ro</span>
+            <span className="fb-co">© {new Date().getFullYear()} LUNAR este un serviciu {PAYEE.name} · CIF {PAYEE.cif} · {PAYEE.regCom} · {PAYEE.address} · {PAYEE.bank}</span>
             <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
           </div>
         </div>
