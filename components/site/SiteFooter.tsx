@@ -75,9 +75,8 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
         <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span><span>LUNAR</span></div>
         <div className="fb-legal">
           <div className="wrap">
-            <span>© {new Date().getFullYear()} LUNAR · golunar.ro · Prețuri finale</span>
+            <span>© {new Date().getFullYear()} LUNAR · golunar.ro</span>
             <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
-            <a href="#top">Înapoi sus ↑</a>
           </div>
         </div>
       </footer>
