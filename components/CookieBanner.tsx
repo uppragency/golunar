@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,7 +29,7 @@ export default function CookieBanner() {
 
   return (
     <div className="ck" role="dialog" aria-live="polite" aria-label="Preferințe cookie-uri">
-      <p>Folosim cookie-uri de analiză și marketing doar cu acordul tău, ca să înțelegem ce funcționează pe site. <Link href="/legal/cookies">Detalii</Link></p>
+      <p>Folosim cookie-uri de analiză și marketing doar cu acordul tău, ca să înțelegem ce funcționează pe site.</p>
       <div className="ck-b">
         <button type="button" className="ck-no" onClick={() => { apply("denied"); setShow(false); }}>Refuz</button>
         <button type="button" className="ck-ok" onClick={() => { apply("granted"); setShow(false); }}>Accept</button>
