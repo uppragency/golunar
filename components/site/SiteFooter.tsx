@@ -68,7 +68,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div>
               <h6>Explorează</h6>
               <Link href="/#proces">Proces</Link><Link href="/#portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
-              <Link href="/cum-lucram">Cum lucrăm</Link><Link href="/audit">Audit SEO gratuit</Link><Link href="/status">Status servicii</Link>
+              <Link href="/cum-lucram">Cum lucrăm</Link><Link href="/audit">Audit SEO gratuit</Link>
             </div>
             <div>
               <h6>Resurse</h6>
