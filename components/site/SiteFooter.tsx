@@ -51,9 +51,10 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
               <div className="eyebrow">Dacă începi azi</div>
               <h2 style={{ marginTop: 18 }}>Online pe <span>{launch}</span></h2>
               <p className="fb-guar">Începi cu 4,99 lei în prima lună. Garanție: dacă întârziem lansarea, luna următoare e gratuită.</p>
-              <div className="fb-tl">
-                {[["ZIUA 1", "Brief"], ["ZIUA 4", "Design"], ["ZIUA 7", "Dezvoltare"], ["ZIUA 10", "Lansare"]].map(([d, l]) => (
-                  <div key={d}><b />{d}<br />{l}</div>
+              <div className="tl-track fb-track">
+                <div className="bar" /><div className="fill" />
+                {[["0%", "ZIUA 1", "Brief"], ["33.3%", "ZIUA 4", "Design"], ["66.6%", "ZIUA 7", "Dezvoltare"], ["100%", "ZIUA 10", "Lansare"]].map(([l, d, e]) => (
+                  <div className="m on" style={{ left: l }} key={d}><span>{d}</span><b /><em>{e}</em></div>
                 ))}
               </div>
             </div>

@@ -1188,3 +1188,9 @@ html,body{overflow-x:clip}
 .fb-tl{display:grid;grid-template-columns:repeat(4,1fr);position:relative}
 .fb-tl::before{content:"";position:absolute;left:5px;width:75%;top:4px;height:2px;background:linear-gradient(90deg,var(--accent),rgba(255,91,31,.55));border-radius:2px}
 .fb-tl b{position:relative;z-index:1}
+/* footer: calendar de lansare pe toată lățimea, ca în cardul portocaliu */
+.fb-track{margin:40px 30px 30px;height:60px}
+.fb-track .fill{width:100%}
+.fb-track .m span{color:var(--mute)}
+.fb-track .m em{color:#fff;font-weight:500;font-size:13px}
+@media (max-width:480px){.fb-track{margin:40px 26px 28px}.fb-track .m em{font-size:12px}}
