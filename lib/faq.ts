@@ -8,6 +8,7 @@ export const FAQ: Record<string, [string, string][]> = {
   ],
   "Plată și facturare": [
     ["Cum plătesc?", "Cu cardul, prin debitare automată lunară, sau prin transfer bancar pe baza proformei trimise cu 7 zile înainte de scadență."],
+    ["Cum funcționează oferta de 6 lei?", "Pentru clienții noi, prima lună pe planul Esențial costă 6 lei (1 €), TVA inclus. Codul GOLUNAR se aplică automat când alegi planul Esențial. Din luna a doua plătești 449 lei (89 €) pe lună. Perioada minimă a planului este de 3 luni."],
     ["Cum folosesc un cod de reducere?", "Introdu codul la „Ai un cod de reducere?”, în rezumatul abonamentului sau în pagina de plată. Reducerea se aplică ratelor indicate de cod și apare în desfășurătorul de plată."],
     ["Primesc factură fiscală?", "Da. Fiecare plată generează factură, transmisă automat în SPV prin e-Factura și disponibilă în contul tău."],
     ["Ce se întâmplă dacă plata eșuează?", "Reîncercăm automat de 3 ori în 7 zile și te anunțăm pe email. După 14 zile fără plată, site-ul intră în mentenanță."],

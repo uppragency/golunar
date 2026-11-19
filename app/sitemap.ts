@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
   return [
     u("/", SITE_UPDATED, "weekly", 1),
+    u("/website-6-lei", SITE_UPDATED, "weekly", 0.9),
     u("/audit", SITE_UPDATED, "monthly", 0.8),
     u("/cum-lucram", SITE_UPDATED, "monthly", 0.7),
     ...INDUSTRIES.map((l) => u(`/${l.slug}`, l.updated, "monthly", 0.8)),

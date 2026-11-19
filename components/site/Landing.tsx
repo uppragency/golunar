@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 import { FAQ } from "@/lib/faq";
-import { PLAN_FEATURES, discountFor, discountLabel, type Discount } from "@/lib/discount";
+import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDiscount, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
+import PromoBar from "./PromoBar";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
@@ -40,7 +41,7 @@ function addWorkdays(d: Date, n: number) {
 
 export default function Landing() {
   const [cur, setCur] = useState<Currency>("RON");
-  const [cart, setCart] = useState<Cart>({ plan: "growth", brand: false, local: false, langs: 0 });
+  const [cart, setCart] = useState<Cart>({ plan: "essential", brand: false, local: false, langs: 0 });
   const [checkout, setCheckout] = useState(false);
   const [lead, setLead] = useState(false);
   const [faqCat, setFaqCat] = useState(0);
@@ -52,9 +53,29 @@ export default function Landing() {
   const [railEdge, setRailEdge] = useState({ start: true, end: false });
 
   const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
-  const [discount, setDiscount] = useState<Discount | null>(null);
+  const [discount, setDiscountRaw] = useState<Discount | null>(null);
+  const [launchOff, setLaunchOff] = useState(false);
+  const setDiscount = (d: Discount | null) => {
+    if (!d && discount?.code === LAUNCH.code) setLaunchOff(true); // clientul a scos codul campaniei
+    setDiscountRaw(d);
+  };
   const [codeParam, setCodeParam] = useState<string | null>(null);
   const disc = discountFor(discount, net, cur);
+
+  // Campania GOLUNAR: aplicată automat pe planul Esențial pentru vizitatorii noi.
+  useEffect(() => {
+    if (cart.plan !== "essential") {
+      if (discount?.code === LAUNCH.code) setDiscountRaw(null);
+      return;
+    }
+    if (discount || launchOff || codeParam) return;
+    let live = true;
+    fetch("/api/discount", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: LAUNCH.code, plan: "essential" }) })
+      .then((r) => r.json())
+      .then((j) => { if (live) setDiscountRaw(toDiscount(j)); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [cart.plan, discount, launchOff, codeParam]);
   const p = (eur: number, ron: number) => fmt(cur === "EUR" ? eur : ron, cur);
 
   useEffect(() => {
@@ -131,6 +152,7 @@ export default function Landing() {
   return (
     <div ref={root}>
       <div className={`toast${toast ? " on" : ""}`} role="status">{toast}</div>
+      <PromoBar />
 
       <nav className="nav" aria-label="Principal">
         <a href="#top" className="logo"><i />LUNAR</a>
@@ -172,11 +194,11 @@ export default function Landing() {
         <div className="wrap">
           <div className="hero-top">
             <div>
-              <div className="price-chip">
-                <span className="muted" style={{ fontSize: 14 }}>de la</span>
-                <b>{p(89, 449)}</b>
-                <span className="muted" style={{ fontSize: 14 }}>/ lună ({PRICE_NOTE})</span>
-              </div>
+              <a href="#abonamente" className="price-chip promo-chip" onClick={() => pick("essential")}>
+                <span className="muted" style={{ fontSize: 14 }}>începi cu</span>
+                <b>{launchPrice(cur)}</b>
+                <span className="muted" style={{ fontSize: 14 }}>prima lună · apoi {p(89, 449)} / lună ({PRICE_NOTE})</span>
+              </a>
             </div>
             <p className="hero-tag">Website-ul tău, live în 10 zile. <span>O echipă care îl face mai bun în fiecare lună.</span></p>
           </div>
@@ -259,7 +281,7 @@ export default function Landing() {
           <div className="cfg">
             <div>
               <div className="plans" role="radiogroup" aria-label="Plan">
-                <PlanCard code="essential" sel={cart.plan} onPick={pick} price={p(89, 449)} lead="Prezență online profesionistă și credibilă."
+                <PlanCard code="essential" sel={cart.plan} onPick={pick} price={p(89, 449)} promo={launchPrice(cur)} tag={`Prima lună ${launchPrice(cur)}`} lead="Prezență online profesionistă și credibilă."
                   items={PLAN_FEATURES.essential} />
                 <PlanCard code="growth" sel={cart.plan} onPick={pick} price={p(189, 949)} cls="pop" tag="Cel mai ales" lead="Mai multă vizibilitate și mai multe cereri de ofertă."
                   items={PLAN_FEATURES.growth} />
@@ -369,8 +391,9 @@ export default function Landing() {
         <div className="wrap">
           <div className="eyebrow" style={{ justifyContent: "center", marginBottom: 24 }}>Ritmul tău</div>
           <h2>Plătești lunar.<br /><span className="dim">Crești lunar.</span></h2>
+          <p className="end-promo">Începi cu <b>{launchPrice(cur)}</b> în prima lună. Codul {LAUNCH.code} e deja aplicat.</p>
           <div className="row">
-            <a href="#abonamente" className="btn btn-accent"><span className="ic"><Arrow /></span>Vreau un site nou</a>
+            <a href="#abonamente" onClick={() => pick("essential")} className="btn btn-accent"><span className="ic"><Arrow /></span>Vreau un site nou</a>
             <button className="btn btn-ghost" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Programează discuția</button>
           </div>
         </div>
@@ -411,8 +434,8 @@ function Step({ n, num, t, d }: { n: number; num: string; t: string; d: string }
   );
 }
 
-function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag }: {
-  code: PlanCode; sel: PlanCode; onPick: (p: PlanCode) => void; price: string; lead: string; items: string[]; cls?: string; tag?: string;
+function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag, promo }: {
+  code: PlanCode; sel: PlanCode; onPick: (p: PlanCode) => void; price: string; lead: string; items: string[]; cls?: string; tag?: string; promo?: string;
 }) {
   const on = sel === code;
   return (
@@ -424,7 +447,11 @@ function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag }: {
         <p className="lead">{lead}</p>
         <ul>{items.map((i) => (i.startsWith("+") ? <li className="plus" key={i}>{i.slice(1)}</li> : <li key={i}>{i}</li>))}</ul>
       </div>
-      <div className="pr"><span className="radio" /><div><b>{price}</b><br /><small>/ lună ({PRICE_NOTE})</small><br /><small>Minim {PLANS[code].minMonths === 1 ? "o lună" : `${PLANS[code].minMonths} luni`}</small></div></div>
+      <div className="pr"><span className="radio" />{promo ? (
+        <div><b>{promo}</b><br /><small>prima lună, apoi {price} / lună ({PRICE_NOTE})</small><br /><small>Minim {PLANS[code].minMonths} luni · ofertă pentru clienți noi</small></div>
+      ) : (
+        <div><b>{price}</b><br /><small>/ lună ({PRICE_NOTE})</small><br /><small>Minim {PLANS[code].minMonths === 1 ? "o lună" : `${PLANS[code].minMonths} luni`}</small></div>
+      )}</div>
     </div>
   );
 }

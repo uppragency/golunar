@@ -46,7 +46,7 @@ export async function POST(req: Request) {
   let discount: Discount | null = null;
   if (d.discountCode) {
     const sb = await createClient();
-    const { data: chk } = await sb.rpc("check_discount", { p_code: d.discountCode, p_plan: d.cart.plan });
+    const { data: chk } = await sb.rpc("check_discount_for", { p_code: d.discountCode, p_plan: d.cart.plan, p_cui: d.cui });
     if (!chk?.valid) return NextResponse.json({ error: chk?.error || "Codul de reducere nu mai este valid." }, { status: 400 });
     discount = { id: chk.id, code: chk.code, kind: chk.kind, percent: chk.percent != null ? +chk.percent : null, amount_ron: chk.amount_ron != null ? +chk.amount_ron : null, amount_eur: chk.amount_eur != null ? +chk.amount_eur : null, months: chk.months, description: null };
   }

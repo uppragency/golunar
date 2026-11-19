@@ -59,7 +59,7 @@ export default function ResourceShell({ r, children, faq }: { r: Resource; child
       <main className="wrap">
         {children}
         <div className="r-cta">
-          <h3>Vrei să-l facem noi? <span>Site live în 10 zile, de la {PLANS.essential.ron} lei pe lună.</span></h3>
+          <h3>Vrei să-l facem noi? <span>Începi cu 6 lei în prima lună, apoi {PLANS.essential.ron} lei pe lună. Live în 10 zile.</span></h3>
           <Link href="/#abonamente" className="btn"><span className="ic"><Arrow /></span>Vezi abonamentele</Link>
         </div>
         <section className="r-related">

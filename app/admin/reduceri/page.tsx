@@ -43,6 +43,7 @@ export default async function DiscountsPage() {
                 {(Object.keys(PLANS) as PlanCode[]).map((p) => <label key={p} className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="plans" value={p} />{PLANS[p].name}</label>)}
               </div>
             </div>
+            <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="new_customers_only" />Doar clienți noi (CUI fără abonament)</label>
           </SaveForm>
         </div>
         <div className="panel">
@@ -61,7 +62,7 @@ export default async function DiscountsPage() {
                 const expired = (c.ends_at && new Date(c.ends_at).getTime() < now) || (c.max_redemptions && c.redemptions >= c.max_redemptions);
                 return (
                   <tr key={c.id}>
-                    <td><b className="mono">{String(c.code).toUpperCase()}</b>{c.description && <small style={{ display: "block", color: "var(--mute)" }}>{c.description}</small>}</td>
+                    <td><b className="mono">{String(c.code).toUpperCase()}</b>{c.description && <small style={{ display: "block", color: "var(--mute)" }}>{c.description}</small>}{c.new_customers_only && <small style={{ display: "block", color: "var(--accent2)" }}>Doar clienți noi</small>}</td>
                     <td>{c.kind === "percent" ? `${Number(c.percent)}%` : `${Number(c.amount_ron)} lei / ${Number(c.amount_eur)} €`}</td>
                     <td>{c.months === 12 ? "Toate 12" : `Primele ${c.months}`}</td>
                     <td>{c.plans ? (c.plans as PlanCode[]).map((p) => PLANS[p].name).join(", ") : "Toate"}</td>

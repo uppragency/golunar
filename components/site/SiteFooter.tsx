@@ -21,6 +21,8 @@ function addWorkdays(d: Date, n: number) {
 export default function SiteFooter({ onLead }: { onLead?: () => void }) {
   const [launch, setLaunch] = useState("—");
   const [lead, setLead] = useState(false);
+  const [allInd, setAllInd] = useState(false);
+  const [allCity, setAllCity] = useState(false);
   const wordRef = useRef<HTMLDivElement>(null);
   const openLead = onLead ?? (() => setLead(true));
 
@@ -47,7 +49,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div className="fb-card">
               <div className="eyebrow">Dacă începi azi</div>
               <h2 style={{ marginTop: 18 }}>Online pe <span>{launch}</span></h2>
-              <p className="fb-guar">Garanție: dacă întârziem lansarea, luna următoare e gratuită.</p>
+              <p className="fb-guar">Începi cu 6 lei în prima lună. Garanție: dacă întârziem lansarea, luna următoare e gratuită.</p>
               <div className="fb-tl">
                 {[["ZIUA 1", "Brief"], ["ZIUA 4", "Design"], ["ZIUA 7", "Dezvoltare"], ["ZIUA 10", "Lansare"]].map(([d, l]) => (
                   <div key={d}><b />{d}<br />{l}</div>
@@ -68,7 +70,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             <div>
               <h6>Explorează</h6>
               <Link href="/#proces">Proces</Link><Link href="/#portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
-              <Link href="/cum-lucram">Cum lucrăm</Link><Link href="/audit">Audit SEO gratuit</Link>
+              <Link href="/website-6-lei">Website de la 6 lei</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/audit">Audit SEO gratuit</Link>
             </div>
             <div>
               <h6>Resurse</h6>
@@ -77,11 +79,13 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div>
               <h6>Website pentru</h6>
-              {INDUSTRY_LINKS.map(([slug, label]) => <Link key={slug} href={`/${slug}`}>{label}</Link>)}
+              {INDUSTRY_LINKS.map(([slug, label], i) => <Link key={slug} href={`/${slug}`} className={i && !allInd ? "fb-x" : undefined}>{label}</Link>)}
+              <button type="button" className="fb-more" aria-expanded={allInd} onClick={() => setAllInd((v) => !v)}>{allInd ? "Arată mai puțin" : `Vezi toate paginile (${INDUSTRY_LINKS.length})`}</button>
             </div>
             <div>
               <h6>Creare site</h6>
-              {CITY_LINKS.map(([slug, label]) => <Link key={slug} href={`/${slug}`}>{label}</Link>)}
+              {CITY_LINKS.map(([slug, label], i) => <Link key={slug} href={`/${slug}`} className={i && !allCity ? "fb-x" : undefined}>{label}</Link>)}
+              <button type="button" className="fb-more" aria-expanded={allCity} onClick={() => setAllCity((v) => !v)}>{allCity ? "Arată mai puțin" : `Vezi toate paginile (${CITY_LINKS.length})`}</button>
             </div>
             <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><Link href="/#abonamente">Începe proiectul</Link><Link href="/cont/cereri">Cere o îmbunătățire</Link><Link href="/cont/recomanda">Recomandă și câștigă</Link></div>
           </div>

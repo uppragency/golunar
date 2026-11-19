@@ -262,6 +262,7 @@ export async function createDiscount(_: ActionState, form: FormData): Promise<Ac
     max_redemptions: d.max_redemptions || null,
     starts_at: d.starts_at ? new Date(d.starts_at).toISOString() : null,
     ends_at: d.ends_at ? new Date(`${d.ends_at}T23:59:59`).toISOString() : null,
+    new_customers_only: form.get("new_customers_only") === "on",
   });
   if (error) return { error: error.code === "23505" ? "Codul există deja." : error.message };
   revalidatePath("/admin/reduceri");

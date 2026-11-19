@@ -822,3 +822,38 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 @media (max-width:900px){.sheet{grid-template-columns:1fr}.sheet .s{max-height:none;position:static}}
 .sheet .s{align-self:start}
 .co-side+.x{background:#1A1A1D;border:1px solid var(--line2);z-index:3}
+
+/* ---------- campania 6 lei ---------- */
+.plan{position:relative}
+.plan:not(.pop) .tag{background:var(--accent)}
+.promo-chip{border-color:rgba(255,91,31,.45);background:rgba(255,91,31,.08);flex-wrap:wrap;row-gap:2px;transition:border-color .2s}
+.promo-chip:hover{border-color:var(--accent)}
+.promo-chip b{color:var(--accent2)}
+.promo-bar{position:fixed;left:50%;bottom:18px;z-index:60;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);padding:8px 8px 8px 16px;border-radius:999px;background:rgba(16,16,18,.98);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,91,31,.4);box-shadow:0 20px 50px -20px rgba(0,0,0,.8);color:#fff;font-size:14px;transform:translate(-50%,140%);opacity:0;transition:transform .5s var(--ease),opacity .4s}
+.promo-bar.on{transform:translate(-50%,0);opacity:1}
+.promo-bar a{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.promo-bar a b{font-weight:600}
+.promo-bar a span{color:#C4C4CA}
+.promo-bar button{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:18px;line-height:1}
+.promo-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,91,31,.2);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,91,31,0)}}
+@media (max-width:640px){.promo-bar{font-size:13px;bottom:12px}.promo-bar a span{display:none}.promo-bar a b::after{content:" prima lună →";font-weight:400;color:#C4C4CA}}
+.end-promo{text-align:center;color:var(--mute);font-size:17px;margin:-8px auto 28px}
+.end-promo b{color:var(--accent2);font-weight:600}
+.offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.offer-grid .card{padding:30px;border-radius:var(--r-xl, 28px)}
+.offer-k{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.offer-price{background:linear-gradient(160deg,#FF6A2E,#E8501A)!important;border-color:transparent!important;color:#fff}
+.offer-price .offer-k{color:rgba(255,255,255,.75)}
+.offer-price>b{display:block;font-size:clamp(64px,8vw,104px);font-weight:600;letter-spacing:-.05em;line-height:1;margin-top:14px}
+.offer-price>small{color:rgba(255,255,255,.8);font-size:14px}
+.offer-rows{margin:24px 0;display:grid}
+.offer-rows div{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.22);font-size:14px}
+.offer-rows span{color:rgba(255,255,255,.8)}
+.offer-price .btn-accent{background:#fff;color:var(--ink)}
+.offer-price .btn-accent .ic{background:var(--ink);color:#fff}
+.offer-inc .co-feat{font-size:15px;gap:12px;margin-top:18px}
+@media (max-width:820px){.offer-grid{grid-template-columns:1fr}.offer-grid .card{padding:24px}}
+.fb-cols a.fb-x{display:none}
+.fb-more{display:inline-block;width:auto!important;white-space:nowrap;align-self:flex-start;margin-top:6px;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--mute);font-size:12px;font-family:var(--mono);letter-spacing:.02em;transition:color .2s,border-color .2s}
+.fb-more:hover{color:#fff;border-color:#fff}

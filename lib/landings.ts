@@ -73,7 +73,7 @@ export const INDUSTRIES: Industry[] = [
     integrations: ["Google Business Profile", "Google Ads cu urmărirea programărilor", "WhatsApp Business", "Sistemul tău de programări, dacă are integrare"],
     seo: ["Date structurate Dentist și MedicalProcedure", "Pagini pentru „implant dentar”, „aparat dentar” și numele orașului", "Recenzii Google afișate pe site", "Viteză mare pe mobil, unde caută majoritatea pacienților"],
     faq: [
-      ["Cât costă un site pentru o clinică stomatologică?", "La LUNAR, de la 449 lei pe lună cu TVA inclus, fără taxă de creare. Recomandăm planul Creștere, de 949 lei pe lună, pentru SEO pe tratamente și urmărirea programărilor."],
+      ["Cât costă un site pentru o clinică stomatologică?", "La LUNAR începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Recomandăm planul Creștere, de 949 lei pe lună, pentru SEO pe tratamente și urmărirea programărilor."],
       ["Puteți integra programările cu softul clinicii?", "Da, dacă softul are un modul de programări online sau o integrare publică. Altfel, programările ajung pe email și în WhatsApp, iar recepția le confirmă."],
       ["Putem publica fotografii înainte și după?", "Da, doar cu acordul scris al pacientului și fără elemente care îl identifică. Includem în site mențiunea despre consimțământ."],
       ["Cât durează până apare clinica în Google?", "Pagina principală se indexează de obicei în câteva zile. Pozițiile bune pe tratamente și în Maps se construiesc în câteva luni, cu conținut și recenzii."],
@@ -113,7 +113,7 @@ export const INDUSTRIES: Industry[] = [
     faq: [
       ["Am nevoie de site dacă am Instagram?", "Da. Instagram aduce atenția, dar nu apare în Google la „salon manichiură” și numele cartierului, iar algoritmul se poate schimba oricând. Site-ul e canalul pe care îl controlezi."],
       ["Pot schimba singură prețurile?", "Ne trimiți lista nouă din portal și o actualizăm în 48 de ore lucrătoare, inclusă în îmbunătățirea lunară."],
-      ["Cât costă un site pentru salon?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. După 12 plăți, site-ul e al tău."],
+      ["Cât costă un site pentru salon?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. După 12 plăți, site-ul e al tău."],
       ["Puteți vinde vouchere online?", "Da, cu plată cu cardul. Necesită planul Creștere sau o îmbunătățire dedicată pentru configurarea plăților."],
     ],
     updated: "2026-11-19",
@@ -152,7 +152,7 @@ export const INDUSTRIES: Industry[] = [
       ["Cât de des pot schimba meniul?", "Oricând. Modificările de meniu intră în îmbunătățirile lunare și le livrăm în 48 de ore lucrătoare."],
       ["Puteți afișa alergenii?", "Da, pe fiecare preparat, conform obligației de informare a consumatorilor."],
       ["Site-ul poate primi comenzi fără comision?", "Da, prin comandă directă cu plata la livrare sau cu cardul. Discutăm varianta potrivită volumului tău."],
-      ["Cât costă un site pentru restaurant?", "De la 449 lei pe lună cu TVA inclus. Recomandăm Creștere, de 949 lei pe lună, pentru meniul de sezon și SEO local."],
+      ["Cât costă un site pentru restaurant?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus. Recomandăm Creștere, de 949 lei pe lună, pentru meniul de sezon și SEO local."],
     ],
     updated: "2026-11-19",
   },
@@ -190,7 +190,7 @@ export const INDUSTRIES: Industry[] = [
       ["Respectă site-ul regulile de publicitate ale profesiei?", "Scriem texte informative, fără promisiuni de rezultat sau comparații. Verificarea finală a conformității îți aparține, ca titular al cabinetului."],
       ["Puteți scrie articolele juridice?", "Redactăm structura și varianta inițială pe baza notelor tale. Conținutul juridic îl validezi tu înainte de publicare."],
       ["Datele din formulare sunt în siguranță?", "Da. Folosim HTTPS, găzduire în UE și trimitem mesajele direct pe emailul cabinetului."],
-      ["Cât costă un site pentru avocat?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. Al tău după 12 plăți."],
+      ["Cât costă un site pentru avocat?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Al tău după 12 plăți."],
     ],
     updated: "2026-11-19",
   },
@@ -227,7 +227,7 @@ export const INDUSTRIES: Industry[] = [
     faq: [
       ["Pot adăuga singur proiectele noi?", "Ne trimiți pozele și câteva rânduri din portal, iar noi publicăm proiectul în 48 de ore lucrătoare, în îmbunătățirea lunară."],
       ["Site-ul ajută la licitații cu firme mari?", "Un site cu proiecte, certificări și date de firmă clare e adesea primul lucru verificat înainte de invitația la ofertă."],
-      ["Cât costă un site pentru o firmă de construcții?", "De la 449 lei pe lună cu TVA inclus. Recomandăm Creștere, de 949 lei pe lună, pentru SEO local pe servicii."],
+      ["Cât costă un site pentru o firmă de construcții?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus. Recomandăm Creștere, de 949 lei pe lună, pentru SEO local pe servicii."],
       ["Puteți face site în mai multe limbi?", "Da, cu opțiunea de limbă suplimentară, utilă pentru clienți din diaspora care renovează în țară."],
     ],
     updated: "2026-11-19",
@@ -265,7 +265,7 @@ export const INDUSTRIES: Industry[] = [
     faq: [
       ["Puteți face un calculator de preț pe site?", "Da. Stabilim împreună regulile de preț, iar clientul vede o estimare înainte să ceară oferta finală."],
       ["Cine scrie articolele despre termene fiscale?", "Pregătim structura și textul inițial, iar tu validezi conținutul înainte de publicare."],
-      ["Cât costă un site pentru o firmă de contabilitate?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. Al tău după 12 plăți."],
+      ["Cât costă un site pentru o firmă de contabilitate?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Al tău după 12 plăți."],
       ["Formularul poate prelua datele firmei automat?", "Da, după CUI, din datele publice ANAF: denumire, adresă și număr de înregistrare."],
     ],
     updated: "2026-11-19",
@@ -292,7 +292,7 @@ export const CITIES: City[] = [
     sectors: ["Clinici și cabinete medicale", "Servicii profesionale: avocatură, contabilitate, consultanță", "Restaurante și cafenele", "Construcții și amenajări interioare", "Saloane și centre de înfrumusețare"],
     localSeo: ["Pagini pentru zonele deservite, cu conținut real, nu doar numele schimbat", "Google Business Profile complet, cu categorii, servicii și poze", "Date structurate LocalBusiness cu adresă și program", "Recenzii Google afișate pe site", "Viteză mare pe mobil, pentru căutările din mers"],
     faq: [
-      ["Cât costă crearea unui site în București?", "La LUNAR nu plătești o sumă mare la început: abonamentul pornește de la 449 lei pe lună cu TVA inclus și include designul, dezvoltarea, hostingul și îmbunătățirile lunare. După 12 plăți, site-ul e al tău."],
+      ["Cât costă crearea unui site în București?", "La LUNAR nu plătești o sumă mare la început: prima lună costă 6 lei pe planul Esențial, apoi abonamentul este 449 lei pe lună cu TVA inclus și include designul, dezvoltarea, hostingul și îmbunătățirile lunare. După 12 plăți, site-ul e al tău."],
       ["Ne întâlnim față în față?", "Lucrăm online: discuția de început pe Google Meet, brief-ul în portal, designul aprobat pe link. Așa livrăm în 10 zile lucrătoare."],
       ["Puteți optimiza site-ul pe un anumit sector?", "Da. Scriem conținut pentru zonele în care lucrezi efectiv și configurăm Google Business Profile pentru adresa ta."],
       ["Cât durează până apare firma în Google?", "Site-ul se indexează în câteva zile. Pozițiile bune pe căutări locale competitive se construiesc în câteva luni, cu conținut și recenzii."],
@@ -318,7 +318,7 @@ export const CITIES: City[] = [
     sectors: ["Clinici medicale și stomatologice", "Firme de servicii pentru companii", "Restaurante și cafenele", "Construcții și dezvoltare rezidențială", "Educație și cursuri"],
     localSeo: ["Pagini pe zonele deservite, inclusiv Florești", "Google Business Profile complet", "Date structurate LocalBusiness", "Conținut în română și, opțional, în engleză sau maghiară", "Viteză mare pe mobil"],
     faq: [
-      ["Cât costă crearea unui site în Cluj?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. Abonamentul include design, dezvoltare, hosting și îmbunătățiri lunare. După 12 plăți, site-ul e al tău."],
+      ["Cât costă crearea unui site în Cluj?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Abonamentul include design, dezvoltare, hosting și îmbunătățiri lunare. După 12 plăți, site-ul e al tău."],
       ["Puteți face site și în maghiară sau engleză?", "Da, cu opțiunea de limbă suplimentară, de la 149 lei pe lună pentru fiecare limbă."],
       ["Lucrați cu firme din afara Clujului?", "Lucrăm online cu firme din toată țara. Discuțiile au loc pe Google Meet, iar restul în portalul de client."],
       ["Cât durează lansarea?", "10 zile lucrătoare de la brief. Dacă întârziem din vina noastră, luna următoare e gratuită."],
@@ -344,7 +344,7 @@ export const CITIES: City[] = [
     sectors: ["Clinici medicale și stomatologice", "Servicii profesionale", "Educație și meditații", "Restaurante și evenimente", "Construcții și amenajări"],
     localSeo: ["Pagini pentru serviciile căutate din Iași și județele vecine", "Google Business Profile cu indicații de acces", "Date structurate LocalBusiness", "Recenzii afișate pe site", "Viteză mare pe mobil"],
     faq: [
-      ["Cât costă crearea unui site în Iași?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. Site-ul devine al tău după 12 plăți."],
+      ["Cât costă crearea unui site în Iași?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Site-ul devine al tău după 12 plăți."],
       ["Puteți atrage clienți din alte județe?", "Da, prin pagini de servicii complete și SEO pe căutările din regiune. Rezultatele cresc în câteva luni."],
       ["Lucrați la distanță?", "Da. Discuțiile au loc pe Google Meet, iar brief-ul, aprobările și cererile în portalul de client."],
       ["Ce se întâmplă după lansare?", "Primești raport lunar și îmbunătățiri incluse în plan, ca site-ul să aducă mai multe cereri în timp."],
@@ -370,7 +370,7 @@ export const CITIES: City[] = [
     sectors: ["Firme B2B și producție", "Clinici medicale și stomatologice", "Servicii profesionale", "Restaurante și HoReCa", "Construcții și dezvoltare rezidențială"],
     localSeo: ["Versiuni în engleză sau germană, cu SEO pe fiecare limbă", "Pagini pe zonele deservite din zona metropolitană", "Google Business Profile complet", "Date structurate LocalBusiness", "Viteză mare pe mobil"],
     faq: [
-      ["Cât costă crearea unui site în Timișoara?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. Limbile suplimentare pornesc de la 149 lei pe lună pentru fiecare limbă."],
+      ["Cât costă crearea unui site în Timișoara?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Limbile suplimentare pornesc de la 149 lei pe lună pentru fiecare limbă."],
       ["Traduceți voi textele în engleză sau germană?", "Pregătim versiunile și adaptăm SEO-ul pe fiecare limbă. Pentru texte juridice sau tehnice recomandăm o verificare făcută de tine sau de un traducător."],
       ["Lucrați și cu firme B2B?", "Da. Pentru firmele B2B recomandăm planul Partener, cu landing pages pentru campanii și optimizarea conversiilor."],
       ["Cât durează lansarea?", "10 zile lucrătoare de la brief. Dacă întârziem din vina noastră, luna următoare e gratuită."],
@@ -396,7 +396,7 @@ export const CITIES: City[] = [
     sectors: ["Cazare și turism", "Restaurante și beach bar-uri", "Clinici și servicii medicale", "Logistică și servicii pentru port", "Construcții și amenajări"],
     localSeo: ["Rezervări directe pe site, fără comision", "Pagini în engleză pentru turiști", "Google Business Profile cu program sezonier", "Date structurate LodgingBusiness sau Restaurant", "Viteză mare pe mobil"],
     faq: [
-      ["Cât costă crearea unui site în Constanța?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. După 12 plăți, site-ul e al tău."],
+      ["Cât costă crearea unui site în Constanța?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. După 12 plăți, site-ul e al tău."],
       ["Putem actualiza prețurile pe sezon?", "Da. Actualizările de sezon intră în îmbunătățirile lunare și le livrăm în 48 de ore lucrătoare."],
       ["Puteți integra rezervările?", "Da, cu formular de rezervare sau cu sistemul de rezervări pe care îl folosești, dacă are integrare."],
       ["Când ar trebui să lansez site-ul înainte de sezon?", "Ideal cu două sau trei luni înainte, ca Google să indexeze paginile și să ai timp pentru ajustări."],
@@ -422,7 +422,7 @@ export const CITIES: City[] = [
     sectors: ["Cazare și turism", "Restaurante și cafenele", "Clinici și servicii medicale", "Construcții și amenajări", "Industrie și firme B2B"],
     localSeo: ["Pagini în engleză pentru turiști", "Rezervări directe pe site", "Google Business Profile complet", "Date structurate LocalBusiness, Restaurant sau LodgingBusiness", "Viteză mare pe mobil"],
     faq: [
-      ["Cât costă crearea unui site în Brașov?", "De la 449 lei pe lună cu TVA inclus, fără taxă de creare. Site-ul devine al tău după 12 plăți."],
+      ["Cât costă crearea unui site în Brașov?", "Începi cu 6 lei în prima lună pe planul Esențial, apoi 449 lei pe lună cu TVA inclus, fără taxă de creare. Site-ul devine al tău după 12 plăți."],
       ["Puteți face site în mai multe limbi pentru turiști?", "Da, cu opțiunea de limbă suplimentară, de la 149 lei pe lună pentru fiecare limbă."],
       ["Lucrați la distanță?", "Da. Discuțiile au loc pe Google Meet, iar aprobările și cererile în portalul de client."],
       ["Ce primesc lunar după lansare?", "Hosting, mentenanță, backup zilnic, monitorizare, raport lunar și numărul de îmbunătățiri din planul ales."],

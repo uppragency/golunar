@@ -1,3 +1,7 @@
+/** Campania de lansare: Esențial, prima lună. Valorile reale vin din codul din baza de date. */
+export const LAUNCH = { code: "GOLUNAR", ron: 6, eur: 1 } as const;
+export const launchPrice = (cur: "RON" | "EUR") => (cur === "EUR" ? "1 €" : "6 lei");
+
 import { ADDONS, PLANS, cartLines, round2, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 
 /** Reducere validată (răspunsul RPC check_discount). */
@@ -20,6 +24,7 @@ export function discountFor(d: Discount | null, monthly: number, cur: Currency) 
 }
 
 export const discountLabel = (d: Discount, cur: Currency) =>
+  d.code === LAUNCH.code ? "Ofertă de lansare · reducere la prima rată" :
   `${d.kind === "percent" ? `−${Number(d.percent).toLocaleString("ro-RO")}%` : `−${(cur === "EUR" ? d.amount_eur : d.amount_ron)?.toLocaleString("ro-RO")} ${cur === "EUR" ? "€" : "lei"}`}${d.months >= 12 ? " la toate cele 12 rate" : d.months === 1 ? " la prima rată" : ` la primele ${d.months} rate`}`;
 
 const addMonths = (d: Date, n: number, day: number) => {
@@ -66,4 +71,11 @@ export function allFeatures(plan: PlanCode): string[] {
     .flatMap((p) => PLAN_FEATURES[p].filter((f) => !f.startsWith("+")))
     .filter((f) => !/îmbunătățir/.test(f) || f.startsWith(String(PLANS[plan].improvements)))
     .filter((f) => (seen.has(f) ? false : (seen.add(f), true)));
+}
+
+/** Normalizează răspunsul /api/discount. */
+export function toDiscount(j: Record<string, unknown>): Discount | null {
+  if (!j?.valid) return null;
+  const n = (v: unknown) => (v == null ? null : Number(v));
+  return { id: String(j.id), code: String(j.code), kind: j.kind as Discount["kind"], percent: n(j.percent), amount_ron: n(j.amount_ron), amount_eur: n(j.amount_eur), months: Number(j.months), description: null };
 }

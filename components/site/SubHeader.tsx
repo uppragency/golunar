@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LeadModal } from "./LeadModal";
+import PromoBar from "./PromoBar";
 
 const LINKS: [string, string][] = [["/#proces", "Proces"], ["/#portofoliu", "Portofoliu"], ["/#abonamente", "Abonamente"], ["/resurse", "Resurse"], ["/#intrebari", "Întrebări"]];
 
@@ -20,6 +21,7 @@ export default function SubHeader() {
 
   return (
     <>
+      <PromoBar />
       <nav className="nav" aria-label="Principal">
         <Link href="/" className="logo"><i />LUNAR</Link>
         <ul>{LINKS.slice(0, 4).map(([h, l]) => <li key={h}><Link href={h}>{l}</Link></li>)}</ul>

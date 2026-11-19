@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Discount } from "@/lib/discount";
+import { LAUNCH, toDiscount, type Discount } from "@/lib/discount";
 import type { PlanCode } from "@/lib/plans";
 
 /** Câmp pentru cod de reducere. Revalidează automat când se schimbă planul. */
@@ -30,7 +30,7 @@ export function DiscountField({ plan, value, onChange, tone = "dark", initial }:
         onChange(null);
         setErr(j.error || "Codul nu este valid.");
       } else {
-        onChange({ id: j.id, code: j.code, kind: j.kind, percent: j.percent != null ? +j.percent : null, amount_ron: j.amount_ron != null ? +j.amount_ron : null, amount_eur: j.amount_eur != null ? +j.amount_eur : null, months: j.months, description: null });
+        onChange(toDiscount(j));
       }
     } catch {
       setErr("Nu am putut verifica codul.");
@@ -41,6 +41,7 @@ export function DiscountField({ plan, value, onChange, tone = "dark", initial }:
 
   // cod din URL (?cod=) sau revalidare la schimbarea planului
   useEffect(() => {
+    if (value?.code === LAUNCH.code) return; // codul campaniei e gestionat de pagină
     const c = value?.code ?? (initial && tried.current !== `${initial}:${plan}` ? initial : null);
     if (!c) return;
     tried.current = `${c}:${plan}`;
@@ -51,7 +52,7 @@ export function DiscountField({ plan, value, onChange, tone = "dark", initial }:
   if (value) {
     return (
       <div className={`disc on ${tone}`}>
-        <span className="disc-tag">{value.code}</span>
+        <span className="disc-tag">{value.code === LAUNCH.code ? `${value.code} · aplicat automat` : value.code}</span>
         <button type="button" className="disc-x" onClick={() => { onChange(null); setCode(""); setErr(null); }} aria-label="Elimină codul">Elimină</button>
       </div>
     );

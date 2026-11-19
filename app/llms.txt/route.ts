@@ -19,6 +19,8 @@ export function GET() {
 
 ## Fapte esențiale
 
+- Ofertă de lansare: pentru clienții noi, prima lună pe planul Esențial costă 6 lei (1 €), cu codul GOLUNAR aplicat automat; apoi 449 lei (89 €) pe lună; perioadă minimă 3 luni. Detalii: ${SITE_URL}/website-6-lei
+
 - Model: abonament lunar, fără investiție inițială, fără taxă de creare
 - Lansare: 10 zile lucrătoare de la brief; dacă întârzierea ne aparține, luna următoare de abonament e gratuită (nu se returnează bani)
 - Proprietate: după 12 plăți lunare; domeniul este al clientului din prima zi
@@ -36,6 +38,7 @@ ${addons}
 ## Pagini principale
 
 - [Pagina principală și abonamente](${SITE_URL}/)
+- [Website la 6 lei în prima lună](${SITE_URL}/website-6-lei)
 - [Cum lucrăm, zi cu zi](${SITE_URL}/cum-lucram)
 - [Audit SEO gratuit](${SITE_URL}/audit)
 - [Status servicii și uptime](${SITE_URL}/status)
