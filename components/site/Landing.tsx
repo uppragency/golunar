@@ -197,7 +197,7 @@ export default function Landing() {
               <a href="#abonamente" className="price-chip promo-chip" onClick={() => pick("essential")}>
                 <span className="muted" style={{ fontSize: 14 }}>începi cu</span>
                 <b>{launchPrice(cur)}</b>
-                <span className="muted" style={{ fontSize: 14 }}>prima lună · apoi {p(53, 269)} / lună ({PRICE_NOTE})</span>
+                <span className="muted" style={{ fontSize: 14 }}>prima lună</span>
               </a>
             </div>
             <p className="hero-tag">Website-ul tău, live în 10 zile. <span>O echipă care îl face mai bun în fiecare lună.</span></p>
