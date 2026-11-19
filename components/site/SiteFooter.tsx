@@ -69,7 +69,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
               <Link href="/resurse">Toate resursele →</Link>
             </div>
             <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><Link href="/#abonamente">Începe proiectul</Link><Link href="/cont/cereri">Cere o îmbunătățire</Link></div>
-            <div><h6>Contact</h6><a href="mailto:salut@golunar.ro">salut@golunar.ro</a><a href="mailto:facturare@golunar.ro">facturare@golunar.ro</a></div>
+            <div><h6>Contact</h6><a href="mailto:hello@golunar.ro">hello@golunar.ro</a></div>
           </div>
         </div>
         <div className="fb-word" ref={wordRef} aria-hidden="true"><span className="go">GO</span> LUNAR</div>

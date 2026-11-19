@@ -22,7 +22,7 @@ export async function createRequest(_: ActionState, form: FormData): Promise<Act
   const { error } = await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, ...parsed.data });
   if (error) return { error: error.message.includes("îmbunătățirile") ? error.message : "Cererea nu a putut fi salvată." };
   if (ctx.user?.email) await sendEmail({ template: "request_received", to: ctx.user.email, subject: "Am primit cererea ta · LUNAR", html: templates.requestReceived(parsed.data.title) });
-  await sendEmail({ template: "admin_request", to: process.env.ADMIN_NOTIFY_EMAIL || "golunar2027@gmail.com", subject: `Cerere nouă: ${parsed.data.title}`,
+  await sendEmail({ template: "admin_request", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Cerere nouă: ${parsed.data.title}`,
     html: templates.adminNotice("Cerere nouă de la client", { Tip: parsed.data.type, Titlu: parsed.data.title, Detalii: parsed.data.body, Utilizator: ctx.user?.email }) });
   revalidatePath("/cont", "layout");
   return { ok: "Cerere trimisă. Primești confirmarea pe email." };
@@ -76,11 +76,11 @@ export async function cancelSubscription(): Promise<ActionState> {
     try {
       await s.subscriptions.update(sub.stripe_subscription_id, { cancel_at_period_end: true });
     } catch {
-      return { error: "Anularea nu a putut fi procesată. Scrie-ne la salut@golunar.ro." };
+      return { error: "Anularea nu a putut fi procesată. Scrie-ne la hello@golunar.ro." };
     }
   }
   await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, type: "billing", title: "Anulare abonament la finalul perioadei plătite" });
-  await sendEmail({ template: "admin_cancel", to: process.env.ADMIN_NOTIFY_EMAIL || "golunar2027@gmail.com", subject: "Cerere de anulare abonament", html: templates.adminNotice("Anulare abonament", { Firmă: ctx.companyId, Utilizator: ctx.user?.email }) });
+  await sendEmail({ template: "admin_cancel", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: "Cerere de anulare abonament", html: templates.adminNotice("Anulare abonament", { Firmă: ctx.companyId, Utilizator: ctx.user?.email }) });
   revalidatePath("/cont", "layout");
   return { ok: "Abonamentul se oprește la finalul perioadei plătite. Îți trimitem confirmarea pe email." };
 }

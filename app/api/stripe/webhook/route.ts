@@ -44,7 +44,7 @@ export async function POST(req: Request) {
           if (created) {
             const email = sub.metadata.email;
             await sendEmail({ db, companyId, template: "welcome", to: email, subject: "Bun venit la LUNAR · următorul pas: brief-ul", html: templates.welcome(sub.metadata.contact || sub.metadata.name) });
-            await sendEmail({ db, template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "golunar2027@gmail.com", subject: `Client nou (card): ${sub.metadata.name}`,
+            await sendEmail({ db, template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Client nou (card): ${sub.metadata.name}`,
               html: templates.adminNotice("Client nou prin card", { Firmă: sub.metadata.name, CUI: sub.metadata.cui, Email: email, Domeniu: sub.metadata.domain }) });
           }
         } else if (cs.mode === "payment" && cs.metadata?.kind === "buyout") {

@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   if (error) console.error("[lead]", error.message);
   await sendEmail({
     template: "admin_lead",
-    to: process.env.ADMIN_NOTIFY_EMAIL || "golunar2027@gmail.com",
+    to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro",
     subject: `Discuție nouă: ${d.company || d.name}`,
     html: templates.adminNotice("Cerere de discuție gratuită", { Nume: d.name, Firmă: d.company, Email: d.email, Telefon: d.phone, Plan: d.plan, Mesaj: d.message }),
     replyTo: d.email,

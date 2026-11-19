@@ -105,7 +105,7 @@ export async function POST(req: Request) {
       const iban = (bank?.value as Record<string, string> | undefined)?.[d.currency === "EUR" ? "iban_eur" : "iban_ron"] || "";
       await sendEmail({ db, companyId: res.companyId, billing: true, template: "bank_order", to: d.email, subject: `Comanda LUNAR · referință ${res.bankReference}`,
         html: templates.bankOrder(d.contact, money(gross, d.currency, 2), res.bankReference!, iban) });
-      await sendEmail({ db, template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "golunar2027@gmail.com", subject: `Comandă nouă (transfer): ${d.name}`,
+      await sendEmail({ db, template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Comandă nouă (transfer): ${d.name}`,
         html: templates.adminNotice("Comandă nouă prin transfer bancar", { Firmă: d.name, CUI: d.cui, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), Email: d.email, Referință: res.bankReference }) });
       return NextResponse.json({ ok: true, message: `Comanda este înregistrată. Ți-am trimis pe email datele de plată și referința ${res.bankReference}. Te poți autentifica în portal cu ${d.email}.` });
     } catch (e) {
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
   }
 
   // ---------- fallback: payments not configured yet ----------
-  await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "golunar2027@gmail.com", subject: `Comandă nouă (manuală): ${d.name}`,
+  await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Comandă nouă (manuală): ${d.name}`,
     html: templates.adminNotice("Comandă nouă de confirmat manual", { Firmă: d.name, CUI: d.cui, Adresă: d.address, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), Plată: d.paymentMode, Email: d.email, Telefon: d.phone, Domeniu: d.domain }),
     replyTo: d.email });
   return NextResponse.json({ ok: true, message: "Am primit comanda. Îți trimitem în cel mult o zi lucrătoare confirmarea și link-ul de plată." });

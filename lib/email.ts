@@ -3,8 +3,8 @@ import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { SITE_URL } from "@/lib/env";
 
-const FROM = process.env.EMAIL_FROM || "LUNAR <salut@golunar.ro>";
-const FROM_BILLING = process.env.EMAIL_BILLING_FROM || "LUNAR Facturare <facturare@golunar.ro>";
+const FROM = process.env.EMAIL_FROM || "LUNAR <hello@golunar.ro>";
+const FROM_BILLING = process.env.EMAIL_BILLING_FROM || "LUNAR <hello@golunar.ro>";
 
 type Send = {
   template: string;
@@ -31,7 +31,7 @@ export async function sendEmail({ template, to, subject, html, billing, companyI
       to,
       subject,
       html,
-      replyTo: replyTo || "salut@golunar.ro",
+      replyTo: replyTo || "hello@golunar.ro",
     });
     if (error) throw new Error(error.message);
     await db?.from("email_log").insert({ company_id: companyId ?? null, template, to_email: to, resend_id: data?.id ?? null, status: "sent" });
