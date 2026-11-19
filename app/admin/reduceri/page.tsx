@@ -1,4 +1,6 @@
 import { requireAdmin } from "@/lib/session";
+import { getOps } from "@/lib/admin-ops";
+import { money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { SaveForm } from "@/components/app/forms";
 import { createDiscount, toggleDiscount } from "@/app/admin/actions";
@@ -9,6 +11,8 @@ const dt = (v: string | null) => (v ? new Date(v).toLocaleDateString("ro-RO", { 
 
 export default async function DiscountsPage() {
   const s = await requireAdmin();
+  const ops = await getOps();
+  const stat = new Map(ops.codeStats.map((x) => [x.id, x]));
   const { data: codes } = await s.supabase.from("discount_codes").select("*").order("created_at", { ascending: false });
   const now = Date.now();
   return (
@@ -56,7 +60,7 @@ export default async function DiscountsPage() {
         <h3>Coduri</h3>
         {codes?.length ? (
           <div className="tbl"><table>
-            <thead><tr><th>Cod</th><th>Reducere</th><th>Rate</th><th>Planuri</th><th>Valabilitate</th><th>Utilizări</th><th>Status</th><th /></tr></thead>
+            <thead><tr><th>Cod</th><th>Reducere</th><th>Rate</th><th>Planuri</th><th>Valabilitate</th><th>Utilizări</th><th>Rezultate</th><th>Status</th><th /></tr></thead>
             <tbody>
               {codes.map((c) => {
                 const expired = (c.ends_at && new Date(c.ends_at).getTime() < now) || (c.max_redemptions && c.redemptions >= c.max_redemptions);
@@ -68,6 +72,7 @@ export default async function DiscountsPage() {
                     <td>{c.plans ? (c.plans as PlanCode[]).map((p) => PLANS[p].name).join(", ") : "Toate"}</td>
                     <td>{dt(c.starts_at)} → {dt(c.ends_at)}</td>
                     <td>{c.redemptions}{c.max_redemptions ? ` / ${c.max_redemptions}` : ""}</td>
+                    <td style={{ fontSize: 12.5 }}>{(() => { const x = stat.get(c.id); if (!x || !x.orders) return <span className="muted">—</span>; return <>{x.orders} comenzi · {x.converted} plătite<br /><span className="muted">{x.stayed} active · {x.canceled} anulate · {money(Math.round(x.revenue), "RON")}</span></>; })()}</td>
                     <td><Pill tone={!c.active ? "bad" : expired ? "warn" : "ok"}>{!c.active ? "Oprit" : expired ? "Epuizat" : "Activ"}</Pill></td>
                     <td><form action={toggleDiscount}><input type="hidden" name="id" value={c.id} /><input type="hidden" name="active" value={String(!c.active)} /><button className="btn-plain sm">{c.active ? "Oprește" : "Pornește"}</button></form></td>
                   </tr>

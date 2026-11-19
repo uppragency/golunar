@@ -5,7 +5,8 @@ import { date, money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { INST_PILL, PLAN_NAME, REQ_PILL, REQ_TYPE, SITE_PILL, SPV_PILL } from "@/lib/labels";
 import { BRIEF_KEYS } from "@/lib/brief";
-import { inviteMember, markInstallmentPaid, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
+import { addNote, deleteNote, inviteMember, markInstallmentPaid, pinNote, setSiteStatus, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
+import { buildTimeline } from "@/lib/timeline";
 import InviteForm from "@/components/app/InviteForm";
 import type { Currency } from "@/lib/plans";
 
@@ -27,6 +28,10 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
     db.from("referrals").select("*").eq("referrer_company_id", id).order("created_at", { ascending: false }),
     db.from("briefs").select("*").eq("company_id", id).maybeSingle(),
   ]);
+  const [{ data: notes }, { data: mails }] = await Promise.all([
+    db.from("client_notes").select("*").eq("company_id", id).order("pinned", { ascending: false }).order("created_at", { ascending: false }),
+    db.from("email_log").select("template, sent_at, status, to_email").eq("company_id", id).order("sent_at", { ascending: false }).limit(100),
+  ]);
   const briefFiles = (brief?.files ?? []) as { path: string; name: string; size: number }[];
   const { data: signed } = briefFiles.length ? await db.storage.from("documents").createSignedUrls(briefFiles.map((f) => f.path), 3600) : { data: [] };
   const { data: refBy } = c?.referred_by ? await db.from("companies").select("id, name").eq("id", c.referred_by).maybeSingle() : { data: null };
@@ -41,6 +46,9 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
         <div><h1>{c.name}</h1><p>{c.cui} · {c.reg_com ?? "—"} · referință {c.bank_reference}{c.is_demo ? " · demo" : ""}</p></div>
         <div className="tb-r">
           <Link href="/admin/clienti" className="btn-plain">← Clienți</Link>
+          {site && (site.status === "live" || site.status === "suspended") && (
+            <form action={setSiteStatus}><input type="hidden" name="id" value={site.id} /><input type="hidden" name="status" value={site.status === "live" ? "suspended" : "live"} /><button className="btn-plain">{site.status === "live" ? "Suspendă site-ul" : "Reactivează site-ul"}</button></form>
+          )}
           <form action={setViewAs}><input type="hidden" name="company_id" value={c.id} /><button className="btn-plain">Vezi portalul clientului</button></form>
         </div>
       </div>
@@ -50,6 +58,34 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
         <div className="panel kpi"><span className="l">Rate plătite</span><b>{paid}/12</b><span className="d" style={{ color: "var(--mute)" }}>{sub?.payment_mode === "card" ? "Card" : "Transfer"} · {sub?.status}</span></div>
         <div className="panel kpi"><span className="l">Lunar</span><b>{money(inst?.[0]?.amount_net ?? 0, cur)}</b><span className="d" style={{ color: "var(--mute)" }}>{cur}</span></div>
         <div className="panel kpi"><span className="l">Website</span><b style={{ fontSize: 20 }}>{site?.domain ?? "—"}</b><Pill tone={sTone}>{sLabel}</Pill></div>
+      </div>
+
+      <div className="g g-2" style={{ marginTop: 12 }}>
+        <div className="panel">
+          <h3>Notițe interne <span className="muted" style={{ fontWeight: 400, fontSize: 12 }}>clientul nu le vede</span></h3>
+          <form action={addNote} className="note-f"><input type="hidden" name="company_id" value={c.id} /><textarea name="body" placeholder="Ex: preferă WhatsApp, nu suna dimineața, vrea culori deschise" required /><button className="btn-plain sm" style={{ marginTop: 6 }}>Adaugă notiță</button></form>
+          <div className="notes" style={{ marginTop: 12 }}>
+            {(notes ?? []).map((n) => (
+              <div className={`note${n.pinned ? " pin" : ""}`} key={n.id}>
+                <p>{n.body}</p>
+                <small><span>{n.author_email?.split("@")[0]} · {date(n.created_at, { day: "numeric", month: "short", year: "numeric" })}</span>
+                  <span>
+                    <form action={pinNote}><input type="hidden" name="id" value={n.id} /><input type="hidden" name="company_id" value={c.id} /><input type="hidden" name="pinned" value={n.pinned ? "0" : "1"} /><button>{n.pinned ? "Desprinde" : "Fixează"}</button></form>
+                    <form action={deleteNote}><input type="hidden" name="id" value={n.id} /><input type="hidden" name="company_id" value={c.id} /><button>Șterge</button></form>
+                  </span>
+                </small>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="panel">
+          <h3>Cronologie</h3>
+          <div className="tl">
+            {buildTimeline({ company: c, subs: subs ?? [], inst: inst ?? [], reqs: reqs ?? [], mails: mails ?? [], brief, launch, notes: notes ?? [] }).slice(0, 40).map((e, k) => (
+              <div className={`tl-i ${e.tone}`} key={k}>{e.title}<small>{date(e.at, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}{e.sub ? ` · ${e.sub}` : ""}</small></div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="g g-2" style={{ marginTop: 12 }}>

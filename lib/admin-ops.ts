@@ -87,7 +87,7 @@ export const getOps = cache(async () => {
       return {
         id: l.id as string, companyId: l.company_id as string, name: (l.companies as { name: string } | null)?.name ?? "—", domain: (l.websites as { domain: string } | null)?.domain ?? "—",
         stage: (l.stage === "brief" && brief ? "design" : l.stage) as Stage, brief, due: l.due_at as string | null, left, used, tone,
-        paused: l.sla_paused as boolean, reason: l.paused_reason as string | null, freeMonth: l.free_month_applied_at as string | null,
+        paused: l.sla_paused as boolean, checklist: ((l.checklist as Record<string, boolean>) ?? {}), reason: l.paused_reason as string | null, freeMonth: l.free_month_applied_at as string | null,
         stageSince: daysSince(l.stage_changed_at), paidAt: firstPaid.get(l.company_id) ?? null,
         briefHours: brief ? 0 : hoursSince(firstPaid.get(l.company_id)),
         briefReminders: sentTo(l.company_id, "brief_reminder_1").length + sentTo(l.company_id, "brief_reminder_2").length + sentTo(l.company_id, "brief_reminder_manual").length,
@@ -137,8 +137,68 @@ export const getOps = cache(async () => {
     bySource.set(k, v);
   }
 
+  // ---------- Lot 2 ----------
+  const [sitesQ, refsQ, upQ] = await Promise.all([
+    db.from("websites").select("id, company_id, domain, status, domain_expires_at, uptime_90d, psi_mobile, psi_desktop, ssl_expires_at, http_status, broken_links, tech_checked_at, last_backup_at"),
+    db.from("referrals").select("referrer_company_id, referred_company_id, status, created_at"),
+    db.from("uptime_checks").select("website_id, ok, checked_at").order("checked_at", { ascending: false }).limit(400),
+  ]);
+  const lastCheck = new Map<string, { ok: boolean; checked_at: string }>();
+  for (const u of upQ.data ?? []) if (!lastCheck.has(u.website_id)) lastCheck.set(u.website_id, u);
+  const sites = (sitesQ.data ?? []).filter((w) => !C.get(w.company_id)?.is_demo).map((w) => {
+    const days = (x: string | null) => (x ? Math.ceil((+new Date(x) - Date.now()) / 864e5) : null);
+    const issues: string[] = [];
+    const lc = lastCheck.get(w.id);
+    if (lc && !lc.ok) issues.push("site căzut");
+    if (w.http_status && w.http_status >= 400) issues.push(`HTTP ${w.http_status}`);
+    const ssl = days(w.ssl_expires_at), dom = days(w.domain_expires_at);
+    if (ssl != null && ssl <= 14) issues.push(`SSL expiră în ${ssl} z`);
+    if (dom != null && dom <= 30) issues.push(`domeniul expiră în ${dom} z`);
+    if (w.psi_mobile != null && w.psi_mobile < 90) issues.push(`viteză mobil ${w.psi_mobile}`);
+    const broken = (w.broken_links as { url: string; status: number }[] | null) ?? [];
+    if (broken.length) issues.push(`${broken.length} linkuri rupte`);
+    return { ...w, name: C.get(w.company_id)?.name ?? "—", down: Boolean(lc && !lc.ok), lastCheckAt: lc?.checked_at ?? null, sslDays: ssl, domainDays: dom, broken, issues };
+  });
+
+  // rate restante (lunare)
+  const overdue = I.filter((i) => (i.status === "overdue" || i.status === "failed") && !C.get(i.company_id)?.is_demo).map((i) => ({
+    id: i.id, companyId: i.company_id, name: C.get(i.company_id)?.name ?? "—", number: i.number, due: i.due_date as string, amount: i.amount_net, currency: i.currency as Currency,
+    late: daysSince(i.due_date), reminders: mails.filter((m) => m.company_id === i.company_id && m.template.startsWith("overdue_")).length,
+    phone: C.get(i.company_id)?.phone ?? null,
+  })).sort((a, b) => b.late - a.late);
+
+  // proprietate aproape completă: 10 sau 11 rate plătite
+  const nearOwnership = d.clients.filter((c) => (c.paid === 10 || c.paid === 11) && c.status !== "Anulat").map((c) => ({ ...c, left: 12 - c.paid }));
+
+  // valoarea recomandărilor
+  const paidBy = new Map<string, number>();
+  for (const i of I) if (i.status === "paid") paidBy.set(i.company_id, (paidBy.get(i.company_id) ?? 0) + i.amount_net * (i.currency === "EUR" ? 5.09 : 1));
+  const refAgg = new Map<string, { count: number; revenue: number; names: string[] }>();
+  for (const r of refsQ.data ?? []) {
+    if (!r.referred_company_id || r.status === "rejected") continue;
+    const v = refAgg.get(r.referrer_company_id) ?? { count: 0, revenue: 0, names: [] };
+    v.count++;
+    v.revenue += paidBy.get(r.referred_company_id) ?? 0;
+    v.names.push(C.get(r.referred_company_id)?.name ?? "—");
+    refAgg.set(r.referrer_company_id, v);
+  }
+  const referralValue = [...refAgg.entries()].map(([id, v]) => ({ id, name: C.get(id)?.name ?? "—", ...v })).sort((a, b) => b.revenue - a.revenue);
+
+  // upgrade sugerat: peste îmbunătățirile incluse luna aceasta sau în 2 din ultimele 3 luni
+  const monthsBack = [0, 1, 2].map((k) => { const x = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - k, 1)); return x.toISOString().slice(0, 10); });
+  const nextPlan: Record<PlanCode, PlanCode | null> = { essential: "growth", growth: "partner", partner: null };
+  const upgrades = d.clients.filter((c) => c.mrrEur > 0 && nextPlan[c.plan]).map((c) => {
+    const per = monthsBack.map((m) => d.requests.filter((r) => r.company_id === c.id && r.type === "improvement" && r.month_bucket === m && r.status !== "rejected").length);
+    const incl = PLANS[c.plan].improvements;
+    const over = per.filter((n) => n > incl).length;
+    return { ...c, per, incl, over, to: nextPlan[c.plan]!, offered: mails.some((m) => m.company_id === c.id && m.template === "upgrade_offer") };
+  }).filter((c) => c.per[0] > c.incl || c.over >= 2);
+
+  const newRequests = d.requests.filter((r) => r.status === "new");
+  const freshBriefs = production.filter((p) => p.brief && hoursSince(p.brief) <= 72 && p.stage === "design");
+
   return {
-    ...d, orders, expired, production, missingBrief, improvements, codeStats, golunar, leads: L,
+    ...d, sites, overdue, nearOwnership, referralValue, upgrades, newRequests, freshBriefs, orders, expired, production, missingBrief, improvements, codeStats, golunar, leads: L,
     sources: [...bySource.entries()].map(([k, v]) => ({ source: k, ...v })).sort((a, b) => b.leads - a.leads),
     company: C, mails, installmentsAll: I, subsAll: subs.data ?? [],
   };

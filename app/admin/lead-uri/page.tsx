@@ -1,7 +1,7 @@
 import { getOps, LEAD_STATUS, SOURCE_LABEL } from "@/lib/admin-ops";
 import { date } from "@/lib/format";
 import { PLAN_NAME } from "@/lib/labels";
-import { updateLead } from "@/app/admin/actions";
+import { sendLeadOffer, updateLead } from "@/app/admin/actions";
 import { Pill } from "@/components/app/charts";
 
 export const metadata = { title: "Lead-uri" };
@@ -32,6 +32,18 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                   <a href={`mailto:${l.email}`}>{l.email}</a>{l.phone && <a href={`tel:${l.phone.replace(/\s/g, "")}`}>{l.phone}</a>}{l.plan && <span>Plan: {PLAN_NAME[l.plan]}</span>}{l.url && <a href={l.url} target="_blank" rel="noopener">{l.url.replace(/^https?:\/\//, "")}</a>}
                 </div>
                 {l.message && <p className="lead-m">{l.message}</p>}
+                {(l.status === "new" || l.status === "contacted") && (
+                  <details className="offer">
+                    <summary>Trimite ofertă personalizată</summary>
+                    <form action={sendLeadOffer} className="inline-form">
+                      <input type="hidden" name="lead_id" value={l.id} />
+                      <select name="plan" defaultValue={l.plan ?? "growth"} aria-label="Plan">{Object.entries(PLAN_NAME).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+                      <select name="percent" defaultValue="20" aria-label="Reducere">{[10, 15, 20, 25, 30, 40, 50].map((v) => <option key={v} value={v}>{v}% reducere</option>)}</select>
+                      <select name="months" defaultValue="1" aria-label="Luni">{[1, 2, 3].map((v) => <option key={v} value={v}>{v === 1 ? "prima lună" : `primele ${v} luni`}</option>)}</select>
+                      <button className="btn-plain sm acc">Trimite (72h)</button>
+                    </form>
+                  </details>
+                )}
                 <form action={updateLead} className="inline-form">
                   <input type="hidden" name="id" value={l.id} />
                   <select name="status" defaultValue={l.status} aria-label="Status">{Object.entries(LEAD_STATUS).map(([k, v]) => <option key={k} value={k}>{v[0]}</option>)}</select>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Shell, { type NavItem } from "@/components/app/Shell";
 import { requireAdmin } from "@/lib/session";
 
-export const metadata: Metadata = { title: "Admin", robots: { index: false } };
+export const metadata: Metadata = { title: { default: "Admin", template: "%s · Admin" }, robots: { index: false } };
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Prezentare", icon: "chart" },
@@ -12,6 +12,7 @@ const NAV: NavItem[] = [
   { href: "/admin/cereri", label: "Cereri", icon: "inbox" },
   { href: "/admin/lead-uri", label: "Lead-uri", icon: "chat" },
   { href: "/admin/incasari", label: "Încasări", icon: "card" },
+  { href: "/admin/tehnic", label: "Tehnic", icon: "shield" },
   { href: "/admin/reduceri", label: "Reduceri", icon: "pen" },
   { href: "/admin/setari", label: "Setări", icon: "building" },
 ];

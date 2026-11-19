@@ -77,7 +77,9 @@ export default function Landing() {
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     if (q.has("discutie")) setLead(true);
-    if (q.has("comanda")) { setCart((c) => ({ ...c, plan: "essential" })); setCheckout(true); }
+    const qp = q.get("plan");
+    const plan = qp === "growth" || qp === "partner" ? qp : "essential";
+    if (q.has("comanda")) { setCart((c) => ({ ...c, plan })); setCheckout(true); }
     const c = q.get("cod")?.toUpperCase();
     if (c && /^[A-Z0-9_-]{3,24}$/.test(c)) setCodeParam(c);
   }, []);

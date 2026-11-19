@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getOps, STAGES, type Stage } from "@/lib/admin-ops";
 import { date } from "@/lib/format";
-import { moveStage, sendBriefReminder, setPause } from "@/app/admin/actions";
+import { moveStage, sendBriefReminder, setPause, toggleChecklist } from "@/app/admin/actions";
+import { CHECKLIST } from "@/lib/checklist";
 
 export const metadata = { title: "Producție" };
 
@@ -40,15 +41,25 @@ export default async function ProductionPage() {
                   ) : (
                     <>
                       <div className="job-meta">
-                        {p.paused ? `Pauză: ${p.reason}` : p.left! < 0 ? `Depășit cu ${-p.left!} ${p.left === -1 ? "zi" : "zile"}` : `${p.left} ${p.left === 1 ? "zi rămasă" : "zile rămase"}`} · termen {p.due ? date(p.due, { day: "numeric", month: "short" }) : "—"}
+                        {p.paused ? `Pauză: ${p.reason}` : p.left == null ? "Fără termen: brief-ul nu a fost trimis" : p.left < 0 ? `Depășit cu ${-p.left} ${p.left === -1 ? "zi" : "zile"}` : `${p.left} ${p.left === 1 ? "zi rămasă" : "zile rămase"}`}{p.due ? ` · termen ${date(p.due, { day: "numeric", month: "short" })}` : ""}
                       </div>
                       <div className="job-bar"><i style={{ width: `${Math.min(100, (p.used / 10) * 100)}%` }} /></div>
                       <div className="job-meta">Ziua {p.used}/10 · în etapă de {p.stageSince} {p.stageSince === 1 ? "zi" : "zile"}{p.freeMonth ? " · lună gratuită acordată" : ""}</div>
                     </>
                   )}
+                  {p.stage === "qa" && (
+                    <div className="chk">
+                      <div className="job-meta">Checklist de lansare · {CHECKLIST.filter(([k]) => p.checklist[k]).length}/{CHECKLIST.length}</div>
+                      {CHECKLIST.map(([k, t]) => (
+                        <form action={toggleChecklist} key={k}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="key" value={k} /><input type="hidden" name="on" value={p.checklist[k] ? "0" : "1"} />
+                          <button className={p.checklist[k] ? "on" : ""}><i>{p.checklist[k] ? "✓" : ""}</i>{t}</button>
+                        </form>
+                      ))}
+                    </div>
+                  )}
                   <div className="job-act">
                     {prev[p.stage] && p.stage !== "design" && <form action={moveStage}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="stage" value={prev[p.stage]!} /><button className="btn-plain sm" title={`Înapoi la ${label(prev[p.stage])}`}>←</button></form>}
-                    {next[p.stage] && p.stage !== "brief" && <form action={moveStage}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="stage" value={next[p.stage]!} /><button className="btn-plain sm acc">{label(next[p.stage])} →</button></form>}
+                    {next[p.stage] && p.stage !== "brief" && (p.stage !== "qa" || CHECKLIST.every(([k]) => p.checklist[k])) && <form action={moveStage}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="stage" value={next[p.stage]!} /><button className="btn-plain sm acc">{label(next[p.stage])} →</button></form>}
                     {p.stage !== "brief" && p.stage !== "live" && (
                       <form action={setPause} className="job-pause">
                         <input type="hidden" name="id" value={p.id} /><input type="hidden" name="paused" value={p.paused ? "0" : "1"} />

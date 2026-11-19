@@ -11,6 +11,10 @@ import { sendEmail, templates } from "@/lib/email";
 import { money } from "@/lib/format";
 import type { Currency } from "@/lib/plans";
 import { PAYEE } from "@/lib/bank";
+import { CHECKLIST } from "@/lib/checklist";
+import { SITE_URL } from "@/lib/env";
+import { checkSite } from "@/lib/tech-check";
+import { PLANS as PLAN_DEFS, type PlanCode as PlanKey } from "@/lib/plans";
 
 export type ActionState = { ok?: string; error?: string } | null;
 
@@ -304,6 +308,11 @@ export async function moveStage(form: FormData) {
   const id = String(form.get("id"));
   const stage = String(form.get("stage"));
   if (!["brief", "design", "build", "qa", "live"].includes(stage)) return;
+  if (stage === "live") {
+    const { data: cur } = await s.supabase.from("launch_projects").select("checklist").eq("id", id).single();
+    const cl = (cur?.checklist as Record<string, boolean>) ?? {};
+    if (!CHECKLIST.every(([k]) => cl[k])) return;
+  }
   const today = new Date().toISOString().slice(0, 10);
   const { data: lp } = await s.supabase.from("launch_projects").update({ stage, completed_at: stage === "live" ? today : null }).eq("id", id).select("website_id, company_id").single();
   if (lp && stage === "live") await s.supabase.from("websites").update({ status: "live", launched_at: today }).eq("id", lp.website_id);
@@ -335,5 +344,86 @@ export async function updateLead(form: FormData) {
   const status = String(form.get("status"));
   if (!["new", "contacted", "won", "lost"].includes(status)) return;
   await s.supabase.from("leads").update({ status, status_at: new Date().toISOString(), note: String(form.get("note") || "").slice(0, 2000) || null }).eq("id", String(form.get("id")));
+  revalidatePath("/admin/lead-uri");
+}
+
+// ---------- Lot 2 ----------
+
+export async function addNote(form: FormData) {
+  const s = await requireAdmin();
+  const body = String(form.get("body") || "").trim().slice(0, 4000);
+  if (!body) return;
+  await s.supabase.from("client_notes").insert({ company_id: String(form.get("company_id")), body, author: s.user!.id, author_email: s.user!.email });
+  revalidatePath(`/admin/clienti/${form.get("company_id")}`);
+}
+
+export async function deleteNote(form: FormData) {
+  const s = await requireAdmin();
+  await s.supabase.from("client_notes").delete().eq("id", String(form.get("id")));
+  revalidatePath(`/admin/clienti/${form.get("company_id")}`);
+}
+
+export async function pinNote(form: FormData) {
+  const s = await requireAdmin();
+  await s.supabase.from("client_notes").update({ pinned: form.get("pinned") === "1" }).eq("id", String(form.get("id")));
+  revalidatePath(`/admin/clienti/${form.get("company_id")}`);
+}
+
+export async function sendUpgradeOffer(form: FormData) {
+  const s = await requireAdmin();
+  const c = await companyContact(s.supabase, String(form.get("company_id")));
+  const from = String(form.get("from")) as PlanKey, to = String(form.get("to")) as PlanKey;
+  if (!c?.to || !PLAN_DEFS[from] || !PLAN_DEFS[to]) return;
+  await sendEmail({ db: s.supabase, companyId: c.id, template: "upgrade_offer", to: c.to, subject: `Planul ${PLAN_DEFS[to].name} ți se potrivește mai bine · LUNAR`,
+    html: templates.upgradeOffer(c.first, PLAN_DEFS[from].name, PLAN_DEFS[to].name, Number(form.get("used") || 0), PLAN_DEFS[from].improvements, PLAN_DEFS[to].improvements) });
+  revalidatePath("/admin", "layout");
+}
+
+
+export async function toggleChecklist(form: FormData) {
+  const s = await requireAdmin();
+  const id = String(form.get("id")), key = String(form.get("key"));
+  if (!CHECKLIST.some(([k]) => k === key)) return;
+  const { data } = await s.supabase.from("launch_projects").select("checklist").eq("id", id).single();
+  const cl = { ...((data?.checklist as Record<string, boolean>) ?? {}), [key]: form.get("on") === "1" };
+  await s.supabase.from("launch_projects").update({ checklist: cl }).eq("id", id);
+  revalidatePath("/admin/lansari");
+}
+
+export async function runTechCheck(form: FormData) {
+  const s = await requireAdmin();
+  const id = String(form.get("id"));
+  const { data: w } = await s.supabase.from("websites").select("domain").eq("id", id).single();
+  if (!w?.domain || !w.domain.includes(".")) return;
+  const r = await checkSite(w.domain);
+  await s.supabase.from("websites").update({ ...r, cwv_ok: r.psi_mobile == null ? undefined : r.psi_mobile >= 90 }).eq("id", id);
+  revalidatePath("/admin/tehnic");
+}
+
+export async function setSiteStatus(form: FormData) {
+  const s = await requireAdmin();
+  const status = String(form.get("status"));
+  if (!["live", "suspended"].includes(status)) return;
+  await s.supabase.from("websites").update({ status }).eq("id", String(form.get("id")));
+  revalidatePath("/admin", "layout");
+}
+
+export async function sendLeadOffer(form: FormData) {
+  const s = await requireAdmin();
+  const leadId = String(form.get("lead_id"));
+  const plan = String(form.get("plan")) as PlanKey;
+  const percent = Math.max(5, Math.min(50, Number(form.get("percent") || 20)));
+  const months = Math.max(1, Math.min(3, Number(form.get("months") || 1)));
+  if (!PLAN_DEFS[plan]) return;
+  const { data: lead } = await s.supabase.from("leads").select("id, name, email").eq("id", leadId).single();
+  if (!lead) return;
+  const code = `L${crypto.randomUUID().replace(/-/g, "").slice(0, 7).toUpperCase()}`;
+  const ends = new Date(Date.now() + 72 * 3600e3).toISOString();
+  const { error } = await s.supabase.from("discount_codes").insert({ code, description: `Ofertă pentru ${lead.name}`, kind: "percent", percent, months, plans: [plan], ends_at: ends, max_redemptions: 1, new_customers_only: true, lead_id: lead.id });
+  if (error) return;
+  const url = `${SITE_URL}/?comanda=1&plan=${plan}&cod=${code}`;
+  await sendEmail({ db: s.supabase, template: "lead_offer", to: lead.email, subject: `Ofertă personală: ${percent}% reducere · LUNAR`,
+    html: templates.leadOffer(lead.name.split(" ")[0], PLAN_DEFS[plan].name, percent, months, url, code) });
+  await s.supabase.from("leads").update({ status: "contacted", status_at: new Date().toISOString(), note: `Ofertă ${code}: ${percent}% ${PLAN_DEFS[plan].name}, expiră ${ends.slice(0, 10)}` }).eq("id", lead.id);
   revalidatePath("/admin/lead-uri");
 }

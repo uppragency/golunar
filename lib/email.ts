@@ -226,6 +226,26 @@ export const templates = {
       cta: "Vezi plățile",
       ctaUrl: `${SITE_URL}/cont/plati`,
     }),
+  upgradeOffer: (name: string, from: string, to: string, used: number, incl: number, toImpr: number) =>
+    layout({
+      preheader: `Ceri mai multe îmbunătățiri decât include planul ${from}.`,
+      eyebrow: "Abonament",
+      title: "Website-ul tău crește.",
+      titleDim: `Planul ${to} ți se potrivește mai bine.`,
+      body: `<p>Bună, ${esc(name)}. Luna aceasta ai cerut ${used} îmbunătățiri, iar planul ${esc(from)} include ${incl}. Pe planul <b style="color:#F5F5F6">${esc(to)}</b> ai ${toImpr} îmbunătățiri pe lună, plus funcțiile planului.</p><p>Schimbarea se face de la următoarea rată, fără costuri suplimentare. Răspunde la acest email și o activăm.</p>`,
+      cta: "Vezi planurile",
+      ctaUrl: `${SITE_URL}/#abonamente`,
+    }),
+  leadOffer: (name: string, plan: string, percent: number, months: number, url: string, code: string) =>
+    layout({
+      preheader: `Ofertă personală: ${percent}% reducere la planul ${plan}, valabilă 72 de ore.`,
+      eyebrow: "Ofertă personală",
+      title: `${percent}% reducere la planul ${plan}.`,
+      titleDim: "Valabilă 72 de ore.",
+      body: `<p>Bună, ${esc(name)}. Mulțumim pentru interes. Am pregătit pentru tine o ofertă: <b style="color:#F5F5F6">${percent}% reducere ${months === 1 ? "în prima lună" : `în primele ${months} luni`}</b> la planul ${esc(plan)}.</p><p>Codul <b style="color:#FF7A45;font-family:${MONO}">${esc(code)}</b> este deja aplicat în link. Expiră în 72 de ore.</p>`,
+      cta: "Comandă cu reducerea",
+      ctaUrl: url,
+    }),
   paymentFailed: (amount: string) =>
     layout({
       preheader: "Plata lunară nu a trecut. Actualizează cardul în 1 minut.",

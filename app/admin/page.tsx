@@ -4,6 +4,7 @@ import { EUR_RON } from "@/lib/plans";
 import { money, monthShort, num } from "@/lib/format";
 import { Bars, Pill } from "@/components/app/charts";
 import { Plus } from "@/components/site/visuals";
+import TodayInbox from "@/components/app/TodayInbox";
 
 const eur = (v: number) => money(Math.round(v * EUR_RON), "RON");
 
@@ -22,6 +23,9 @@ export default async function AdminHome() {
           <Link href="/admin/clienti/nou" className="btn btn-accent"><span className="ic"><Plus /></span>Client nou</Link>
         </div>
       </div>
+      <form action="/admin/cauta" className="gsearch"><input name="q" placeholder="Caută firmă, CUI, email, LNR-0001 sau domeniu" aria-label="Căutare globală" /><button className="btn-plain sm">Caută</button></form>
+      <TodayInbox d={d} />
+      <div style={{ height: 12 }} />
       <div className="g g-4">
         <div className="panel kpi"><span className="l">MRR</span><b>{eur(d.mrr)}</b><span className={`d${growth !== null && growth < 0 ? " n" : ""}`}>{growth === null ? "—" : `${growth >= 0 ? "+" : ""}${num(growth, 1)}% față de luna trecută`}</span></div>
         <div className="panel kpi"><span className="l">ARR</span><b>{eur(d.arr)}</b><span className="d" style={{ color: "var(--mute)" }}>MRR × 12</span></div>
@@ -42,23 +46,11 @@ export default async function AdminHome() {
       </div>
       <div className="g g-3" style={{ marginTop: 12 }}>
         <div className="panel">
-          <h3>Necesită atenție</h3>
-          {d.orders.filter((o) => o.expiresIn <= 3).map((o) => (
-            <div className="req" key={o.subId}><div><Link href="/admin/comenzi">{o.name} · comandă neplătită</Link><small>{money(o.amount, o.currency, 2)} · {o.reference}</small></div><Pill tone="bad">{o.expiresIn === 0 ? "Expiră azi" : `Expiră în ${o.expiresIn} z`}</Pill></div>
-          ))}
-          {d.missingBrief.filter((p) => p.briefHours >= 48).map((p) => (
-            <div className="req" key={p.id}><div><Link href="/admin/lansari">{p.name} · brief lipsă</Link><small>plătit acum {Math.floor(p.briefHours / 24)} zile · {p.briefReminders} reamintiri</small></div><Pill tone="warn">Brief</Pill></div>
-          ))}
-          {d.restants.map((c) => (
-            <div className="req" key={c.id}><div><Link href={`/admin/clienti/${c.id}`}>{c.name} · plată eșuată</Link><small>{eur(c.overdueAmount)} · {c.mode === "card" ? "reîncercare automată Stripe" : "transfer neprimit"}</small></div><Pill tone="bad">Restant</Pill></div>
-          ))}
-          {d.unmatched.slice(0, 3).map((t) => (
-            <div className="req" key={t.id}><div><Link href="/admin/incasari">{t.payer_name} · transfer neidentificat</Link><small>{money(+t.amount, t.currency, 2)} · {t.reference ?? "fără referință"}</small></div><Pill tone="warn">Reconciliere</Pill></div>
-          ))}
-          {d.production.filter((p) => p.tone === "bad" || p.tone === "warn").map((p) => (
-            <div className="req" key={p.id}><div><Link href="/admin/lansari">{p.name} · {p.left! < 0 ? `termen depășit cu ${-p.left!} z` : `${p.left} zile rămase`}</Link><small>{p.paused ? `pauză: ${p.reason}` : p.domain}</small></div><Pill tone={p.tone === "bad" ? "bad" : "warn"}>Risc SLA</Pill></div>
-          ))}
-          {!d.restants.length && !d.unmatched.length && !d.orders.some((o) => o.expiresIn <= 3) && !d.missingBrief.some((p) => p.briefHours >= 48) && !d.production.some((p) => p.tone === "bad" || p.tone === "warn") && <div className="empty">Nimic urgent.</div>}
+          <h3>Valoarea recomandărilor</h3>
+          {d.referralValue.length ? d.referralValue.slice(0, 6).map((r) => (
+            <div className="kv" key={r.id}><span><Link href={`/admin/clienti/${r.id}`}>{r.name}</Link> · {r.count} {r.count === 1 ? "client adus" : "clienți aduși"}</span><b>{money(Math.round(r.revenue), "RON")}</b></div>
+          )) : <div className="empty">Încă nicio recomandare convertită.</div>}
+          <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>Venit încasat de la clienții aduși prin recomandare.</p>
         </div>
         <div className="panel">
           <h3>Transferuri de proprietate</h3>
