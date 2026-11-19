@@ -34,7 +34,7 @@ export default async function CompanyPage() {
             <div className="fld"><label htmlFor="f-be">Email facturi</label><input id="f-be" type="email" name="billing_email" defaultValue={c.billing_email ?? ""} /></div>
             <div className="fld"><label htmlFor="f-ne">Email notificări</label><input id="f-ne" type="email" name="notify_email" defaultValue={c.notify_email ?? ""} /></div>
             <div className="fld"><label htmlFor="f-ph">Telefon</label><input id="f-ph" type="tel" name="phone" defaultValue={c.phone ?? ""} /></div>
-            <div className="fld"><label>Monedă abonament</label><input value={c.currency === "EUR" ? "EUR (factură EUR, TVA în RON)" : "RON"} readOnly /></div>
+            <div className="fld"><label>Monedă abonament</label><input value={c.currency === "EUR" ? "EUR" : "RON"} readOnly /></div>
           </div>
         </div>
       </SaveForm>

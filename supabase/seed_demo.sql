@@ -43,7 +43,7 @@ begin
     if st = 'paid' then
       insert into public.invoices(company_id,installment_id,smartbill_number,issued_at,period_label,total,currency,payment_label,spv_status)
       select cid, id, lpad((floor(random()*900000)+100000)::text,6,'0'), due_date, to_char(due_date,'TMMonth YYYY'),
-             round(amount_net*1.21,2), p_cur, method, 'validated'
+             amount_net, p_cur, method, 'validated'
       from public.installments where subscription_id = sid and number = i;
     end if;
   end loop;
@@ -116,6 +116,6 @@ begin
   insert into public.bank_transfers(received_at,payer_name,reference,amount,currency,match_status) values
     (current_date - 1,'FORMA FITNESS SRL',null,471.90,'EUR','unmatched');
   insert into public.bank_transfers(received_at,payer_name,reference,amount,currency,match_status,matched_installment_id,confirmed_at)
-    select current_date - 2,'CABINET AVOCAT IONESCU',c.bank_reference,round(i.amount_net*1.21,2),'RON','auto',i.id,now()
+    select current_date - 2,'CABINET AVOCAT IONESCU',c.bank_reference,i.amount_net,'RON','auto',i.id,now()
     from public.companies c join public.installments i on i.company_id=c.id and i.number=8 where c.cui='RO38333444';
 end $$;

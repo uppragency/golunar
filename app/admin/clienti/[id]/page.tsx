@@ -42,7 +42,7 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
       <div className="g g-4">
         <div className="panel kpi"><span className="l">Plan</span><b>{sub ? PLAN_NAME[sub.plan] : "—"}</b><span className="d" style={{ color: "var(--mute)" }}>{(items ?? []).map((i) => i.addon).join(", ") || "fără opțiuni"}</span></div>
         <div className="panel kpi"><span className="l">Rate plătite</span><b>{paid}/12</b><span className="d" style={{ color: "var(--mute)" }}>{sub?.payment_mode === "card" ? "Card" : "Transfer"} · {sub?.status}</span></div>
-        <div className="panel kpi"><span className="l">Lunar fără TVA</span><b>{money(inst?.[0]?.amount_net ?? 0, cur)}</b><span className="d" style={{ color: "var(--mute)" }}>{cur}</span></div>
+        <div className="panel kpi"><span className="l">Lunar</span><b>{money(inst?.[0]?.amount_net ?? 0, cur)}</b><span className="d" style={{ color: "var(--mute)" }}>{cur}</span></div>
         <div className="panel kpi"><span className="l">Website</span><b style={{ fontSize: 20 }}>{site?.domain ?? "—"}</b><Pill tone={sTone}>{sLabel}</Pill></div>
       </div>
 
@@ -50,7 +50,7 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
         <div className="panel">
           <h3>Rate</h3>
           <div className="tbl"><table>
-            <thead><tr><th>Rata</th><th>Scadență</th><th className="r">Fără TVA</th><th>Status</th><th>Metodă</th><th className="r" /></tr></thead>
+            <thead><tr><th>Rata</th><th>Scadență</th><th className="r">Sumă</th><th>Status</th><th>Metodă</th><th className="r" /></tr></thead>
             <tbody>
               {(inst ?? []).map((i) => (
                 <tr key={i.id}>

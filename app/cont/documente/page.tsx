@@ -48,8 +48,7 @@ export default async function DocsPage({ searchParams }: { searchParams: Promise
               <p className="muted" style={{ fontSize: 14 }}>Plătești ratele rămase la valoarea lunară curentă, inclusiv opțiunile. Transferul se face în 15 zile lucrătoare.</p>
               <div className="kv" style={{ marginTop: 12 }}><span>Rate rămase</span><b>{remaining}</b></div>
               <div className="kv"><span>Valoare lunară</span><b>{money(monthly, cur)}</b></div>
-              <div className="kv"><span>Total fără TVA</span><b>{money(total, cur)}</b></div>
-              <div className="kv"><span>Total cu TVA</span><b>{money(total * 1.21, cur, 2)}</b></div>
+              <div className="kv"><span>Total de plată</span><b>{money(total, cur)}</b></div>
               {d.ctx.role === "owner" && (
                 <form action="/api/buyout" method="post">
                   <button className="btn btn-accent" style={{ width: "100%", justifyContent: "space-between", marginTop: 16 }}><span className="ic"><Arrow size={16} /></span>Preia website-ul acum<span /></button>
@@ -60,7 +59,7 @@ export default async function DocsPage({ searchParams }: { searchParams: Promise
           {d.ctx.role === "owner" && !canceled && (
             <div style={{ marginTop: 10 }}>
               <ConfirmAction action={cancelSubscription} label="Anulează abonamentul" className="btn-plain" style={{ width: "100%", color: "var(--mute)" }}
-                confirm={owned ? "Anulezi abonamentul de îngrijire la finalul perioadei plătite?" : `Anulezi abonamentul la finalul perioadei plătite? Fără răscumpărare (${money(total, cur)} + TVA), website-ul nu se transferă.`} />
+                confirm={owned ? "Anulezi abonamentul de îngrijire la finalul perioadei plătite?" : `Anulezi abonamentul la finalul perioadei plătite? Fără răscumpărare (${money(total, cur)}), website-ul nu se transferă.`} />
             </div>
           )}
           {canceled && <p className="muted" style={{ fontSize: 13, marginTop: 14 }}>Abonamentul se oprește {d.sub?.cancel_at ? `pe ${date(d.sub.cancel_at)}` : "la finalul perioadei plătite"}.</p>}

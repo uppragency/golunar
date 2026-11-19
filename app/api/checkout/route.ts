@@ -71,19 +71,16 @@ export async function POST(req: Request) {
       cui: d.cui, name: d.name.slice(0, 200), reg_com: d.regCom, address: d.address.slice(0, 300), contact: d.contact, email: d.email,
       phone: d.phone, domain: d.domain, vat_payer: String(d.vatPayer), currency: d.currency, cart: JSON.stringify(d.cart), ip: ip || "",
     };
-    const vatRate = await ensureVatRate(s);
     const checkout = await s.checkout.sessions.create({
       mode: "subscription",
       customer: customer.id,
       locale: "ro",
       line_items: items.map((i) => ({
         quantity: i.qty,
-        tax_rates: [vatRate],
         price_data: {
           currency: cur,
           unit_amount: Math.round(i.amount * 100),
           recurring: { interval: "month" },
-          tax_behavior: "exclusive",
           product_data: { name: i.name, metadata: { code: i.code } },
         },
       })),
@@ -123,10 +120,3 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true, message: "Am primit comanda. Îți trimitem în cel mult o zi lucrătoare confirmarea și link-ul de plată." });
 }
 
-async function ensureVatRate(s: NonNullable<ReturnType<typeof stripe>>) {
-  const list = await s.taxRates.list({ active: true, limit: 100 });
-  const found = list.data.find((t) => t.metadata?.lunar === "vat21");
-  if (found) return found.id;
-  const created = await s.taxRates.create({ display_name: "TVA", percentage: 21, inclusive: false, country: "RO", jurisdiction: "RO", tax_type: "vat", metadata: { lunar: "vat21" } });
-  return created.id;
-}

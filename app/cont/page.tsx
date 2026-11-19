@@ -78,7 +78,7 @@ export default async function PortalHome() {
               <>
                 <div>
                   <div className="amt">{money(next.amount_net, cur)}</div>
-                  <span className="muted" style={{ fontSize: 13 }}>+ TVA {num(next.vat_rate)}% · total {money(next.amount_net * (1 + next.vat_rate / 100), cur, 2)}</span>
+                  <span className="muted" style={{ fontSize: 13 }}>TVA inclus</span>
                 </div>
                 <div className="kv"><span>Data</span><b>{date(next.due_date)}</b></div>
                 <div className="kv"><span>Metodă</span><b>{d.sub?.payment_mode === "bank_transfer" ? "Transfer bancar" : d.pms[0] ? `${cap(d.pms[0].brand)} •• ${d.pms[0].last4}` : "Card"}</b></div>

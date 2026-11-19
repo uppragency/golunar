@@ -11,7 +11,7 @@ export default async function PaymentsPage() {
   const d = await getAdminData();
   return (
     <div>
-      <div className="topbar"><div><h1>Încasări</h1><p>Stripe, transferuri bancare și facturi {has.smartbill() ? "SmartBill" : "(SmartBill neconectat)"}. Sume cu TVA, în EUR.</p></div></div>
+      <div className="topbar"><div><h1>Încasări</h1><p>Stripe, transferuri bancare și facturi {has.smartbill() ? "SmartBill" : "(SmartBill neconectat)"}. Sume în EUR.</p></div></div>
       <div className="g g-4">
         <div className="panel kpi"><span className="l">Încasat luna aceasta</span><b>{eur(d.collectedEur)}</b><span className="d" style={{ color: "var(--mute)" }}>din {eur(d.scheduledEur)} programat</span></div>
         <div className="panel kpi"><span className="l">Card (Stripe)</span><b>{num(d.cardShare * 100)}%</b><span className="d" style={{ color: "var(--mute)" }}>din volum</span></div>

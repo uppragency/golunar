@@ -15,14 +15,14 @@ export async function POST() {
   const remaining = (inst ?? []).reduce((a, r) => a + Number(r.amount_net), 0);
   const s = stripe();
   if (!s || !company?.stripe_customer_id || remaining <= 0) {
-    await db.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, type: "billing", title: "Răscumpărare anticipată website", body: `Rate rămase: ${inst?.length ?? 0}. Valoare fără TVA: ${remaining}.` });
+    await db.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, type: "billing", title: "Răscumpărare anticipată website", body: `Rate rămase: ${inst?.length ?? 0}. Valoare: ${remaining}.` });
     return NextResponse.redirect(`${SITE_URL}/cont/cereri?ok=buyout`, { status: 303 });
   }
   const cs = await s.checkout.sessions.create({
     mode: "payment",
     customer: company.stripe_customer_id,
     locale: "ro",
-    line_items: [{ quantity: 1, price_data: { currency: company.currency.toLowerCase(), unit_amount: Math.round(remaining * 121), product_data: { name: `LUNAR · Răscumpărare anticipată (${inst!.length} rate, TVA inclus)` } } }],
+    line_items: [{ quantity: 1, price_data: { currency: company.currency.toLowerCase(), unit_amount: Math.round(remaining * 100), product_data: { name: `LUNAR · Răscumpărare anticipată (${inst!.length} rate)` } } }],
     metadata: { kind: "buyout", company_id: company.id },
     success_url: `${SITE_URL}/cont/documente?ok=buyout`,
     cancel_url: `${SITE_URL}/cont/documente`,

@@ -14,7 +14,9 @@ export const ADDONS: Record<AddonCode, { name: string; eur: number; ron: number;
   lang: { name: "Limbă suplimentară", eur: 29, ron: 149, maxQty: 5 },
 };
 
-export const VAT_RATE = 0.21;
+/** LUNAR nu este plătitoare de TVA: prețurile afișate sunt prețuri finale. */
+export const VAT_RATE = 0;
+export const PRICE_NOTE = "TVA inclus";
 export const EUR_RON = 5.09; // curs indicativ pentru afișare; facturile folosesc cursul BNR al zilei
 
 export type Cart = { plan: PlanCode; brand: boolean; local: boolean; langs: number };

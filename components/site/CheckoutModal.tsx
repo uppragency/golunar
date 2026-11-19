@@ -20,7 +20,7 @@ export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onC
   const [busy, setBusy] = useState<"anaf" | "pay" | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
-  const { lines, vat, gross } = cartLines(cart, cur);
+  const { lines, gross } = cartLines(cart, cur);
 
   useEffect(() => {
     if (!open) return;
@@ -129,7 +129,7 @@ export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onC
               {err && <p className="err" role="alert">{err}</p>}
               <button className="btn btn-ink" style={{ width: "100%", justifyContent: "space-between", marginTop: 6 }} disabled={busy === "pay"}>
                 <span className="ic"><Arrow /></span>
-                <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(gross, cur, 2)}` : "Trimite comanda"}</span>
+                <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(gross, cur)}` : "Trimite comanda"}</span>
                 <span style={{ width: 8 }} />
               </button>
             </>
@@ -143,15 +143,12 @@ export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onC
                 <span style={{ color: "#C4C4CA" }}>{l.label}</span><span>{fmt(l.total, cur)}</span>
               </div>
             ))}
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, padding: "10px 0" }}>
-              <span style={{ color: "#C4C4CA" }}>TVA 21%</span><span>{fmt(vat, cur, 2)}</span>
-            </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 20 }}>
             <span className="muted">Azi plătești</span>
-            <b style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-.04em" }}>{fmt(gross, cur, 2)}</b>
+            <b style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-.04em" }}>{fmt(gross, cur)}</b>
           </div>
-          <p style={{ fontSize: 12, color: "var(--mute)", marginTop: 12 }}>Apoi aceeași sumă lunar, la aceeași dată. Factura fiscală ajunge automat în SPV și pe email.</p>
+          <p style={{ fontSize: 12, color: "var(--mute)", marginTop: 12 }}>TVA inclus. Apoi aceeași sumă lunar, la aceeași dată. Factura fiscală ajunge automat în SPV și pe email.</p>
         </div>
         <button type="button" className="x" onClick={onClose} aria-label="Închide">✕</button>
       </form>

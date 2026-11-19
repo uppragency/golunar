@@ -15,7 +15,7 @@ export default async function AdminHome() {
   return (
     <div>
       <div className="topbar">
-        <div><h1 style={{ textTransform: "capitalize" }}>{monthName}</h1><p>Venit recurent, încasări și lansări în curs. Sume în EUR fără TVA, RON convertit la 5,09.</p></div>
+        <div><h1 style={{ textTransform: "capitalize" }}>{monthName}</h1><p>Venit recurent, încasări și lansări în curs. Sume în EUR, RON convertit la 5,09.</p></div>
         <div className="tb-r">
           <a className="btn-plain" href="/admin/export">Export CSV</a>
           <Link href="/admin/clienti/nou" className="btn btn-accent"><span className="ic"><Plus /></span>Client nou</Link>
@@ -43,7 +43,7 @@ export default async function AdminHome() {
         <div className="panel">
           <h3>Necesită atenție</h3>
           {d.restants.map((c) => (
-            <div className="req" key={c.id}><div><Link href={`/admin/clienti/${c.id}`}>{c.name} · plată eșuată</Link><small>{eur(c.overdueAmount)} cu TVA · {c.mode === "card" ? "reîncercare automată Stripe" : "transfer neprimit"}</small></div><Pill tone="bad">Restant</Pill></div>
+            <div className="req" key={c.id}><div><Link href={`/admin/clienti/${c.id}`}>{c.name} · plată eșuată</Link><small>{eur(c.overdueAmount)} · {c.mode === "card" ? "reîncercare automată Stripe" : "transfer neprimit"}</small></div><Pill tone="bad">Restant</Pill></div>
           ))}
           {d.unmatched.slice(0, 3).map((t) => (
             <div className="req" key={t.id}><div><Link href="/admin/incasari">{t.payer_name} · transfer neidentificat</Link><small>{money(+t.amount, t.currency, 2)} · {t.reference ?? "fără referință"}</small></div><Pill tone="warn">Reconciliere</Pill></div>

@@ -157,7 +157,7 @@ export async function confirmTransfer(form: FormData) {
   revalidatePath("/admin", "layout");
 }
 
-/** CSV: data;plătitor;referință;sumă;monedă (separator ; sau ,). Potrivire automată pe referință + sumă cu TVA. */
+/** CSV: data;plătitor;referință;sumă;monedă (separator ; sau ,). Potrivire automată pe referință + sumă. */
 export async function importTransfers(_: ActionState, form: FormData): Promise<ActionState> {
   const s = await requireAdmin();
   const csv = String(form.get("csv") || "").trim();

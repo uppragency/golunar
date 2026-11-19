@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ADDONS, PLANS, cartLines, type Cart, type Currency, type PlanCode } from "@/lib/plans";
+import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
@@ -25,7 +25,7 @@ const FAQ: Record<string, [string, string][]> = {
   Abonament: [
     ["Ce primesc concret?", "Website personalizat, domeniu, hosting, SSL, mentenanță, backup zilnic, suport și numărul de îmbunătățiri lunare din plan."],
     ["Există taxă de creare sau de setup?", "Nu. Designul și dezvoltarea sunt incluse în abonament. Plătești doar prima lună la comandă."],
-    ["Prețurile includ TVA?", "Nu. Serviciul este exclusiv B2B, iar prețurile afișate sunt fără TVA 21%."],
+    ["Prețurile includ TVA?", "Da. Prețul afișat este prețul final pe care îl plătești, fără TVA adăugat la factură."],
     ["Ce diferență este între planuri?", "Esențial acoperă prezența online. Creștere adaugă SEO, vizibilitate în AI și tracking de conversii. Partener adaugă landing pages, CRO și automatizări."],
   ],
   "Plată și facturare": [
@@ -67,7 +67,7 @@ export default function Landing() {
   const [toast, setToast] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
 
-  const { lines, net, gross } = useMemo(() => cartLines(cart, cur), [cart, cur]);
+  const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
   const p = (eur: number, ron: number) => fmt(cur === "EUR" ? eur : ron, cur);
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function Landing() {
               <div className="price-chip">
                 <span className="muted" style={{ fontSize: 14 }}>de la</span>
                 <b>{p(89, 449)}</b>
-                <span className="muted" style={{ fontSize: 14 }}>/ lună + TVA</span>
+                <span className="muted" style={{ fontSize: 14 }}>/ lună ({PRICE_NOTE})</span>
               </div>
             </div>
             <p className="hero-tag">Website-ul tău, live în 10 zile. <span>O echipă care îl face mai bun în fiecare lună.</span></p>
@@ -214,7 +214,7 @@ export default function Landing() {
         <div className="wrap">
           <div className="sec-head reveal">
             <div><div className="eyebrow">Abonamente</div><h2 style={{ marginTop: 20 }}>Alege ritmul. <span className="dim">Noi construim restul.</span></h2></div>
-            <p>Toate prețurile sunt fără TVA. Fără taxă de setup. Anulezi oricând, la finalul perioadei plătite.</p>
+            <p>Toate prețurile includ TVA. Fără taxă de setup. Anulezi oricând, la finalul perioadei plătite.</p>
           </div>
           <div className="cfg">
             <div>
@@ -260,9 +260,9 @@ export default function Landing() {
                 ))}
               </div>
               <div className="total"><span className="muted">Total lunar</span><b>{fmt(net, cur)}</b></div>
-              <div className="vat">{`+ TVA 21% · ${fmt(gross, cur, 2)} lunar`}</div>
+              <div className="vat">{PRICE_NOTE} · fără costuri suplimentare</div>
               <div className="own">
-                Website-ul devine al tău după <b>12 plăți</b>: <b>{fmt(net * 12, cur)}</b> fără TVA în primul an.
+                Website-ul devine al tău după <b>12 plăți</b>: <b>{fmt(net * 12, cur)}</b> în primul an.
                 {cart.brand ? " Identitatea vizuală se oprește automat după rata 12." : ""}
                 <div className="prog">{Array.from({ length: 12 }, (_, i) => <i key={i} />)}</div>
               </div>
@@ -350,7 +350,7 @@ export default function Landing() {
             <div><h6>Resurse</h6><a href="#resurse">Ghiduri</a><a href="#intrebari">Întrebări frecvente</a></div>
             <div><h6>Legal</h6><Link href="/legal/termeni">Termeni și condiții</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></div>
           </div>
-          <div className="legal"><span>© {new Date().getFullYear()} LUNAR · golunar.ro</span><span>Serviciu exclusiv B2B. Prețuri fără TVA.</span></div>
+          <div className="legal"><span>© {new Date().getFullYear()} LUNAR · golunar.ro</span><span>Serviciu exclusiv B2B. Prețuri finale, TVA inclus.</span></div>
         </div>
       </footer>
 
@@ -400,7 +400,7 @@ function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag }: {
         <p className="lead">{lead}</p>
         <ul>{items.map((i) => (i.startsWith("+") ? <li className="plus" key={i}>{i.slice(1)}</li> : <li key={i}>{i}</li>))}</ul>
       </div>
-      <div className="pr"><span className="radio" /><div><b>{price}</b><br /><small>/ lună + TVA</small></div></div>
+      <div className="pr"><span className="radio" /><div><b>{price}</b><br /><small>/ lună ({PRICE_NOTE})</small></div></div>
     </div>
   );
 }

@@ -29,10 +29,10 @@ export async function createSmartbillInvoice(input: InvoiceInput) {
     sendEmail: false,
     products: input.lines.map((l) => ({
       name: l.name, measuringUnitName: "luna", currency: input.currency, quantity: l.quantity, price: l.price,
-      isTaxIncluded: false, taxName: "Normala", taxPercentage: 21, isService: true, saveToDb: false,
+      isService: true, saveToDb: false,
     })),
     ...(input.paid
-      ? { payment: { value: Math.round(input.lines.reduce((a, l) => a + l.quantity * l.price, 0) * 121) / 100, type: input.paymentType || "Card", isCash: false } }
+      ? { payment: { value: Math.round(input.lines.reduce((a, l) => a + l.quantity * l.price, 0) * 100) / 100, type: input.paymentType || "Card", isCash: false } }
       : {}),
   };
   const res = await fetch("https://ws.smartbill.ro/SBORO/api/invoice", {
