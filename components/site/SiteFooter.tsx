@@ -96,7 +96,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
         <div className="fb-legal">
           <div className="wrap">
             <span className="fb-co">© {new Date().getFullYear()} LUNAR este un serviciu {PAYEE.name} · CIF {PAYEE.cif} · {PAYEE.regCom}</span>
-            <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
+            <nav><Link href="/legal/termeni">Termeni</Link><Link href="/legal/confidentialitate">Confidențialitate</Link><Link href="/legal/cookies">Cookie-uri</Link><button type="button" className="ck-link" onClick={() => window.dispatchEvent(new Event("lunar:cookies"))}>Preferințe cookie</button><a href="https://anpc.ro" rel="noopener" target="_blank">ANPC · SOL</a></nav>
           </div>
         </div>
       </footer>

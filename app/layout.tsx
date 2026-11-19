@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import VercelAnalytics from "@/components/VercelAnalytics";
 import RefCapture from "@/components/RefCapture";
+import Gtm, { GtmNoScript } from "@/components/Gtm";
+import CookieBanner from "@/components/CookieBanner";
 import { SITE_URL } from "@/lib/env";
 import { IS_PROD, JsonLd, organizationLd, websiteLd } from "@/lib/seo";
 
@@ -35,10 +37,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ro" className={`${geist.variable} ${geistMono.variable}`}>
       <body>
+        <GtmNoScript />
+        <Gtm />
         <JsonLd data={[organizationLd, websiteLd]} />
         {children}
         <VercelAnalytics />
         <RefCapture />
+        <CookieBanner />
       </body>
     </html>
   );
