@@ -24,7 +24,7 @@ export function GET() {
 - Model: abonament lunar, fără investiție inițială, fără taxă de creare
 - Lansare: 10 zile lucrătoare de la brief; dacă întârzierea ne aparține, luna următoare de abonament e gratuită (nu se returnează bani)
 - Proprietate: după 12 plăți lunare; domeniul este al clientului din prima zi
-- Plată: card (debitare automată) sau transfer bancar; factură fiscală prin e-Factura
+- Plată: momentan doar transfer bancar (beneficiar UPPRMARKETING S.R.L.); factură fiscală prin e-Factura
 - Găzduire: infrastructură în UE, SSL, backup zilnic, monitorizare la fiecare 10 minute
 - Contact: hello@golunar.ro
 

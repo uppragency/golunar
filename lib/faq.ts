@@ -7,7 +7,7 @@ export const FAQ: Record<string, [string, string][]> = {
     ["Ce diferență este între planuri?", "Esențial acoperă prezența online. Creștere adaugă SEO, vizibilitate în AI și tracking de conversii. Partener adaugă landing pages, CRO și automatizări."],
   ],
   "Plată și facturare": [
-    ["Cum plătesc?", "Cu cardul, prin debitare automată lunară, sau prin transfer bancar pe baza proformei trimise cu 7 zile înainte de scadență."],
+    ["Cum plătesc?", "Momentan prin transfer bancar, în lei, către UPPRMARKETING S.R.L. Primești datele de plată imediat după comandă și înainte de fiecare scadență. Plata cu cardul va fi disponibilă în curând."],
     ["Cum funcționează oferta de 6 lei?", "Pentru clienții noi, prima lună pe planul Esențial costă 6 lei (1 €), TVA inclus. Codul GOLUNAR se aplică automat când alegi planul Esențial. Din luna a doua plătești 449 lei (89 €) pe lună. Perioada minimă a planului este de 3 luni."],
     ["Cum folosesc un cod de reducere?", "Introdu codul la „Ai un cod de reducere?”, în rezumatul abonamentului sau în pagina de plată. Reducerea se aplică ratelor indicate de cod și apare în desfășurătorul de plată."],
     ["Primesc factură fiscală?", "Da. Fiecare plată generează factură, transmisă automat în SPV prin e-Factura și disponibilă în contul tău."],
