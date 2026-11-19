@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/session";
 import { date, money } from "@/lib/format";
 import { Pill } from "@/components/app/charts";
 import { INST_PILL, PLAN_NAME, REQ_PILL, REQ_TYPE, SITE_PILL, SPV_PILL } from "@/lib/labels";
+import { BRIEF_KEYS } from "@/lib/brief";
 import { inviteMember, markInstallmentPaid, setViewAs, startLaunchAction, updateReferral, updateWebsite } from "@/app/admin/actions";
 import InviteForm from "@/components/app/InviteForm";
 import type { Currency } from "@/lib/plans";
@@ -12,7 +13,7 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const s = await requireAdmin();
   const db = s.supabase;
-  const [{ data: c }, { data: subs }, { data: items }, { data: inst }, { data: inv }, { data: site }, { data: reqs }, { data: members }, { data: invites }, { data: launch }, { data: refs } ] = await Promise.all([
+  const [{ data: c }, { data: subs }, { data: items }, { data: inst }, { data: inv }, { data: site }, { data: reqs }, { data: members }, { data: invites }, { data: launch }, { data: refs }, { data: brief }] = await Promise.all([
     db.from("companies").select("*").eq("id", id).maybeSingle(),
     db.from("subscriptions").select("*").eq("company_id", id).order("created_at", { ascending: false }),
     db.from("subscription_items").select("*").eq("company_id", id),
@@ -24,7 +25,10 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
     db.from("invites").select("email, role, accepted_at").eq("company_id", id),
     db.from("launch_projects").select("*").eq("company_id", id).maybeSingle(),
     db.from("referrals").select("*").eq("referrer_company_id", id).order("created_at", { ascending: false }),
+    db.from("briefs").select("*").eq("company_id", id).maybeSingle(),
   ]);
+  const briefFiles = (brief?.files ?? []) as { path: string; name: string; size: number }[];
+  const { data: signed } = briefFiles.length ? await db.storage.from("documents").createSignedUrls(briefFiles.map((f) => f.path), 3600) : { data: [] };
   const { data: refBy } = c?.referred_by ? await db.from("companies").select("id, name").eq("id", c.referred_by).maybeSingle() : { data: null };
   if (!c) notFound();
   const sub = subs?.[0];
@@ -143,6 +147,20 @@ export default async function ClientDetail({ params }: { params: Promise<{ id: s
             </form>
           ))}
         </div>
+      </div>
+      <div className="panel" style={{ marginTop: 12 }}>
+        <h3>Brief {brief?.submitted_at ? <Pill tone="ok">Trimis {date(brief.submitted_at, { day: "numeric", month: "short" })}</Pill> : brief ? <Pill tone="warn">Ciornă</Pill> : <Pill>Necompletat</Pill>}</h3>
+        {brief ? (
+          <>
+            {BRIEF_KEYS.filter((q) => (brief.answers as Record<string, string>)?.[q.key]).map((q) => (
+              <div className="kv" key={q.key} style={{ alignItems: "flex-start" }}><span>{q.label}</span><b style={{ whiteSpace: "pre-wrap", textAlign: "right", maxWidth: "60%" }}>{(brief.answers as Record<string, string>)[q.key]}</b></div>
+            ))}
+            {brief.description && <><h4 style={{ margin: "18px 0 8px" }}>Descriere</h4><p style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.6 }}>{brief.description}</p></>}
+            {brief.examples && <><h4 style={{ margin: "18px 0 8px" }}>Site-uri exemple</h4><p style={{ whiteSpace: "pre-wrap", fontSize: 14 }}>{brief.examples}</p></>}
+            {briefFiles.length > 0 && <><h4 style={{ margin: "18px 0 8px" }}>Fișiere ({briefFiles.length})</h4>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>{briefFiles.map((f, i) => <a key={f.path} href={signed?.[i]?.signedUrl ?? "#"} target="_blank" rel="noreferrer" className="btn-plain sm">{f.name}</a>)}</div></>}
+          </>
+        ) : <div className="empty">Clientul nu a început brief-ul.</div>}
       </div>
     </div>
   );

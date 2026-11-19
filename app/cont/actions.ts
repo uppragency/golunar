@@ -89,3 +89,45 @@ export async function cancelSubscription(): Promise<ActionState> {
   revalidatePath("/cont", "layout");
   return { ok: "Abonamentul se oprește la finalul perioadei plătite. Îți trimitem confirmarea pe email." };
 }
+
+export async function saveBrief(_: ActionState, form: FormData): Promise<ActionState> {
+  const ctx = await getPortalContext();
+  if (!ctx.companyId || !ctx.canEdit) return { error: "Nu ai drepturi să editezi brief-ul." };
+  const { BRIEF_KEYS, BRIEF_MAX_FILES } = await import("@/lib/brief");
+  const submit = form.get("intent") === "submit";
+  const answers: Record<string, string> = {};
+  for (const q of BRIEF_KEYS) {
+    const v = q.kind === "multi" ? form.getAll(q.key).map(String).join(", ") : String(form.get(q.key) ?? "");
+    answers[q.key] = v.trim().slice(0, 4000);
+  }
+  if (submit) {
+    const missing = BRIEF_KEYS.filter((q) => q.required && !answers[q.key]).map((q) => q.label);
+    if (missing.length) return { error: `Completează: ${missing.join("; ")}` };
+  }
+  let files: { path: string; name: string; size: number }[] = [];
+  try {
+    files = (JSON.parse(String(form.get("files") || "[]")) as typeof files)
+      .filter((f) => typeof f.path === "string" && f.path.startsWith(`${ctx.companyId}/brief/`))
+      .slice(0, BRIEF_MAX_FILES);
+  } catch {}
+  const { data: prev } = await ctx.supabase.from("briefs").select("submitted_at").eq("company_id", ctx.companyId).maybeSingle();
+  const { error } = await ctx.supabase.from("briefs").upsert({
+    company_id: ctx.companyId,
+    answers,
+    description: String(form.get("description") ?? "").trim().slice(0, 20000) || null,
+    examples: String(form.get("examples") ?? "").trim().slice(0, 3000) || null,
+    files,
+    submitted_at: submit ? prev?.submitted_at ?? new Date().toISOString() : prev?.submitted_at ?? null,
+    updated_by: ctx.user?.id ?? null,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) return { error: "Nu am putut salva brief-ul. Încearcă din nou." };
+  if (submit) {
+    const { data: c } = await ctx.supabase.from("companies").select("name").eq("id", ctx.companyId).single();
+    await sendEmail({ template: "admin_brief", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: ctx.user?.email ?? undefined,
+      subject: `${prev?.submitted_at ? "Brief actualizat" : "Brief nou"}: ${c?.name ?? ""}`,
+      html: templates.adminNotice(prev?.submitted_at ? "Brief actualizat" : "Brief trimis", { Firmă: c?.name, Scop: answers.goal, Pagini: answers.pages, Fișiere: String(files.length), Utilizator: ctx.user?.email }) });
+  }
+  revalidatePath("/cont", "layout");
+  return { ok: submit ? "Brief trimis. Îl citim azi și revenim dacă lipsește ceva." : "Ciornă salvată." };
+}

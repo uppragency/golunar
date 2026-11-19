@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { SITE_URL } from "@/lib/env";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { stripe } from "@/lib/stripe";
-import { ADDONS, PLANS, cartLines } from "@/lib/plans";
-import { provision } from "@/lib/provision";
+import { PLANS, cartLines } from "@/lib/plans";
 import { money } from "@/lib/format";
 import { sendEmail, templates } from "@/lib/email";
 import { getRef } from "@/lib/ref";
+import { provisionBankOrder } from "@/lib/provision-bank";
+import { PAYEE } from "@/lib/bank";
 import { discountFor, type Discount } from "@/lib/discount";
 
 const Body = z.object({
@@ -52,8 +50,6 @@ export async function POST(req: Request) {
   }
   const firstDisc = discountFor(discount, net, d.currency);
   const gross = net - firstDisc;
-  const k = d.currency === "EUR" ? "eur" : "ron";
-  const cur = d.currency.toLowerCase();
 
   // Always keep the order as a lead, so nothing is lost if a downstream service fails.
   const session = await createClient();
@@ -63,90 +59,28 @@ export async function POST(req: Request) {
     p_message: `Checkout ${d.paymentMode} · ${money(net, d.currency)}/lună${discount ? ` · cod ${discount.code}` : ""} · domeniu ${d.domain || "—"}`, p_source: "checkout", p_ref: ref ?? "", p_meta: {},
   });
 
-  const db = createAdminClient();
-  const s = stripe();
+  // Momentan acceptăm doar transfer bancar.
+  if (d.paymentMode !== "bank_transfer") return NextResponse.json({ error: "Momentan acceptăm doar plata prin transfer bancar." }, { status: 400 });
 
-  // ---------- card: Stripe Checkout (subscription) ----------
-  if (d.paymentMode === "card" && s) {
-    const customer = await s.customers.create({
-      name: d.name,
-      email: d.email,
-      phone: d.phone || undefined,
-      preferred_locales: ["ro"],
-      address: { line1: d.address.slice(0, 200), country: "RO" },
-      metadata: { cui: d.cui, reg_com: d.regCom, contact: d.contact },
+  try {
+    const res = await provisionBankOrder({
+      cui: d.cui, name: d.name, regCom: d.regCom, address: d.address, vatPayer: d.vatPayer, contact: d.contact, email: d.email, phone: d.phone,
+      domain: d.domain, cart: d.cart, currency: d.currency, ip, ref, discount,
     });
-    const items = [
-      { name: `LUNAR · Plan ${PLANS[d.cart.plan].name}`, amount: PLANS[d.cart.plan][k], qty: 1, code: d.cart.plan },
-      ...(d.cart.brand ? [{ name: "LUNAR · Identitate vizuală (12 luni)", amount: ADDONS.brand[k], qty: 1, code: "brand" }] : []),
-      ...(d.cart.local ? [{ name: "LUNAR · Vizibilitate locală Google", amount: ADDONS.local[k], qty: 1, code: "local" }] : []),
-      ...(d.cart.langs ? [{ name: "LUNAR · Limbă suplimentară", amount: ADDONS.lang[k], qty: d.cart.langs, code: "lang" }] : []),
-    ];
-    const meta = {
-      cui: d.cui, name: d.name.slice(0, 200), reg_com: d.regCom, address: d.address.slice(0, 300), contact: d.contact, email: d.email,
-      phone: d.phone, domain: d.domain, vat_payer: String(d.vatPayer), currency: d.currency, cart: JSON.stringify(d.cart), ip: ip || "", ref: ref ?? "", discount: discount ? JSON.stringify(discount) : "",
-    };
-    let coupon: string | undefined;
-    if (discount) {
-      const c = await s.coupons.create({
-        name: `LUNAR ${discount.code}`.slice(0, 40),
-        duration: "repeating",
-        duration_in_months: discount.months,
-        ...(discount.kind === "percent"
-          ? { percent_off: discount.percent! }
-          : { amount_off: Math.round((d.currency === "EUR" ? discount.amount_eur! : discount.amount_ron!) * 100), currency: cur }),
-        max_redemptions: 1,
-        metadata: { code_id: discount.id, code: discount.code },
-      });
-      coupon = c.id;
+    if (res.error === "exists") {
+      return NextResponse.json({ error: "Firma cu acest CUI are deja un cont LUNAR. Intră în cont sau scrie-ne la hello@golunar.ro." }, { status: 409 });
     }
-    const checkout = await s.checkout.sessions.create({
-      mode: "subscription",
-      ...(coupon ? { discounts: [{ coupon }] } : {}),
-      customer: customer.id,
-      locale: "ro",
-      line_items: items.map((i) => ({
-        quantity: i.qty,
-        price_data: {
-          currency: cur,
-          unit_amount: Math.round(i.amount * 100),
-          recurring: { interval: "month" },
-          product_data: { name: i.name, metadata: { code: i.code } },
-        },
-      })),
-      subscription_data: { metadata: meta, description: `LUNAR · ${d.name}` },
-      metadata: meta,
-      payment_method_collection: "always",
-      billing_address_collection: "auto",
-      success_url: `${SITE_URL}/comanda/succes?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${SITE_URL}/#abonamente`,
-    });
-    return NextResponse.json({ url: checkout.url });
+    const amount = money(res.firstAmount, d.currency, 2);
+    await sendEmail({ companyId: res.company_id, billing: true, template: "bank_order", to: d.email, subject: `Comanda LUNAR · referință ${res.bank_reference}`,
+      html: templates.bankOrder(d.contact, amount, res.bank_reference, PAYEE.iban, d.email) });
+    await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: d.email, subject: `Comandă nouă (transfer): ${d.name}`,
+      html: templates.adminNotice("Comandă nouă prin transfer bancar", { Firmă: d.name, CUI: d.cui, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), "Prima rată": amount, Reducere: discount ? `${discount.code} · ${money(firstDisc, d.currency)} × ${discount.months}` : "", Email: d.email, Telefon: d.phone, Referință: res.bank_reference }) });
+    const q = new URLSearchParams({ ref: res.bank_reference, suma: amount, email: d.email, cont: res.has_account ? "1" : "0" });
+    return NextResponse.json({ ok: true, redirect: `/comanda/multumim?${q}` });
+  } catch (e) {
+    console.error("[checkout] bank order", e);
+    await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: d.email, subject: `Comandă de procesat manual: ${d.name}`,
+      html: templates.adminNotice("Comandă de confirmat manual (provizionare eșuată)", { Firmă: d.name, CUI: d.cui, Adresă: d.address, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), Email: d.email, Telefon: d.phone, Domeniu: d.domain }) });
+    return NextResponse.json({ ok: true, message: "Am primit comanda. Îți trimitem în cel mult o zi lucrătoare datele de plată și accesul în cont." });
   }
-
-  // ---------- bank transfer: provision now, pay by proforma ----------
-  if (d.paymentMode === "bank_transfer" && db) {
-    try {
-      const res = await provision(db, {
-        company: { cui: d.cui, name: d.name, regCom: d.regCom, address: d.address, vatPayer: d.vatPayer, contact: d.contact, email: d.email, phone: d.phone },
-        domain: d.domain, cart: d.cart, currency: d.currency, mode: "bank_transfer", start: new Date(), firstPaid: false, ip, ref, discount,
-      });
-      const { data: bank } = await db.from("app_settings").select("value").eq("key", "bank").maybeSingle();
-      const iban = (bank?.value as Record<string, string> | undefined)?.[d.currency === "EUR" ? "iban_eur" : "iban_ron"] || "";
-      await sendEmail({ db, companyId: res.companyId, billing: true, template: "bank_order", to: d.email, subject: `Comanda LUNAR · referință ${res.bankReference}`,
-        html: templates.bankOrder(d.contact, money(gross, d.currency, 2), res.bankReference!, iban) });
-      await sendEmail({ db, template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Comandă nouă (transfer): ${d.name}`,
-        html: templates.adminNotice("Comandă nouă prin transfer bancar", { Firmă: d.name, CUI: d.cui, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), Reducere: discount ? `${discount.code} · ${money(firstDisc, d.currency)} × ${discount.months}` : "", Email: d.email, Referință: res.bankReference }) });
-      return NextResponse.json({ ok: true, message: `Comanda este înregistrată. Ți-am trimis pe email datele de plată și referința ${res.bankReference}. Te poți autentifica în portal cu ${d.email}.` });
-    } catch (e) {
-      console.error("[checkout] provision", e);
-    }
-  }
-
-  // ---------- fallback: payments not configured yet ----------
-  await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Comandă nouă (manuală): ${d.name}`,
-    html: templates.adminNotice("Comandă nouă de confirmat manual", { Firmă: d.name, CUI: d.cui, Adresă: d.address, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), Reducere: discount ? `${discount.code} · ${money(firstDisc, d.currency)} × ${discount.months}` : "", Plată: d.paymentMode, Email: d.email, Telefon: d.phone, Domeniu: d.domain }),
-    replyTo: d.email });
-  return NextResponse.json({ ok: true, message: "Am primit comanda. Îți trimitem în cel mult o zi lucrătoare confirmarea și link-ul de plată." });
 }
-

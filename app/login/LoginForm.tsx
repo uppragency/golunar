@@ -14,10 +14,10 @@ const COPY: Record<Mode, { button: string; busy: string }> = {
   reset: { button: "Trimite link de resetare", busy: "Se trimite…" },
 };
 
-export default function LoginForm({ next }: { next?: string }) {
+export default function LoginForm({ next, email: initialEmail, mode: initialMode }: { next?: string; email?: string; mode?: Mode }) {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("magic");
-  const [email, setEmail] = useState("");
+  const [mode, setMode] = useState<Mode>(initialMode ?? "magic");
+  const [email, setEmail] = useState(initialEmail ?? "");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);

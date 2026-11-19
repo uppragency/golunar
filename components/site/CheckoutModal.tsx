@@ -17,7 +17,8 @@ type Form = { cui: string; name: string; regCom: string; address: string; contac
 export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }: { open: boolean; onClose: () => void; cart: Cart; cur: Currency; discount: Discount | null; onDiscount: (d: Discount | null) => void }) {
   const [f, setF] = useState<Form>({ cui: "", name: "", regCom: "", address: "", contact: "", email: "", phone: "", domain: "" });
   const [vatPayer, setVatPayer] = useState(true);
-  const [pm, setPm] = useState<"card" | "bank_transfer">("card");
+  const [shown, setShown] = useState(3);
+  const [pm, setPm] = useState<"card" | "bank_transfer">("bank_transfer");
   const [accept, setAccept] = useState(false);
   const [busy, setBusy] = useState<"anaf" | "pay" | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -70,8 +71,8 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Comanda nu a putut fi trimisă");
-      if (j.url) {
-        window.location.href = j.url;
+      if (j.url || j.redirect) {
+        window.location.href = j.url || j.redirect;
         return;
       }
       setDone(j.message || "Comanda a fost înregistrată. Îți trimitem confirmarea pe email.");
@@ -120,13 +121,13 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
               <span className="eyebrow" style={{ marginTop: 20 }}>Pasul 2 din 2</span>
               <h3 style={{ marginTop: 14, fontSize: 22 }}>Metodă de plată</h3>
               <div className="pm">
-                <button type="button" className={pm === "card" ? "on" : ""} onClick={() => setPm("card")}><b>Card</b><span>Debitare automată lunară prin Stripe</span></button>
-                <button type="button" className={pm === "bank_transfer" ? "on" : ""} onClick={() => setPm("bank_transfer")}><b>Transfer bancar</b><span>Proformă lunară, plată în 5 zile</span></button>
+                <button type="button" className={pm === "bank_transfer" ? "on" : ""} onClick={() => setPm("bank_transfer")}><b>Transfer bancar</b><span>Plătești din aplicația băncii, în lei</span></button>
+                <button type="button" className="off" disabled aria-disabled="true"><b>Card</b><span>Disponibil în curând</span></button>
               </div>
               {pm === "card" ? (
                 <div style={{ fontSize: 14, color: "var(--inkmute)" }}>Introduci cardul în pagina securizată Stripe. Acceptăm Visa, Mastercard, Apple Pay și Google Pay.</div>
               ) : (
-                <div style={{ fontSize: 14, color: "var(--inkmute)" }}>Primești proforma pe email. Lansarea începe după confirmarea primei plăți în cont.</div>
+                <div style={{ fontSize: 14, color: "var(--inkmute)" }}>După ce trimiți comanda, primești datele de plată pe ecran și pe email. Lansarea începe după ce confirmăm plata, de obicei în aceeași zi lucrătoare.</div>
               )}
               <label className="check">
                 <input type="checkbox" checked={accept} onChange={(e) => setAccept(e.target.checked)} />
@@ -135,7 +136,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
               {err && <p className="err" role="alert">{err}</p>}
               <button className="btn btn-ink" style={{ width: "100%", justifyContent: "space-between", marginTop: 6 }} disabled={busy === "pay"}>
                 <span className="ic"><Arrow /></span>
-                <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(today, cur)}` : "Trimite comanda"}</span>
+                <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(today, cur)}` : `Trimite comanda · ${fmt(today, cur)}`}</span>
                 <span style={{ width: 8 }} />
               </button>
             </>
@@ -169,7 +170,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
           <h4 className="co-h" style={{ marginTop: 28 }}>Desfășurător de plată</h4>
           <p className="co-note" style={{ marginTop: 6 }}>12 rate · total {fmt(yearTotal, cur)} · perioadă minimă {PLANS[cart.plan].minMonths === 1 ? "o lună" : `${PLANS[cart.plan].minMonths} luni`}</p>
           <div className="co-sched">
-            {schedule.map((r) => (
+            {schedule.slice(0, shown).map((r) => (
               <details key={r.n} className={r.n === 1 ? "first" : r.n === 12 ? "last" : ""}>
                 <summary>
                   <span className="n">{String(r.n).padStart(2, "0")}</span>
@@ -182,6 +183,11 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
                 </ul>
               </details>
             ))}
+            {shown < schedule.length ? (
+              <button type="button" className="co-more" onClick={() => setShown((n) => Math.min(schedule.length, n + 3))}>Arată mai mult · încă {Math.min(3, schedule.length - shown)} luni</button>
+            ) : (
+              <button type="button" className="co-more" onClick={() => setShown(3)}>Arată mai puțin</button>
+            )}
           </div>
         </div>
         <button type="button" className="x" onClick={onClose} aria-label="Închide">✕</button>

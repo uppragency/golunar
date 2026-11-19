@@ -6,8 +6,8 @@ import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = { title: "Contul meu", robots: { index: false } };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
-  const { next, error } = await searchParams;
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string; email?: string; mode?: string }> }) {
+  const { next, error, email, mode } = await searchParams;
   const s = await getSession();
   if (s.user) redirect(next && next.startsWith("/") ? next : s.isAdmin ? "/admin" : "/cont");
   return (
@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <h1>Contul meu</h1>
         <p>Intră cu link pe email sau cu parolă.</p>
         {error && <p className="err" role="alert" style={{ marginBottom: 14 }}>Link-ul a expirat sau a fost deja folosit. Cere unul nou.</p>}
-        <LoginForm next={next} />
+        <LoginForm next={next} email={email && /^[^@\s]+@[^@\s]+$/.test(email) ? email : undefined} mode={mode === "signup" || mode === "password" ? mode : undefined} />
       </div>
     </main>
   );

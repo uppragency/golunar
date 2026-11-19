@@ -10,7 +10,7 @@ export const getPortalData = cache(async () => {
   if (!ctx.companyId) return { ready: false as const, ctx, company: null };
   const db = ctx.supabase;
   const id = ctx.companyId;
-  const [company, subs, items, inst, invoices, sites, metrics, requests, docs, pms, attempts, launch, own, bank] = await Promise.all([
+  const [company, subs, items, inst, invoices, sites, metrics, requests, docs, pms, attempts, launch, own, bank, brief] = await Promise.all([
     db.from("companies").select("*").eq("id", id).single(),
     db.from("subscriptions").select("*").eq("company_id", id).order("created_at", { ascending: false }).limit(1),
     db.from("subscription_items").select("*").eq("company_id", id),
@@ -25,6 +25,7 @@ export const getPortalData = cache(async () => {
     db.from("launch_projects").select("*").eq("company_id", id).maybeSingle(),
     db.from("ownership").select("*").eq("company_id", id).maybeSingle(),
     db.from("app_settings").select("value").eq("key", "bank").maybeSingle(),
+    db.from("briefs").select("*").eq("company_id", id).maybeSingle(),
   ]);
   const sub = subs.data?.[0] ?? null;
   const installments = (inst.data ?? []).map((r) => ({ ...r, amount_plan: +r.amount_plan, amount_addons: +r.amount_addons, amount_discount: +(r.amount_discount ?? 0), amount_net: +r.amount_net, vat_rate: +r.vat_rate })) as Installment[];
@@ -71,5 +72,9 @@ export const getPortalData = cache(async () => {
     launch: launch.data,
     ownership: own.data,
     bank: (bank.data?.value ?? {}) as { iban_eur?: string; iban_ron?: string; bank?: string; beneficiary?: string },
+    brief: brief.data as { answers: Record<string, string>; description: string | null; examples: string | null; files: { path: string; name: string; size: number }[]; submitted_at: string | null } | null,
+    /** Până la confirmarea primei plăți, portalul e vizibil, dar blocat. */
+    awaitingPayment: paid.length === 0 && !ctx.viewingAsAdmin,
+    firstDue: installments[0] ?? null,
   };
 });

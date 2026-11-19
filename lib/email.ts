@@ -145,19 +145,24 @@ export const templates = {
       cta: "Intră în portal",
       ctaUrl: `${SITE_URL}/login`,
     }),
-  bankOrder: (name: string, amount: string, reference: string, iban: string) =>
+  bankOrder: (name: string, amount: string, reference: string, iban: string, email = "") =>
     layout({
-      preheader: `Proforma pentru prima rată: ${amount}. Referință ${reference}.`,
+      preheader: `Prima rată: ${amount}. Plătești prin transfer cu referința ${reference}.`,
       eyebrow: "Comandă",
       title: "Comanda e înregistrată.",
       titleDim: "Plătești prin transfer.",
-      body: `<p>Mulțumim, ${esc(name)}. Pentru a porni lansarea, plătește prima rată prin transfer bancar.</p>
-<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin:12px 0"><tr><td style="padding:6px 0;color:#8C8C93">Sumă</td><td align="right"><b style="color:#F5F5F6">${esc(amount)}</b></td></tr>
-<tr><td style="padding:6px 0;color:#8C8C93">IBAN</td><td align="right"><b>${esc(iban || "îl primești de la noi în cel mult o zi lucrătoare")}</b></td></tr>
-<tr><td style="padding:6px 0;color:#8C8C93">Referință obligatorie</td><td align="right"><b>${esc(reference)}</b></td></tr></table>
-<p>Confirmăm plata automat în 1–2 zile lucrătoare și emitem factura fiscală în SPV.</p>`,
-      cta: "Vezi comanda în portal",
-      ctaUrl: `${SITE_URL}/login`,
+      body: `<p>Mulțumim, ${esc(name)}. Pentru a porni lansarea, plătește prima rată prin transfer bancar, din aplicația băncii tale.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin:12px 0">
+<tr><td style="padding:7px 0;color:#8C8C93">Beneficiar</td><td align="right"><b style="color:#F5F5F6">UPPRMARKETING S.R.L.</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">IBAN</td><td align="right"><b style="color:#F5F5F6;font-family:${MONO}">${esc(iban)}</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Banca</td><td align="right"><b style="color:#F5F5F6">BANCA TRANSILVANIA</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Suma</td><td align="right"><b style="color:#F5F5F6">${esc(amount)}</b></td></tr>
+<tr><td style="padding:7px 0;color:#8C8C93">Detalii plată</td><td align="right"><b style="color:#FF7A45;font-family:${MONO}">${esc(reference)}</b></td></tr></table>
+<p>Pașii următori:</p>
+<ol style="margin:6px 0 0;padding-left:18px"><li style="margin:4px 0">Plătești prima rată cu referința de mai sus.</li><li style="margin:4px 0">Îți creezi parola contului de client, cu acest email.</li><li style="margin:4px 0">Confirmăm plata, de obicei în aceeași zi lucrătoare, și primești acces complet.</li><li style="margin:4px 0">Completezi brief-ul din cont. Lansăm în 10 zile lucrătoare.</li></ol>
+<p style="margin-top:16px;color:#8C8C93;font-size:12px">Facturile sunt emise de UPPRMARKETING S.R.L., CIF 52762670, J2025081624004.</p>`,
+      cta: "Creează parola contului",
+      ctaUrl: `${SITE_URL}/login?mode=signup${email ? `&email=${encodeURIComponent(email)}` : ""}`,
     }),
   paymentFailed: (amount: string) =>
     layout({
@@ -175,9 +180,9 @@ export const templates = {
       eyebrow: "Plată",
       title: `Rata ${number} din 12 încasată.`,
       titleDim: number >= 12 ? "Website-ul e al tău." : `Mai ai ${12 - number} până la proprietate.`,
-      body: `<p>Am încasat <b style="color:#F5F5F6">${esc(amount)}</b>. Factura fiscală este emisă în SPV și disponibilă în portal.</p>${number >= 10 && number < 12 ? `<p>Mai ai ${12 - number} ${12 - number === 1 ? "rată" : "rate"} până când website-ul devine al tău.</p>` : ""}${number === 12 ? "<p>Felicitări: website-ul este acum al tău. Îți trimitem procesul-verbal de transfer.</p>" : ""}`,
-      cta: "Vezi facturile",
-      ctaUrl: `${SITE_URL}/cont/plati`,
+      body: `<p>Am încasat <b style="color:#F5F5F6">${esc(amount)}</b>. Factura fiscală este emisă în SPV și disponibilă în portal.</p>${number >= 10 && number < 12 ? `<p>Mai ai ${12 - number} ${12 - number === 1 ? "rată" : "rate"} până când website-ul devine al tău.</p>` : ""}${number === 12 ? "<p>Felicitări: website-ul este acum al tău. Îți trimitem procesul-verbal de transfer.</p>" : ""}${number === 1 ? "<p><b style=\"color:#F5F5F6\">Contul tău de client este acum activ.</b> Pasul următor: completează brief-ul, ca să pornim lansarea în 10 zile lucrătoare.</p>" : ""}`,
+      cta: number === 1 ? "Completează brief-ul" : "Vezi facturile",
+      ctaUrl: number === 1 ? `${SITE_URL}/cont/brief` : `${SITE_URL}/cont/plati`,
     }),
   requestReceived: (title: string) =>
     layout({

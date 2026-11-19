@@ -4,6 +4,7 @@ import { money, date, monthShort, num } from "@/lib/format";
 import { Pill, Ring, Spark } from "@/components/app/charts";
 import { Plus } from "@/components/site/visuals";
 import { REQ_PILL, SITE_PILL, cap } from "@/lib/labels";
+import BankDetails from "@/components/site/BankDetails";
 
 export default async function PortalHome() {
   const d = await getPortalData();
@@ -32,6 +33,10 @@ export default async function PortalHome() {
           <Link href="/cont/cereri" className="btn btn-accent"><span className="ic"><Plus /></span>Cere o îmbunătățire</Link>
         </div>
       </div>
+
+      {(d.awaitingPayment || !d.brief?.submitted_at || (site?.status !== "live" && site?.status !== "transferred")) && (
+        <Onboarding d={d} />
+      )}
 
       <div className="g">
         <div className="panel site-hero">
@@ -126,3 +131,44 @@ export default async function PortalHome() {
   );
 }
 
+
+type Ready = Extract<Awaited<ReturnType<typeof getPortalData>>, { ready: true }>;
+
+/** Tutorialul de început: ce are de făcut clientul, pas cu pas, până la lansare. */
+function Onboarding({ d }: { d: Ready }) {
+  const paidOk = !d.awaitingPayment;
+  const briefOk = !!d.brief?.submitted_at;
+  const live = d.site?.status === "live" || d.site?.status === "transferred";
+  const steps: { t: string; s: string; done: boolean; href?: string; cta?: string }[] = [
+    { t: "Comanda trimisă", s: "Contractul și calendarul de plăți sunt în cont.", done: true },
+    { t: "Plătește prima rată prin transfer", s: d.firstDue ? `${money(d.firstDue.amount_net, d.currency)} cu referința ${d.company.bank_reference}. Confirmăm de obicei în aceeași zi lucrătoare.` : "Datele de plată sunt mai jos.", done: paidOk },
+    { t: "Completează brief-ul", s: "Despre firmă, ce site vrei, exemple și poze. Durează 5 până la 10 minute.", done: briefOk, href: "/cont/brief", cta: "Deschide brief-ul" },
+    { t: "Lansare în 10 zile lucrătoare", s: "Pornim după plată și brief. Urmărești progresul aici.", done: live },
+  ];
+  const current = steps.findIndex((x) => !x.done);
+  return (
+    <div className="panel onb">
+      <h3>Primii pași</h3>
+      <ol className="onb-steps">
+        {steps.map((x, i) => (
+          <li key={x.t} className={x.done ? "done" : i === current ? "on" : ""}>
+            <i aria-hidden="true">{x.done ? "✓" : i + 1}</i>
+            <div><b>{x.t}</b><span>{x.s}</span>{x.href && i === current && !d.awaitingPayment && <Link href={x.href} className="btn-plain sm" style={{ marginTop: 10, alignSelf: "flex-start" }}>{x.cta}</Link>}</div>
+          </li>
+        ))}
+      </ol>
+      {d.awaitingPayment && (
+        <div className="onb-pay">
+          <h4>Cum plătești prin transfer</h4>
+          <ol className="onb-how">
+            <li>Deschide aplicația băncii tale și alege <b>Plată nouă</b> sau <b>Transfer</b>.</li>
+            <li>Copiază beneficiarul, IBAN-ul și suma de mai jos.</li>
+            <li>La <b>Detalii plată</b> scrie exact referința <b className="mono">{d.company.bank_reference}</b>.</li>
+            <li>Trimite plata. Te anunțăm pe email când o confirmăm, iar contul se deblochează.</li>
+          </ol>
+          <BankDetails amount={d.firstDue ? money(d.firstDue.amount_net, d.currency, 2) : null} reference={d.company.bank_reference} />
+        </div>
+      )}
+    </div>
+  );
+}
