@@ -1178,3 +1178,9 @@ html,body{overflow-x:clip}
 .mnav-foot>.btn-plain{width:100%;height:48px;padding:0 12px;white-space:nowrap;font-size:15px;justify-content:center}
 .mnav-cur{grid-column:1/-1;display:flex;justify-content:center;padding-top:4px}
 .mnav-cur>*{width:auto;flex:none}
+/* De ce LUNAR: pe mobil doar primele 2 rânduri, restul la „Arată mai mult” */
+.why-more{display:none}
+@media (max-width:760px){
+  .why-row.why-m-hide{display:none}
+  .why-more{display:flex;margin:14px auto 0;height:44px;padding:0 22px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:#fff;font-size:15px;font-weight:500;cursor:pointer;align-items:center}
+}

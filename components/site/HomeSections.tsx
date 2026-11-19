@@ -37,6 +37,7 @@ const WHY: [string, string, string][] = [
 ];
 
 export function WhySection({ onOrder }: { onOrder: () => void }) {
+  const [whyAll, setWhyAll] = useState(false);
   return (
     <section className="sec why" id="de-ce">
       <div className="wrap">
@@ -46,14 +47,17 @@ export function WhySection({ onOrder }: { onOrder: () => void }) {
         </div>
         <div className="why-table reveal" role="table" aria-label="Cum e de obicei, comparat cu LUNAR">
           <div className="why-row why-h" role="row"><span role="columnheader" /><span role="columnheader">Cum e de obicei</span><span role="columnheader">Cum e la LUNAR</span></div>
-          {WHY.map(([k, bad, good]) => (
-            <div className="why-row" role="row" key={k}>
+          {WHY.map(([k, bad, good], i) => (
+            <div className={`why-row${i > 1 && !whyAll ? " why-m-hide" : ""}`} role="row" key={k}>
               <span role="rowheader" className="why-k">{k}</span>
               <span role="cell" className="why-bad"><i aria-hidden="true">×</i>{bad}</span>
               <span role="cell" className="why-good"><i aria-hidden="true">✓</i>{good}</span>
             </div>
           ))}
         </div>
+        {!whyAll && (
+          <button type="button" className="why-more" onClick={() => setWhyAll(true)}>Arată mai mult</button>
+        )}
         <div className="why-cta reveal">
           <button className="btn btn-accent" onClick={onOrder}><span className="ic"><Arrow /></span>Comandă website cu 4,99 lei</button>
         </div>
