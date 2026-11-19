@@ -43,8 +43,8 @@ export default function SubHeader() {
             ))}
           </ul>
           <div className="mnav-foot" style={{ transitionDelay: menu ? "320ms" : "0ms" }}>
-            <span />
             <Link href="/cont" className="btn-plain" tabIndex={menu ? 0 : -1}>Contul meu</Link>
+            <Link href="/?comanda=1" className="btn-plain mnav-order" tabIndex={menu ? 0 : -1}>Comandă cu 4,99 lei</Link>
           </div>
         </div>
       </div>

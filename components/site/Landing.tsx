@@ -182,9 +182,9 @@ export default function Landing() {
             ))}
           </ul>
           <div className="mnav-foot" style={{ transitionDelay: menu ? "320ms" : "0ms" }}>
-            <CurSeg cur={cur} onChange={switchCur} />
             <Link href="/cont" className="btn-plain" tabIndex={menu ? 0 : -1}>Contul meu</Link>
-            <button className="btn-plain mnav-order" tabIndex={menu ? 0 : -1} onClick={() => { setMenu(false); orderNow(); }}>Comandă website cu 4,99 lei</button>
+            <button className="btn-plain mnav-order" tabIndex={menu ? 0 : -1} onClick={() => { setMenu(false); orderNow(); }}>Comandă cu 4,99 lei</button>
+            <div className="mnav-cur"><CurSeg cur={cur} onChange={switchCur} /></div>
           </div>
         </div>
       </div>
