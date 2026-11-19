@@ -545,3 +545,7 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .fb-legal a:hover{color:#fff}
 @media (max-width:900px){.fb-cta{grid-template-columns:1fr}.fb-cols{grid-template-columns:1fr 1fr;gap:32px 20px}}
 @media (max-width:560px){.fb-card{padding:26px}.fb-legal nav{gap:14px}footer.fb{padding-top:80px}}
+/* Resurse: 4 coloane desktop, 2 pe mobil */
+.res{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1100px){.res{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.res{grid-template-columns:repeat(2,1fr);gap:10px}.res a{min-height:200px;padding:18px;border-radius:22px}.res h4{font-size:16px}.res .k{font-size:10px}.res span{font-size:12px}}

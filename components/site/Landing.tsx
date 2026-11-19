@@ -358,7 +358,6 @@ export default function Landing() {
               ["Comparație", "DIY, AI builder sau agenție: ce alegi în 2026", "6 min"],
               ["Template", "Cum pregătești brief-ul unui website", "5 min · model descărcabil"],
               ["Checklist", "Schimbi furnizorul web fără să pierzi trafic", "7 min"],
-              ["Template", "Revizia lunară a website-ului în 30 de minute", "4 min · foaie de lucru"],
             ].map(([kk, h, s]) => (
               <a href="#resurse" className="card reveal" key={h} onClick={(e) => { e.preventDefault(); flash("Ghidul apare în curând"); }}>
                 <span className="k">{kk}</span><h4>{h}</h4><span>{s}</span>
