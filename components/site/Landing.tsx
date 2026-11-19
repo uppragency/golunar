@@ -68,6 +68,8 @@ export default function Landing() {
   const [menu, setMenu] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const wordRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+  const [railEdge, setRailEdge] = useState({ start: true, end: false });
 
   const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
   const p = (eur: number, ron: number) => fmt(cur === "EUR" ? eur : ron, cur);
@@ -96,6 +98,22 @@ export default function Landing() {
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
   }, []);
+
+  useEffect(() => {
+    const r = railRef.current;
+    if (!r) return;
+    const upd = () => setRailEdge({ start: r.scrollLeft < 8, end: r.scrollLeft + r.clientWidth >= r.scrollWidth - 8 });
+    upd();
+    r.addEventListener("scroll", upd, { passive: true });
+    window.addEventListener("resize", upd);
+    return () => { r.removeEventListener("scroll", upd); window.removeEventListener("resize", upd); };
+  }, []);
+  const slide = (dir: 1 | -1) => {
+    const r = railRef.current;
+    const card = r?.querySelector<HTMLElement>(".shot");
+    if (!r || !card) return;
+    r.scrollBy({ left: dir * (card.offsetWidth + 16), behavior: "smooth" });
+  };
 
   useEffect(() => {
     const el = wordRef.current;
@@ -237,7 +255,7 @@ export default function Landing() {
             <p>Fiecare site pornește de la identitatea și clienții afacerii. Clinici, restaurante, servicii profesionale, retail local.</p>
           </div>
         </div>
-        <div className="rail">
+        <div className="rail" ref={railRef}>
           {FOLIO.map(([u, n, c, h, bg, fg, cb, ct]) => (
             <article className="shot" key={u}>
               <div className="bar"><i /><i /><i /><span>{u}</span></div>
@@ -249,6 +267,10 @@ export default function Landing() {
               <div className="meta"><b>{n}</b><span>{c}</span></div>
             </article>
           ))}
+        </div>
+        <div className="rail-nav">
+          <button aria-label="Proiectul anterior" onClick={() => slide(-1)} disabled={railEdge.start}><Arrow /></button>
+          <button aria-label="Proiectul următor" onClick={() => slide(1)} disabled={railEdge.end}><Arrow /></button>
         </div>
       </section>
 
