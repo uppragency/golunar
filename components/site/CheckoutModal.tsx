@@ -178,20 +178,18 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
 
           <h4 className="co-h" style={{ marginTop: 28 }}>Ce primești</h4>
           <ul className="co-feat">
-            {allFeatures(cart.plan).map((x) => <li key={x}>{x}</li>)}
+            {allFeatures(cart.plan).filter((x) => x !== "Statistici de trafic").map((x) => <li key={x}>{x}</li>)}
             <li>Lansare în 10 zile lucrătoare, garantată</li>
-            <li>Domeniul pe firma ta din prima zi</li>
-            <li>Website-ul devine al tău după 12 plăți</li>
           </ul>
 
           <h4 className="co-h" style={{ marginTop: 28 }}>Desfășurător de plată</h4>
-          <p className="co-note" style={{ marginTop: 6 }}>12 rate · total {fmt(yearTotal, cur)} · perioadă minimă {PLANS[cart.plan].minMonths === 1 ? "o lună" : `${PLANS[cart.plan].minMonths} luni`}</p>
+          <p className="co-note" style={{ marginTop: 6 }}>Următoarele 11 rate, după plata de azi · total 12 luni {fmt(yearTotal, cur)} · perioadă minimă {PLANS[cart.plan].minMonths === 1 ? "o lună" : `${PLANS[cart.plan].minMonths} luni`}</p>
           <div className="co-sched">
-            {schedule.slice(0, shown).map((r) => (
+            {schedule.slice(1, 1 + shown).map((r) => (
               <details key={r.n} className={r.n === 1 ? "first" : r.n === 12 ? "last" : ""}>
                 <summary>
                   <span className="n">{String(r.n).padStart(2, "0")}</span>
-                  <span className="d">{r.n === 1 ? "Azi" : dfmt(r.date)}</span>
+                  <span className="d">{dfmt(r.date)}</span>
                   <span className="a">{r.discount > 0 && <s>{fmt(r.base, cur)}</s>}{fmt(r.total, cur)}</span>
                 </summary>
                 <ul>
@@ -200,8 +198,8 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
                 </ul>
               </details>
             ))}
-            {shown < schedule.length ? (
-              <button type="button" className="co-more" onClick={() => setShown((n) => Math.min(schedule.length, n + 3))}>Arată mai mult · încă {Math.min(3, schedule.length - shown)} luni</button>
+            {shown < schedule.length - 1 ? (
+              <button type="button" className="co-more" onClick={() => setShown((n) => Math.min(schedule.length - 1, n + 3))}>Arată mai mult · încă {Math.min(3, schedule.length - 1 - shown)} luni</button>
             ) : (
               <button type="button" className="co-more" onClick={() => setShown(3)}>Arată mai puțin</button>
             )}

@@ -820,7 +820,7 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .sheet{grid-template-columns:1fr 360px}
 .sheet .s{max-height:92svh;overflow-y:auto;position:sticky;top:0}
 @media (max-width:900px){.sheet{grid-template-columns:1fr}.sheet .s{max-height:none;position:static}}
-.sheet .s{align-self:start}
+.sheet .s{align-self:stretch}
 .co-side+.x{background:#1A1A1D;border:1px solid var(--line2);z-index:3}
 
 /* ---------- campania 6 lei ---------- */
@@ -1077,3 +1077,5 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .guar-card p{color:var(--mute);font-size:15px;line-height:1.6}
 @media (max-width:900px){.guar-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:600px){.guar-grid{grid-template-columns:1fr}}
+/* checkout: un singur scroll pentru tot pop-up-ul */
+.sheet .s{max-height:none!important;overflow:visible!important;position:static!important}
