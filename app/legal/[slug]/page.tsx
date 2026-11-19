@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import PageShell from "@/components/site/PageShell";
 import { notFound } from "next/navigation";
 
 const PAGES: Record<string, string> = {
@@ -22,10 +22,18 @@ export default async function Legal({ params }: { params: Promise<{ slug: string
   const title = PAGES[slug];
   if (!title) notFound();
   return (
-    <main className="wrap" style={{ padding: "120px 0 80px", maxWidth: 760 }}>
-      <Link href="/" className="logo"><i />LUNAR</Link>
-      <h1 style={{ fontSize: "clamp(36px,5vw,56px)", margin: "40px 0 16px" }}>{title}</h1>
-      <p className="muted">Documentul este în revizuire juridică și va fi publicat înainte de lansarea comercială. Pentru întrebări: <a href="mailto:hello@golunar.ro" style={{ textDecoration: "underline" }}>hello@golunar.ro</a>.</p>
-    </main>
+    <PageShell
+      crumbs={[[`/legal/${slug}`, title]]}
+      eyebrow="Legal"
+      title={title}
+      lede="Documentul este în revizuire juridică și va fi publicat înainte de lansarea comercială."
+      cta={false}
+    >
+      <article className="article">
+        <h2>Ai întrebări?</h2>
+        <p>Scrie-ne la <a className="inl" href="mailto:hello@golunar.ro">hello@golunar.ro</a> și îți răspundem în cel mult 48 de ore lucrătoare.</p>
+        <p>Operator: UPPRMARKETING S.R.L., CIF 52762670, Reg. com. J2025081624004, Sat Chiajna, Com. Chiajna, Str. Sergent Ilie Petre Nr. 84, Bl. 1, Et. 7, Ap. 716, Județ Ilfov.</p>
+      </article>
+    </PageShell>
   );
 }

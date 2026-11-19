@@ -71,8 +71,8 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div>
               <h6>Explorează</h6>
-              <Link href="/#proces">Proces</Link><Link href="/#portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
-              <Link href="/website-6-lei">Website de la 6 lei</Link><Link href="/portofoliu">Portofoliu</Link><Link href="/tehnologii">Tehnologii</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/garantii">Garanții</Link><Link href="/lunar-vs-agentie-vs-ai">LUNAR vs agenție vs AI</Link><Link href="/audit">Audit SEO gratuit</Link>
+              <Link href="/#proces">Proces</Link><Link href="/portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
+              <Link href="/website-6-lei">Website de la 6 lei</Link><Link href="/tehnologii">Tehnologii</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/garantii">Garanții</Link><Link href="/lunar-vs-agentie-vs-ai">LUNAR vs agenție vs AI</Link><Link href="/audit">Audit SEO gratuit</Link>
             </div>
             <div>
               <h6>Resurse</h6>
