@@ -30,7 +30,7 @@ export default function SubHeader() {
           <button className={`burger${menu ? " on" : ""}`} aria-label={menu ? "Închide meniul" : "Deschide meniul"} aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
             <span /><span /><span />
           </button>
-          <button className="cta" onClick={() => { setMenu(false); setLead(true); }}>Discuție<span className="lg">&nbsp;gratuită</span></button>
+          <Link className="cta" href="/?comanda=1" onClick={() => setMenu(false)}>Comandă<span className="lg">&nbsp;acum</span></Link>
         </div>
       </nav>
       <div className={`mnav${menu ? " on" : ""}`} aria-hidden={!menu} onClick={(e) => e.target === e.currentTarget && setMenu(false)}>

@@ -58,7 +58,8 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div className="fb-card hot">
               <h2>Începe website-ul tău. <span>Fără investiție inițială.</span></h2>
-              <button className="fb-btn" onClick={openLead}><span className="ic"><Arrow /></span>Discuție gratuită de 20 min</button>
+              <Link className="fb-btn" href="/?comanda=1"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</Link>
+              <button className="fb-sec" onClick={openLead}>sau programează o discuție gratuită de 20 min</button>
             </div>
           </div>
           <div className="fb-cols">

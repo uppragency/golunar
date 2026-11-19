@@ -126,8 +126,8 @@ export default function AuditTool() {
             ))}
           </ul>
           <div className="audit-cta">
-            <p>Vrei să discutăm rezultatele? 20 de minute, gratuit, fără obligații.</p>
-            <a href="/?discutie=1" className="btn btn-accent"><span className="ic"><Arrow /></span>Programează discuția</a>
+            <p>Vrei problemele rezolvate? Începi cu 6 lei în prima lună. <a href="/?discutie=1" className="inl">Sau discutăm rezultatele, gratuit.</a></p>
+            <a href="/?comanda=1" className="btn btn-accent"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</a>
           </div>
         </section>
       )}

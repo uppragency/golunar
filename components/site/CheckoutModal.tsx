@@ -102,7 +102,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
                 <label htmlFor="co-cui">CUI</label>
                 <div className="cui">
                   <input id="co-cui" value={f.cui} onChange={set("cui")} placeholder="RO12345678" required inputMode="text" autoComplete="off" />
-                  <button type="button" onClick={lookup} disabled={busy === "anaf" || f.cui.replace(/\D/g, "").length < 2}>{busy === "anaf" ? "Caut…" : "Caută în ANAF"}</button>
+                  <button type="button" onClick={lookup} disabled={busy === "anaf" || f.cui.replace(/\D/g, "").length < 2}>{busy === "anaf" ? "Caut…" : "Caută"}</button>
                 </div>
               </div>
               <div className="grid2">

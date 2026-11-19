@@ -81,6 +81,7 @@ export default function Landing() {
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     if (q.has("discutie")) setLead(true);
+    if (q.has("comanda")) { setCart((c) => ({ ...c, plan: "essential" })); setCheckout(true); }
     const c = q.get("cod")?.toUpperCase();
     if (c && /^[A-Z0-9_-]{3,24}$/.test(c)) setCodeParam(c);
   }, []);
@@ -147,6 +148,8 @@ export default function Landing() {
     setTimeout(() => setToast(null), 2400);
   };
   const pick = (plan: PlanCode) => setCart((c) => ({ ...c, plan }));
+  /** CTA principal: planul Esențial cu GOLUNAR, direct în pagina de comandă. */
+  const orderNow = () => { pick("essential"); setCheckout(true); };
   const k = cur === "EUR" ? "eur" : "ron";
 
   return (
@@ -169,7 +172,7 @@ export default function Landing() {
           <button className={`burger${menu ? " on" : ""}`} aria-label={menu ? "Închide meniul" : "Deschide meniul"} aria-expanded={menu} aria-controls="mnav" onClick={() => setMenu((m) => !m)}>
             <span /><span /><span />
           </button>
-          <button className="cta" onClick={() => { setMenu(false); setLead(true); }}>Discuție<span className="lg">&nbsp;gratuită</span></button>
+          <button className="cta" onClick={() => { setMenu(false); orderNow(); }}>Comandă<span className="lg">&nbsp;acum</span></button>
         </div>
       </nav>
 
@@ -185,6 +188,7 @@ export default function Landing() {
           <div className="mnav-foot" style={{ transitionDelay: menu ? "320ms" : "0ms" }}>
             <CurSeg cur={cur} onChange={switchCur} />
             <Link href="/cont" className="btn-plain" tabIndex={menu ? 0 : -1}>Contul meu</Link>
+            <button className="btn-plain mnav-order" tabIndex={menu ? 0 : -1} onClick={() => { setMenu(false); orderNow(); }}>Comandă website cu 6 lei</button>
           </div>
         </div>
       </div>
@@ -210,7 +214,7 @@ export default function Landing() {
                 <p>Website personalizat, fără taxă de dezvoltare. Abonamentul acoperă designul, hostingul, mentenanța și optimizarea lunară. După 12 plăți, site-ul devine al tău.</p>
               </div>
               <div className="row">
-                <button className="btn btn-accent" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Discuție gratuită de 20 min</button>
+                <button className="btn btn-accent" onClick={orderNow}><span className="ic"><Arrow /></span>Comandă website cu 6 lei</button>
                 <a href="#abonamente" className="btn btn-ghost"><span className="ic"><Arrow /></span>Vezi abonamentele</a>
               </div>
             </div>
@@ -393,7 +397,7 @@ export default function Landing() {
           <h2>Plătești lunar.<br /><span className="dim">Crești lunar.</span></h2>
           <p className="end-promo">Începi cu <b>{launchPrice(cur)}</b> în prima lună. Codul {LAUNCH.code} e deja aplicat.</p>
           <div className="row">
-            <a href="#abonamente" onClick={() => pick("essential")} className="btn btn-accent"><span className="ic"><Arrow /></span>Vreau un site nou</a>
+            <button onClick={orderNow} className="btn btn-accent"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</button>
             <button className="btn btn-ghost" onClick={() => setLead(true)}><span className="ic"><Arrow /></span>Programează discuția</button>
           </div>
         </div>

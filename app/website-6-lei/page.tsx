@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: { title: "Website-ul tău la 6 lei în prima lună", description: DESC, url: "/website-6-lei", type: "website" },
 };
 
-const CLAIM = `/?cod=${LAUNCH.code}#abonamente`;
+const CLAIM = `/?comanda=1&cod=${LAUNCH.code}`;
 const lei = (v: number) => `${v.toLocaleString("ro-RO")} lei`;
 const eur = (v: number) => `${v.toLocaleString("ro-RO")} €`;
 

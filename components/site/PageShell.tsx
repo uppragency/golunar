@@ -53,7 +53,7 @@ export default function PageShell({
         {cta && (
           <div className="r-cta">
             <h3>{ctaTitle ?? <>Începi cu 6 lei în prima lună. <span>Apoi {PLANS.essential.ron} lei pe lună pe planul Esențial, TVA inclus. Live în 10 zile lucrătoare.</span></>}</h3>
-            <Link href="/#abonamente" className="btn"><span className="ic"><Arrow /></span>Vezi abonamentele</Link>
+            <Link href="/?comanda=1" className="btn"><span className="ic"><Arrow /></span>Comandă website cu 6 lei</Link>
           </div>
         )}
         <div style={{ height: 120 }} />
