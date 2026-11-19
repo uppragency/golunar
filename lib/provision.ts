@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ADDONS, PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
+import { discountFor, type Discount } from "@/lib/discount";
 
 export type ProvisionInput = {
   company: { cui: string; name: string; regCom?: string; address?: string; vatPayer: boolean; contact: string; email: string; phone?: string };
@@ -14,6 +15,7 @@ export type ProvisionInput = {
   stripeSubscriptionId?: string | null;
   ip?: string | null;
   ref?: string | null;
+  discount?: Discount | null;
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -71,6 +73,8 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
       started_at: input.start.toISOString(),
       stripe_subscription_id: input.stripeSubscriptionId ?? null,
       min_commitment_months: PLANS[input.cart.plan].minMonths,
+      discount_code_id: input.discount?.id ?? null,
+      discount: input.discount ?? null,
     })
     .select("id")
     .single();
@@ -94,6 +98,7 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
     due_date: iso(i === 0 ? input.start : addMonths(input.start, i, day)),
     amount_plan: planAmt,
     amount_addons: net - planAmt,
+    amount_discount: i < (input.discount?.months ?? 0) ? discountFor(input.discount ?? null, net, input.currency) : 0,
     currency: input.currency,
     status: i === 0 && input.firstPaid ? "paid" : "scheduled",
     paid_at: i === 0 && input.firstPaid ? new Date().toISOString() : null,
@@ -122,6 +127,10 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
     { company_id: company.id, kind: "source", title: "Cod-sursă și fișiere", locked_until_installment: 12 },
   ]);
 
+  if (input.discount) {
+    const { error: dErr } = await db.from("discount_redemptions").insert({ code_id: input.discount.id, company_id: company.id, subscription_id: sub.id });
+    if (dErr) console.error("[provision] discount", dErr.message);
+  }
   if (input.ref) await attachReferral(db, company.id, input.ref, input.company.name);
 
   const { error: invErr } = await db.rpc("invite_member", { p_email: input.company.email, p_company: company.id, p_role: "owner" });

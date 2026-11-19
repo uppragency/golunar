@@ -3,7 +3,7 @@ import { cache } from "react";
 import { getPortalContext } from "@/lib/session";
 import { PLANS, ADDONS, type Currency, type PlanCode } from "@/lib/plans";
 
-export type Installment = { id: string; number: number; due_date: string; amount_plan: number; amount_addons: number; amount_net: number; vat_rate: number; currency: Currency; status: "scheduled" | "paid" | "failed" | "overdue"; paid_at: string | null; method: string | null };
+export type Installment = { id: string; number: number; due_date: string; amount_plan: number; amount_addons: number; amount_discount: number; amount_net: number; vat_rate: number; currency: Currency; status: "scheduled" | "paid" | "failed" | "overdue"; paid_at: string | null; method: string | null };
 
 export const getPortalData = cache(async () => {
   const ctx = await getPortalContext();
@@ -27,7 +27,7 @@ export const getPortalData = cache(async () => {
     db.from("app_settings").select("value").eq("key", "bank").maybeSingle(),
   ]);
   const sub = subs.data?.[0] ?? null;
-  const installments = (inst.data ?? []).map((r) => ({ ...r, amount_plan: +r.amount_plan, amount_addons: +r.amount_addons, amount_net: +r.amount_net, vat_rate: +r.vat_rate })) as Installment[];
+  const installments = (inst.data ?? []).map((r) => ({ ...r, amount_plan: +r.amount_plan, amount_addons: +r.amount_addons, amount_discount: +(r.amount_discount ?? 0), amount_net: +r.amount_net, vat_rate: +r.vat_rate })) as Installment[];
   const currency: Currency = (sub?.currency ?? company.data?.currency ?? "RON") as Currency;
   const paid = installments.filter((i) => i.status === "paid");
   const open = installments.filter((i) => i.status !== "paid");

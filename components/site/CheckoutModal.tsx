@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { cartLines, type Cart, type Currency } from "@/lib/plans";
+import { PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
+import { allFeatures, discountLabel, paymentSchedule, type Discount } from "@/lib/discount";
+import { DiscountField } from "./DiscountField";
 import { Arrow } from "./visuals";
 
 const fmt = (v: number, cur: Currency, d?: number) => {
@@ -12,7 +14,7 @@ const fmt = (v: number, cur: Currency, d?: number) => {
 
 type Form = { cui: string; name: string; regCom: string; address: string; contact: string; email: string; phone: string; domain: string };
 
-export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onClose: () => void; cart: Cart; cur: Currency }) {
+export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }: { open: boolean; onClose: () => void; cart: Cart; cur: Currency; discount: Discount | null; onDiscount: (d: Discount | null) => void }) {
   const [f, setF] = useState<Form>({ cui: "", name: "", regCom: "", address: "", contact: "", email: "", phone: "", domain: "" });
   const [vatPayer, setVatPayer] = useState(true);
   const [pm, setPm] = useState<"card" | "bank_transfer">("card");
@@ -20,7 +22,11 @@ export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onC
   const [busy, setBusy] = useState<"anaf" | "pay" | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
-  const { lines, gross } = cartLines(cart, cur);
+  const { lines } = cartLines(cart, cur);
+  const schedule = paymentSchedule(cart, cur, discount);
+  const today = schedule[0].total;
+  const yearTotal = schedule.reduce((a, r) => a + r.total, 0);
+  const dfmt = (d: Date) => d.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" });
 
   useEffect(() => {
     if (!open) return;
@@ -60,7 +66,7 @@ export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onC
       const r = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...f, vatPayer, paymentMode: pm, currency: cur, cart, accept }),
+        body: JSON.stringify({ ...f, vatPayer, paymentMode: pm, currency: cur, cart, accept, discountCode: discount?.code ?? "" }),
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Comanda nu a putut fi trimisă");
@@ -129,26 +135,54 @@ export function CheckoutModal({ open, onClose, cart, cur }: { open: boolean; onC
               {err && <p className="err" role="alert">{err}</p>}
               <button className="btn btn-ink" style={{ width: "100%", justifyContent: "space-between", marginTop: 6 }} disabled={busy === "pay"}>
                 <span className="ic"><Arrow /></span>
-                <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(gross, cur)}` : "Trimite comanda"}</span>
+                <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(today, cur)}` : "Trimite comanda"}</span>
                 <span style={{ width: 8 }} />
               </button>
             </>
           )}
         </div>
-        <div className="s">
-          <h4 className="mono" style={{ color: "var(--mute)", fontWeight: 400, textTransform: "uppercase", letterSpacing: ".08em" }}>Comanda ta</h4>
-          <div style={{ marginTop: 16 }}>
+        <div className="s co-side">
+          <h4 className="co-h">Comanda ta</h4>
+          <div style={{ marginTop: 14 }}>
             {lines.map((l) => (
-              <div key={l.code} style={{ display: "flex", justifyContent: "space-between", fontSize: 14, padding: "10px 0", borderBottom: "1px solid var(--line)" }}>
-                <span style={{ color: "#C4C4CA" }}>{l.label}</span><span>{fmt(l.total, cur)}</span>
-              </div>
+              <div key={l.code} className="co-line"><span>{l.label}</span><span>{fmt(l.total, cur)}</span></div>
+            ))}
+            {discount && schedule[0].discount > 0 && (
+              <div className="co-line disc-line"><span>Cod {discount.code}<small>{discountLabel(discount, cur)}</small></span><span>−{fmt(schedule[0].discount, cur)}</span></div>
+            )}
+          </div>
+          <div style={{ marginTop: 12 }}><DiscountField plan={cart.plan} value={discount} onChange={onDiscount} /></div>
+          <div className="co-today">
+            <span>Azi plătești</span>
+            <b>{fmt(today, cur)}</b>
+          </div>
+          <p className="co-note">TVA inclus. Factura fiscală ajunge automat în SPV și pe email.</p>
+
+          <h4 className="co-h" style={{ marginTop: 28 }}>Ce primești</h4>
+          <ul className="co-feat">
+            {allFeatures(cart.plan).map((x) => <li key={x}>{x}</li>)}
+            <li>Lansare în 10 zile lucrătoare, garantată</li>
+            <li>Domeniul pe firma ta din prima zi</li>
+            <li>Website-ul devine al tău după 12 plăți</li>
+          </ul>
+
+          <h4 className="co-h" style={{ marginTop: 28 }}>Desfășurător de plată</h4>
+          <p className="co-note" style={{ marginTop: 6 }}>12 rate · total {fmt(yearTotal, cur)} · perioadă minimă {PLANS[cart.plan].minMonths === 1 ? "o lună" : `${PLANS[cart.plan].minMonths} luni`}</p>
+          <div className="co-sched">
+            {schedule.map((r) => (
+              <details key={r.n} className={r.n === 1 ? "first" : r.n === 12 ? "last" : ""}>
+                <summary>
+                  <span className="n">{String(r.n).padStart(2, "0")}</span>
+                  <span className="d">{r.n === 1 ? "Azi" : dfmt(r.date)}</span>
+                  <span className="a">{r.discount > 0 && <s>{fmt(r.base, cur)}</s>}{fmt(r.total, cur)}</span>
+                </summary>
+                <ul>
+                  {r.includes.map((x) => <li key={x}>{x}</li>)}
+                  {r.discount > 0 && discount && <li className="acc">Reducere {discount.code}: −{fmt(r.discount, cur)}</li>}
+                </ul>
+              </details>
             ))}
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 20 }}>
-            <span className="muted">Azi plătești</span>
-            <b style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-.04em" }}>{fmt(gross, cur)}</b>
-          </div>
-          <p style={{ fontSize: 12, color: "var(--mute)", marginTop: 12 }}>TVA inclus. Apoi aceeași sumă lunar, la aceeași dată. Factura fiscală ajunge automat în SPV și pe email.</p>
         </div>
         <button type="button" className="x" onClick={onClose} aria-label="Închide">✕</button>
       </form>

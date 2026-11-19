@@ -10,6 +10,7 @@ const NAV: NavItem[] = [
   { href: "/admin/incasari", label: "Încasări", icon: "card" },
   { href: "/admin/lansari", label: "Lansări", icon: "star" },
   { href: "/admin/cereri", label: "Cereri", icon: "inbox" },
+  { href: "/admin/reduceri", label: "Reduceri", icon: "card" },
   { href: "/admin/setari", label: "Setări", icon: "building" },
 ];
 

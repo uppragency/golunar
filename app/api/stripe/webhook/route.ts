@@ -1,3 +1,4 @@
+import type { Discount } from "@/lib/discount";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -100,7 +101,7 @@ async function ensureProvisioned(db: SupabaseClient, sub: Stripe.Subscription, f
     return await provision(db, {
       company: { cui: m.cui, name: m.name, regCom: m.reg_com, address: m.address, vatPayer: m.vat_payer !== "false", contact: m.contact, email: m.email, phone: m.phone },
       domain: m.domain, cart, currency: (m.currency as Currency) || "RON", mode: "card", start: new Date(sub.start_date * 1000), firstPaid,
-      stripeCustomerId: String(sub.customer), stripeSubscriptionId: sub.id, ip: m.ip || null, ref: m.ref || null,
+      stripeCustomerId: String(sub.customer), stripeSubscriptionId: sub.id, ip: m.ip || null, ref: m.ref || null, discount: m.discount ? (JSON.parse(m.discount) as Discount) : null,
     });
   } catch (e) {
     // Concurrent webhook created it first.

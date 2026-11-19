@@ -230,3 +230,46 @@ export async function updateReferral(form: FormData) {
   await s.supabase.from("referrals").update({ status, reward_month: month ? `${month.slice(0, 7)}-01` : null }).eq("id", id);
   revalidatePath("/admin", "layout");
 }
+
+const DiscountInput = z.object({
+  code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]{3,24}$/, "Codul are 3–24 caractere: litere, cifre, - sau _."),
+  description: z.string().trim().max(200).optional().default(""),
+  kind: z.enum(["percent", "fixed"]),
+  percent: z.coerce.number().min(0).max(100).optional(),
+  amount_ron: z.coerce.number().min(0).optional(),
+  amount_eur: z.coerce.number().min(0).optional(),
+  months: z.coerce.number().int().min(1).max(12),
+  max_redemptions: z.coerce.number().int().min(0).optional(),
+  starts_at: z.string().optional().default(""),
+  ends_at: z.string().optional().default(""),
+});
+
+export async function createDiscount(_: ActionState, form: FormData): Promise<ActionState> {
+  const s = await requireAdmin();
+  const parsed = DiscountInput.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Date invalide." };
+  const d = parsed.data;
+  if (d.kind === "percent" && !(d.percent && d.percent > 0)) return { error: "Completează procentul." };
+  if (d.kind === "fixed" && !(d.amount_ron && d.amount_eur)) return { error: "Completează suma în lei și în euro." };
+  const plans = form.getAll("plans").map(String).filter((p) => ["essential", "growth", "partner"].includes(p));
+  const { error } = await s.supabase.from("discount_codes").insert({
+    code: d.code, description: d.description || null, kind: d.kind,
+    percent: d.kind === "percent" ? d.percent : null,
+    amount_ron: d.kind === "fixed" ? d.amount_ron : null,
+    amount_eur: d.kind === "fixed" ? d.amount_eur : null,
+    months: d.months,
+    plans: plans.length && plans.length < 3 ? plans : null,
+    max_redemptions: d.max_redemptions || null,
+    starts_at: d.starts_at ? new Date(d.starts_at).toISOString() : null,
+    ends_at: d.ends_at ? new Date(`${d.ends_at}T23:59:59`).toISOString() : null,
+  });
+  if (error) return { error: error.code === "23505" ? "Codul există deja." : error.message };
+  revalidatePath("/admin/reduceri");
+  return { ok: `Codul ${d.code} este activ.` };
+}
+
+export async function toggleDiscount(form: FormData) {
+  const s = await requireAdmin();
+  await s.supabase.from("discount_codes").update({ active: form.get("active") === "true" }).eq("id", String(form.get("id")));
+  revalidatePath("/admin/reduceri");
+}

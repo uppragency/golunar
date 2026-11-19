@@ -20,13 +20,13 @@ export default async function BillingPage() {
       <div className="panel" style={{ marginTop: 12 }}>
         <h3>Calendar plăți · primele 12 luni</h3>
         <div className="tbl"><table>
-          <thead><tr><th>Rata</th><th>Scadență</th><th>Abonament</th><th>Opțiuni</th><th className="r">Total</th><th>Status</th></tr></thead>
+          <thead><tr><th>Rata</th><th>Scadență</th><th>Abonament</th><th>Opțiuni</th><th>Reducere</th><th className="r">Total</th><th>Status</th></tr></thead>
           <tbody>
             {d.installments.map((i, idx) => {
               const [tone, label] = idx === nextIdx && i.status === "scheduled" ? (["acc", "Următoarea"] as const) : INST_PILL[i.status];
               return (
                 <tr key={i.id}>
-                  <td>{i.number}/12</td><td>{date(i.due_date)}</td><td>{money(i.amount_plan, cur)}</td><td>{i.amount_addons ? money(i.amount_addons, cur) : "—"}</td>
+                  <td>{i.number}/12</td><td>{date(i.due_date)}</td><td>{money(i.amount_plan, cur)}</td><td>{i.amount_addons ? money(i.amount_addons, cur) : "—"}</td><td>{i.amount_discount ? `−${money(i.amount_discount, cur)}` : "—"}</td>
                   <td className="r">{money(i.amount_net, cur)}</td>
                   <td><Pill tone={tone}>{label}</Pill></td>
                 </tr>

@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 import { FAQ } from "@/lib/faq";
+import { PLAN_FEATURES, discountFor, discountLabel, type Discount } from "@/lib/discount";
+import { DiscountField } from "./DiscountField";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
@@ -50,10 +52,16 @@ export default function Landing() {
   const [railEdge, setRailEdge] = useState({ start: true, end: false });
 
   const { lines, net } = useMemo(() => cartLines(cart, cur), [cart, cur]);
+  const [discount, setDiscount] = useState<Discount | null>(null);
+  const [codeParam, setCodeParam] = useState<string | null>(null);
+  const disc = discountFor(discount, net, cur);
   const p = (eur: number, ron: number) => fmt(cur === "EUR" ? eur : ron, cur);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("discutie")) setLead(true);
+    const q = new URLSearchParams(window.location.search);
+    if (q.has("discutie")) setLead(true);
+    const c = q.get("cod")?.toUpperCase();
+    if (c && /^[A-Z0-9_-]{3,24}$/.test(c)) setCodeParam(c);
   }, []);
 
   useEffect(() => {
@@ -252,11 +260,11 @@ export default function Landing() {
             <div>
               <div className="plans" role="radiogroup" aria-label="Plan">
                 <PlanCard code="essential" sel={cart.plan} onPick={pick} price={p(89, 449)} lead="Prezență online profesionistă și credibilă."
-                  items={["Website personalizat", "Domeniu, hosting, SSL", "Mentenanță și backup", "1 îmbunătățire / lună", "Răspuns în 48h lucrătoare", "Statistici de trafic"]} />
+                  items={PLAN_FEATURES.essential} />
                 <PlanCard code="growth" sel={cart.plan} onPick={pick} price={p(189, 949)} cls="pop" tag="Cel mai ales" lead="Mai multă vizibilitate și mai multe cereri de ofertă."
-                  items={["+Tot din Esențial, plus:", "SEO + vizibilitate în AI (GEO)", "2 îmbunătățiri / lună", "Tracking conversii", "Integrări marketing", "Raport lunar + recomandări"]} />
+                  items={PLAN_FEATURES.growth} />
                 <PlanCard code="partner" sel={cart.plan} onPick={pick} price={p(390, 1990)} cls="dark" lead="Echipa ta digitală externă, lună de lună."
-                  items={["+Tot din Creștere, plus:", "4 îmbunătățiri / lună", "Landing pages campanii", "Optimizare conversii (CRO)", "Automatizări și integrări", "Suport prioritar"]} />
+                  items={PLAN_FEATURES.partner} />
               </div>
               <div className="addons">
                 <h3>Personalizează</h3>
@@ -291,10 +299,14 @@ export default function Landing() {
                   <div className="line" key={l.code}><span>{l.label}</span><span>{fmt(l.total, cur)}</span></div>
                 ))}
               </div>
-              <div className="total"><span className="muted">Total lunar</span><b>{fmt(net, cur)}</b></div>
-              <div className="vat">{PRICE_NOTE} · fără costuri suplimentare</div>
+              {discount && disc > 0 && (
+                <div className="line disc-line"><span>Cod {discount.code}<small>{discountLabel(discount, cur)}</small></span><span>−{fmt(disc, cur)}</span></div>
+              )}
+              <div className="total"><span className="muted">{discount && disc > 0 ? (discount.months >= 12 ? "Total lunar" : discount.months === 1 ? "Prima lună" : `Primele ${discount.months} luni`) : "Total lunar"}</span><b>{fmt(net - disc, cur)}</b></div>
+              <div className="vat">{PRICE_NOTE}{discount && disc > 0 && discount.months < 12 ? ` · apoi ${fmt(net, cur)} / lună` : " · fără costuri suplimentare"}</div>
+              <DiscountField plan={cart.plan} value={discount} onChange={setDiscount} initial={codeParam} />
               <div className="own">
-                Website-ul devine al tău după <b>12 plăți</b>: <b>{fmt(net * 12, cur)}</b> în primul an.
+                Website-ul devine al tău după <b>12 plăți</b>: <b>{fmt(net * 12 - disc * Math.min(12, discount?.months ?? 0), cur)}</b> în primul an.
                 {cart.brand ? " Identitatea vizuală se oprește automat după rata 12." : ""}
                 <div className="prog">{Array.from({ length: 12 }, (_, i) => <i key={i} />)}</div>
               </div>
@@ -366,7 +378,7 @@ export default function Landing() {
 
       <SiteFooter onLead={() => setLead(true)} />
 
-      <CheckoutModal open={checkout} onClose={() => setCheckout(false)} cart={cart} cur={cur} />
+      <CheckoutModal open={checkout} onClose={() => setCheckout(false)} cart={cart} cur={cur} discount={discount} onDiscount={setDiscount} />
       <LeadModal open={lead} onClose={() => setLead(false)} plan={cart.plan} />
     </div>
   );
