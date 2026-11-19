@@ -1114,3 +1114,24 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 html,body{overflow-x:clip}
 #de-ce::after{display:none}
 .end{padding:clamp(72px,8vw,110px) 0 clamp(72px,8vw,110px)}
+
+/* portfolio: real screenshots */
+.shot.real .screen{padding:0;display:block;overflow:hidden;background:#111}
+.shot.real .screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .8s var(--ease)}
+.shot.real:hover .screen img{transform:scale(1.03)}
+.shot .meta .live,.pf-actions a{color:var(--acc,#FF6A1A)}
+.folio-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px}
+.folio-foot p{font-size:12px;color:var(--mute);margin:0}
+.pf-note{font-size:12px;color:var(--mute);margin:0 0 20px}
+.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.pf-card{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);background:var(--card);scroll-margin-top:96px}
+.pf-card .bar{height:34px;display:flex;align-items:center;gap:6px;padding:0 14px;background:#202024;border-bottom:1px solid var(--line)}
+.pf-card .bar i{width:9px;height:9px;border-radius:50%;background:#3A3A40}
+.pf-card .bar span{margin-left:10px;font-family:var(--mono);font-size:11px;color:var(--mute)}
+.pf-scroll{height:min(72vh,640px);overflow-y:auto;background:#111;scrollbar-width:thin;scrollbar-color:#3A3A40 transparent;outline:none}
+.pf-scroll img{width:100%;height:auto;display:block}
+.pf-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;font-size:14px}
+.pf-meta div{display:flex;flex-direction:column;gap:2px}
+.pf-meta div span{color:var(--mute);font-size:13px}
+.pf-actions{display:flex;gap:14px;white-space:nowrap;font-size:13px}
+@media (max-width:820px){.pf-grid{grid-template-columns:1fr}.pf-scroll{height:60vh}}

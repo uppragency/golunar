@@ -7,6 +7,7 @@ import { FAQ } from "@/lib/faq";
 import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDiscount, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
 import PromoBar from "./PromoBar";
+import { PORTFOLIO, PORTFOLIO_NOTE } from "@/lib/portfolio";
 import { PartnersStrip, PortalPreview, WhySection } from "./HomeSections";
 import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
@@ -19,14 +20,7 @@ const fmt = (v: number, cur: Currency, d?: number) => {
   return v.toLocaleString("ro-RO", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + (cur === "EUR" ? " €" : " lei");
 };
 
-const FOLIO = [
-  ["nordicdental.ro", "Nordic Dental Studio", "Clinică stomatologică", "Zâmbete\nfără grabă.", "#E9EEF2", "#12324A", "#12324A", "#fff"],
-  ["miraflori.ro", "Mira Flori", "Florărie · livrare", "Flori care\nspun tot.", "#F3E4E1", "#6B2B2B", "#6B2B2B", "#fff"],
-  ["bistrotei.ro", "Bistro Tei", "Restaurant", "Gătit încet.\nServit cald.", "#1E1A16", "#F1E6D2", "#E8A04C", "#1E1A16"],
-  ["ionescu-avocat.ro", "Cabinet Ionescu", "Avocatură", "Claritate\njuridică.", "#0F1A2B", "#E6E9EE", "#C9A86A", "#0F1A2B"],
-  ["formafitness.ro", "Forma Fitness", "Sală de sport", "Mai puternic\nîn fiecare zi.", "#D9F15B", "#111", "#111", "#D9F15B"],
-  ["vilabradet.ro", "Vila Brădet", "Pensiune · munte", "Liniștea\nde sus.", "#2F3A2C", "#EDE7DA", "#EDE7DA", "#2F3A2C"],
-] as const;
+
 
 
 
@@ -258,21 +252,23 @@ export default function Landing() {
         <div className="wrap">
           <div className="sec-head reveal">
             <div><div className="eyebrow">Portofoliu</div><h2 style={{ marginTop: 20 }}>Făcut pentru tine. <span className="dim">Fără șabloane.</span></h2></div>
-            <p>Fiecare site pornește de la identitatea și clienții afacerii. Clinici, restaurante, servicii profesionale, retail local.</p>
+            <p>Fiecare site pornește de la identitatea și clienții afacerii. Clinici, academii, evenimente, magazine online, servicii profesionale.</p>
           </div>
         </div>
         <div className="rail" ref={railRef}>
-          {FOLIO.map(([u, n, c, h, bg, fg, cb, ct]) => (
-            <article className="shot" key={u}>
-              <div className="bar"><i /><i /><i /><span>{u}</span></div>
-              <div className="screen" style={{ background: bg, color: fg }}>
-                <div className="tn"><b>{n.toUpperCase()}</b><u><span>Servicii</span><span>Despre</span><span>Contact</span></u></div>
-                <h5 style={{ whiteSpace: "pre-line" }}>{h}</h5>
-                <span className="cta" style={{ background: cb, color: ct }}>Programează →</span>
-              </div>
-              <div className="meta"><b>{n}</b><span>{c}</span></div>
+          {PORTFOLIO.map((p) => (
+            <article className="shot real" key={p.slug}>
+              <div className="bar"><i /><i /><i /><span>{p.url ? p.url.replace(/^https?:\/\/(www\.)?/, "") : p.name}</span></div>
+              <Link href={`/portofoliu#${p.slug}`} className="screen" aria-label={`Vezi proiectul ${p.name}`}>
+                <img src={`/portfolio/${p.slug}-thumb.webp`} alt={`Captură de ecran: ${p.name}, ${p.category}`} loading="lazy" width={800} height={500} />
+              </Link>
+              <div className="meta"><b>{p.name}</b><span>{p.url ? <a href={p.url} target="_blank" rel="noopener" className="live">Vezi live ↗</a> : p.category}</span></div>
             </article>
           ))}
+        </div>
+        <div className="wrap folio-foot">
+          <p>{PORTFOLIO_NOTE}</p>
+          <Link href="/portofoliu" className="btn-plain">Vezi tot portofoliul →</Link>
         </div>
         <div className="rail-nav">
           <button aria-label="Proiectul anterior" onClick={() => slide(-1)} disabled={railEdge.start}><Arrow /></button>
