@@ -7,7 +7,7 @@ export default function AddonCard({ code, name, desc, price, unit, active, canBu
   const [state, action, pending] = useActionState(activateAddon, null);
   const [qty, setQty] = useState(1);
   return (
-    <div className={`panel addon${active ? " on" : ""}`}>
+    <div className={`panel addon-card${active ? " on" : ""}`}>
       <h3>{name}</h3>
       <p className="muted" style={{ fontSize: 14, lineHeight: 1.6, margin: "0 0 14px" }}>{desc}</p>
       <div className="addon-p"><b>{(price * qty).toLocaleString("ro-RO")} {unit}</b><span>/ lună{code === "brand" ? " · 12 luni" : ""}</span></div>

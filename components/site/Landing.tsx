@@ -385,7 +385,7 @@ export default function Landing() {
             <p>Ghiduri și instrumente pentru antreprenorii care aleg între abonament, plată unică sau DIY.</p>
           </div>
           <div className="res">
-            {RESOURCES.map((r) => (
+            {RESOURCES.slice(0, 4).map((r) => (
               <Link href={`/resurse/${r.slug}`} className="card reveal" key={r.slug}>
                 <span className="k">{r.kicker}</span><h4>{r.title}</h4><span>{r.minutes} min{r.extra ? ` · ${r.extra}` : ""}</span>
               </Link>

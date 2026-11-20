@@ -23,7 +23,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           </div>
           <div className="panel">
             {list.length ? list.map((l) => (
-              <div className="lead" key={l.id}>
+              <div className="lrow" key={l.id}>
                 <div className="lead-h">
                   <div><b>{l.name}</b>{l.company ? ` · ${l.company}` : ""}<small>{SOURCE_LABEL[l.source] ?? l.source} · {date(l.createdAt, { day: "numeric", month: "short" })} · sursă {l.channel}{l.medium ? `/${l.medium}` : ""}{l.campaign ? ` · ${l.campaign}` : ""}{l.ref ? ` · recomandare ${l.ref}` : ""}</small></div>
                   <Pill tone={LEAD_STATUS[l.status][1]}>{LEAD_STATUS[l.status][0]}</Pill>
