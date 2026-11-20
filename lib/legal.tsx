@@ -39,7 +39,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
         <p>Prețurile sunt cele afișate pe golunar.ro la data comenzii și sunt prețuri finale, fără TVA adăugat la factură. Prețul lunar al abonamentului tău rămâne cel din momentul comenzii pe toată perioada primelor 12 luni.</p>
         <p>Prima rată se plătește la comandă, iar următoarele lunar, la scadențele afișate în portal. Plata se face prin transfer bancar în contul UPPRMARKETING S.R.L. indicat în portal și pe email, cu referința comenzii. Pentru fiecare plată emitem factură fiscală.</p>
         <p>Codurile de reducere și ofertele promoționale (de exemplu prima lună la 4,99 lei pe planul Esențial, pentru clienți noi) se aplică doar în condițiile afișate pentru fiecare cod, nu se cumulează și nu se pot transforma în bani.</p>
-        <p>Poți alege și plata anuală: plătești o singură dată 12 luni de abonament, cu reducerea afișată la comandă (în prezent 10%). Plata anuală nu se cumulează cu alte coduri de reducere sau oferte, iar suma plătită nu se returnează în caz de anulare.</p>
+        <p>Poți alege și plata anuală: plătești o singură dată 12 luni de abonament, cu reducerea afișată la comandă (în prezent 20%). Plata anuală nu se cumulează cu alte coduri de reducere sau oferte, iar suma plătită nu se returnează în caz de anulare.</p>
         <p>O comandă neplătită în 10 zile de la plasare se anulează automat, fără costuri.</p>
 
         <h2>6. Întârzieri la plată</h2>

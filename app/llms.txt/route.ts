@@ -25,7 +25,7 @@ export function GET() {
 - Lansare: 10 zile lucrătoare de la brief; dacă întârzierea ne aparține, luna următoare de abonament e gratuită (nu se returnează bani)
 - Proprietate: după 12 plăți lunare; domeniul este al clientului din prima zi
 - Plată: transfer bancar (beneficiar UPPRMARKETING S.R.L.), lunar sau anual; factură fiscală pe CUI pentru fiecare plată, transmisă prin e-Factura
-- Plată anuală: 12 luni plătite o dată, cu 10% reducere; website-ul devine proprietatea clientului imediat după confirmarea plății; nu se cumulează cu alte coduri
+- Plată anuală: 12 luni plătite o dată, cu 20% reducere; website-ul devine proprietatea clientului imediat după confirmarea plății; nu se cumulează cu alte coduri
 - Migrare gratuită: preluarea conținutului unui site existent (WordPress, Wix etc.), redirecturi 301, mutarea domeniului fără întreruperea emailului. Detalii: ${SITE_URL}/migrare-website
 - Găzduire: infrastructură în UE, SSL, backup zilnic, monitorizare la fiecare 10 minute
 - Contact: hello@golunar.ro

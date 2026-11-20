@@ -11,7 +11,7 @@ export const FAQ: Record<string, [string, string][]> = {
     ["Cum funcționează oferta de 4,99 lei?", "Pentru clienții noi, prima lună pe planul Esențial costă 4,99 lei (1 €), TVA inclus. Codul GOLUNAR se aplică automat când alegi planul Esențial. Din luna a doua plătești 269 lei (53 €) pe lună. Perioada minimă a planului este de 3 luni."],
     ["Cum folosesc un cod de reducere?", "Introdu codul la „Ai un cod de reducere?”, în rezumatul abonamentului sau în pagina de plată. Reducerea se aplică ratelor indicate de cod și apare în desfășurătorul de plată."],
     ["Primesc factură fiscală?", "Da. Pentru fiecare plată emitem factură fiscală pe CUI-ul firmei, transmisă în SPV prin e-Factura și disponibilă în contul tău."],
-    ["Pot plăti tot anul o dată?", "Da. La comandă alegi plata anuală: plătești 12 luni o singură dată, cu 10% reducere, iar website-ul devine al tău imediat după confirmarea plății. Plata anuală nu se cumulează cu alte coduri de reducere."],
+    ["Pot plăti tot anul o dată?", "Da. La comandă alegi plata anuală: plătești 12 luni o singură dată, cu 20% reducere, iar website-ul devine al tău imediat după confirmarea plății. Plata anuală nu se cumulează cu alte coduri de reducere."],
     ["Ce se întâmplă dacă întârzii o plată?", "Îți trimitem amintiri pe email în zilele 1, 5 și 10 după scadență. După 14 zile fără plată, site-ul poate fi suspendat temporar, până la plata ratei."],
   ],
   "Anulare și proprietate": [
