@@ -1,6 +1,6 @@
-/* Textele legale LUNAR. Ultima actualizare: 20 noiembrie 2026. */
+/* Textele legale LUNAR. Ultima actualizare: 21 noiembrie 2026. */
 
-export const LEGAL_UPDATED = "20 noiembrie 2026";
+export const LEGAL_UPDATED = "21 noiembrie 2026";
 
 const OP = "UPPRMARKETING S.R.L., cu sediul în Sat Chiajna, Com. Chiajna, Str. Sergent Ilie Petre Nr. 84, Bl. 1, Et. 7, Ap. 716, Județ Ilfov, CIF 52762670, Reg. com. J2025081624004";
 
@@ -123,6 +123,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
           <li>banca și, când este cazul, furnizorul de facturare electronică și ANAF (e-Factura);</li>
           <li>contabilul și consultanții noștri, autorități, când legea o cere.</li>
         </ul>
+        <p><b>Publicitate și măsurare cu Google.</b> Dacă accepți cookie-urile de analiză și marketing, folosim funcțiile de publicitate Google Analytics (Google signals): Google asociază vizitele tale cu contul tău Google, dacă ești autentificat și ai activat personalizarea reclamelor în contul Google. Primim astfel doar rapoarte agregate (de exemplu grupe de vârstă și interese), nu date care te identifică, și putem afișa reclame LUNAR persoanelor care au vizitat site-ul (remarketing). Poți opri personalizarea oricând din <a className="inl" href="https://myadcenter.google.com" target="_blank" rel="noopener noreferrer">Google My Ad Center</a> sau retrăgând acordul din <b>Preferințe cookie</b>.</p>
         <p>Unii furnizori pot prelucra date în afara Spațiului Economic European. În aceste cazuri, transferul se face pe baza clauzelor contractuale standard aprobate de Comisia Europeană sau a altor garanții prevăzute de GDPR.</p>
 
         <h2>5. Cât timp păstrăm datele</h2>
@@ -176,8 +177,8 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
         <h3>Analiză și marketing (doar cu acordul tău)</h3>
         <ul>
           <li><b>lunar_src</b>: sursa primei vizite (de exemplu Google, Facebook sau o campanie), ca să știm ce canale aduc clienți. Durată: 90 de zile.</li>
-          <li><b>Google Tag Manager, Google Analytics 4</b> (_ga, _ga_*): statistici despre vizite. Durată: până la 2 ani.</li>
-          <li><b>Google Ads</b> (_gcl_*): măsurarea conversiilor din reclame. Durată: până la 90 de zile.</li>
+          <li><b>Google Tag Manager, Google Analytics 4</b> (_ga, _ga_*): statistici despre vizite și, prin Google signals, rapoarte agregate despre vârstă și interese. Durată: până la 2 ani.</li>
+          <li><b>Google Ads</b> (_gcl_*, IDE, ar_debug): măsurarea conversiilor din reclame și remarketing (reclame LUNAR afișate celor care au vizitat site-ul). Durată: până la 13 luni.</li>
           <li><b>Meta Pixel</b> (_fbp), dacă este activat: măsurarea campaniilor Facebook și Instagram. Durată: până la 90 de zile.</li>
         </ul>
         <p>Folosim și Vercel Web Analytics, care măsoară vizitele fără cookie-uri și fără date care te identifică, și Sentry, care ne anunță erorile tehnice ale site-ului fără să plaseze cookie-uri.</p>
