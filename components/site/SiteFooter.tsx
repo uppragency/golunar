@@ -83,13 +83,13 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div>
               <h6>Website pentru</h6>
-              {INDUSTRY_LINKS.map(([slug, label], i) => <Link key={slug} href={`/${slug}`} className={i && !allInd ? "fb-x" : undefined}>{label}</Link>)}
-              <button type="button" className="fb-more" aria-expanded={allInd} onClick={() => setAllInd((v) => !v)}>{allInd ? "Arată mai puțin" : `Vezi toate paginile (${INDUSTRY_LINKS.length})`}</button>
+              {INDUSTRY_LINKS.map(([slug, label], i) => <Link key={slug} href={`/${slug}`} className={i > 2 && !allInd ? "fb-x" : undefined}>{label}</Link>)}
+              <button type="button" className="fb-more" aria-expanded={allInd} onClick={() => setAllInd((v) => !v)}>{allInd ? "Arată mai puțin" : "Afișează toate"}</button>
             </div>
             <div>
               <h6>Creare site</h6>
-              {CITY_LINKS.map(([slug, label], i) => <Link key={slug} href={`/${slug}`} className={i && !allCity ? "fb-x" : undefined}>{label}</Link>)}
-              <button type="button" className="fb-more" aria-expanded={allCity} onClick={() => setAllCity((v) => !v)}>{allCity ? "Arată mai puțin" : `Vezi toate paginile (${CITY_LINKS.length})`}</button>
+              {CITY_LINKS.map(([slug, label], i) => <Link key={slug} href={`/${slug}`} className={i > 2 && !allCity ? "fb-x" : undefined}>{label}</Link>)}
+              <button type="button" className="fb-more" aria-expanded={allCity} onClick={() => setAllCity((v) => !v)}>{allCity ? "Arată mai puțin" : "Afișează toate"}</button>
             </div>
             <div><h6>Cont</h6><Link href="/cont">Contul meu</Link><Link href="/#abonamente">Începe proiectul</Link><Link href="/cont/cereri">Cere o îmbunătățire</Link><Link href="/cont/recomanda">Recomandă și câștigă</Link></div>
           </div>
