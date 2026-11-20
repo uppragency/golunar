@@ -12,3 +12,6 @@ Sentry.init({
   denyUrls: [/googletagmanager\.com/, /google-analytics\.com/, /connect\.facebook\.net/, /^chrome-extension:\/\//, /^moz-extension:\/\//, /^safari-extension:\/\//],
   beforeSend: scrub,
 });
+
+/** Navigările din aplicație apar ca pași înaintea unei erori (fără măsurarea performanței). */
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
