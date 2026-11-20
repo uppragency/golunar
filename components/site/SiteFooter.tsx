@@ -77,7 +77,7 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div>
               <h6>Resurse</h6>
-              {RESOURCES.map((r) => <Link key={r.slug} href={`/resurse/${r.slug}`}>{r.title.split(":")[0]}</Link>)}
+              {RESOURCES.slice(0, 3).map((r) => <Link key={r.slug} href={`/resurse/${r.slug}`}>{r.title.split(":")[0]}</Link>)}
               <Link href="/lunar-vs-agentie-vs-ai">LUNAR vs agenție vs AI</Link><Link href="/tehnologii">Tehnologii</Link>
               <Link href="/resurse">Toate resursele →</Link>
             </div>
