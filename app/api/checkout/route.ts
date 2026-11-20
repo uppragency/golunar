@@ -11,6 +11,7 @@ import { PAYEE } from "@/lib/bank";
 import { discountFor, type Discount } from "@/lib/discount";
 import { createClient as createAnon } from "@supabase/supabase-js";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
+import { reportError } from "@/lib/report";
 
 const Body = z.object({
   cui: z.string().trim().min(2).max(14),
@@ -75,7 +76,7 @@ export async function POST(req: Request) {
     });
     // Comanda a fost trimisă: oprim recuperarea și nurturing-ul pentru acest email.
     const secret = process.env.CRON_SECRET;
-    if (secret) await createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } }).rpc("checkout_done", { p_secret: secret, p_email: d.email }).then(({ error }) => error && console.error("[checkout] done", error.message));
+    if (secret) await createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } }).rpc("checkout_done", { p_secret: secret, p_email: d.email }).then(({ error }) => error && reportError("checkout-done", error));
     if (res.error === "exists") {
       return NextResponse.json({ error: "Firma cu acest CUI are deja un cont LUNAR. Intră în cont sau scrie-ne la hello@golunar.ro." }, { status: 409 });
     }
@@ -87,7 +88,7 @@ export async function POST(req: Request) {
     const q = new URLSearchParams({ ref: res.bank_reference, suma: amount, lunar: money(net, d.currency), plan: PLANS[d.cart.plan].name + (annual ? " · plată anuală" : ""), ...(annual ? { anual: "1" } : {}), email: d.email, cont: res.has_account ? "1" : "0", v: String(res.firstAmount), m: String(net), cur: d.currency, pc: d.cart.plan });
     return NextResponse.json({ ok: true, redirect: `/comanda/multumim?${q}` });
   } catch (e) {
-    console.error("[checkout] bank order", e);
+    reportError("checkout", e, { plan: d.cart.plan, billing: d.billing });
     await sendEmail({ template: "admin_order", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: d.email, subject: `Comandă de procesat manual: ${d.name}`,
       html: templates.adminNotice("Comandă de confirmat manual (provizionare eșuată)", { Firmă: d.name, CUI: d.cui, Adresă: d.address, Plan: PLANS[d.cart.plan].name, Lunar: money(net, d.currency), Email: d.email, Telefon: d.phone, Domeniu: d.domain }) });
     return NextResponse.json({ ok: true, message: "Am primit comanda. Îți trimitem în cel mult o zi lucrătoare datele de plată și accesul în cont." });

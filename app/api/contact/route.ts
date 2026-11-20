@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { layout, sendEmail, templates } from "@/lib/email";
 import { getRef, getSource } from "@/lib/ref";
 import { CONTACT_TOPICS } from "@/lib/contact";
+import { reportError } from "@/lib/report";
 
 const Body = z.object({
   category: z.enum(["nou", "client", "parteneriat", "altceva"]),
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
     p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: `[${label}] ${d.message}`,
     p_plan: "", p_source: "contact", p_ref: ref ?? "", p_meta: { src: await getSource(), category: d.category, marketing },
   });
-  if (error) console.error("[contact]", error.message);
+  if (error) reportError("contact", error, { category: d.category });
 
   await sendEmail({
     template: "admin_lead", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", replyTo: d.email,

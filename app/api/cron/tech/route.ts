@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient as createAnon } from "@supabase/supabase-js";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 import { checkSite } from "@/lib/tech-check";
+import { reportError } from "@/lib/report";
 
 export const maxDuration = 300;
 
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
   const { data, error } = await db.rpc("tech_sites", { p_secret: secret });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) { reportError("cron-tech", error); return NextResponse.json({ error: error.message }, { status: 500 }); }
   const sites = (data ?? []) as { id: string; domain: string }[];
   let done = 0;
   for (let i = 0; i < sites.length; i += 3) {

@@ -3,6 +3,7 @@ import { createClient as createAnon } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import { SITE_URL, SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 import { monthlyReport } from "@/lib/email";
+import { reportError } from "@/lib/report";
 
 export const maxDuration = 60;
 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const key = process.env.RESEND_API_KEY;
-  if (!key) return NextResponse.json({ error: "RESEND_API_KEY missing" }, { status: 500 });
+  if (!key) { reportError("cron-monthly-report", "RESEND_API_KEY missing"); return NextResponse.json({ error: "RESEND_API_KEY missing" }, { status: 500 }); }
 
   const now = new Date();
   const p = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
 
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
   const { data, error } = await db.rpc("monthly_report_payloads", { p_secret: secret, p_period: period });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) { reportError("cron-monthly-report", error); return NextResponse.json({ error: error.message }, { status: 500 }); }
 
   const resend = new Resend(key);
   let sent = 0, failed = 0;

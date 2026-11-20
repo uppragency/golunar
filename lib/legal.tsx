@@ -118,6 +118,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
           <li>Supabase (bază de date, autentificare, stocare fișiere);</li>
           <li>Vercel (găzduirea golunar.ro și a website-urilor clienților);</li>
           <li>Resend (trimiterea emailurilor);</li>
+          <li>Sentry (monitorizarea erorilor tehnice, cu date stocate în UE și fără conținutul formularelor, cookie-uri sau adrese IP);</li>
           <li>Google (Tag Manager, Analytics, Ads, PageSpeed), doar cu consimțământul tău pentru analiză și marketing;</li>
           <li>banca și, când este cazul, furnizorul de facturare electronică și ANAF (e-Factura);</li>
           <li>contabilul și consultanții noștri, autorități, când legea o cere.</li>
@@ -179,7 +180,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
           <li><b>Google Ads</b> (_gcl_*): măsurarea conversiilor din reclame. Durată: până la 90 de zile.</li>
           <li><b>Meta Pixel</b> (_fbp), dacă este activat: măsurarea campaniilor Facebook și Instagram. Durată: până la 90 de zile.</li>
         </ul>
-        <p>Folosim și Vercel Web Analytics, care măsoară vizitele fără cookie-uri și fără date care te identifică.</p>
+        <p>Folosim și Vercel Web Analytics, care măsoară vizitele fără cookie-uri și fără date care te identifică, și Sentry, care ne anunță erorile tehnice ale site-ului fără să plaseze cookie-uri.</p>
 
         <h2>4. Cum ștergi cookie-urile</h2>
         <p>Poți șterge sau bloca cookie-urile din setările browserului. Dacă blochezi cookie-urile necesare, autentificarea în portal nu va funcționa.</p>

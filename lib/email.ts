@@ -2,6 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { SITE_URL } from "@/lib/env";
+import { reportError } from "@/lib/report";
 
 const FROM = process.env.EMAIL_FROM || "LUNAR <hello@golunar.ro>";
 const FROM_BILLING = process.env.EMAIL_BILLING_FROM || "LUNAR <hello@golunar.ro>";
@@ -39,7 +40,7 @@ export async function sendEmail({ template, to, subject, html, billing, companyI
     await db?.from("email_log").insert({ company_id: companyId ?? null, template, to_email: to, resend_id: data?.id ?? null, status: "sent" });
     return data?.id ?? null;
   } catch (e) {
-    console.error(`[email] ${template} failed`, e);
+    reportError(`email-${template}`, e);
     await db?.from("email_log").insert({ company_id: companyId ?? null, template, to_email: to, status: "failed" });
     return null;
   }

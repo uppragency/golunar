@@ -4,6 +4,7 @@ import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { renderGrowth, type GrowthJob } from "@/lib/growth-emails";
 import { unsubLinks } from "@/lib/unsub";
+import { reportError } from "@/lib/report";
 
 export const maxDuration = 60;
 
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
   const { data, error } = await db.rpc("growth_queue", { p_secret: secret });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) { reportError("cron-growth", error); return NextResponse.json({ error: error.message }, { status: 500 }); }
 
   const stats: Record<string, number> = {};
   for (const j of (data ?? []) as GrowthJob[]) {

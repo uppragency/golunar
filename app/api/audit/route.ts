@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { normalizeUrl, runAudit, topIssues } from "@/lib/audit";
 import { auditReport, sendEmail, templates } from "@/lib/email";
 import { getRef, getSource } from "@/lib/ref";
+import { reportError } from "@/lib/report";
 
 export const maxDuration = 60;
 
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
     p_plan: "", p_source: "audit", p_ref: ref ?? "",
     p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1", url: result.finalUrl, psi: result.psi, scores: s, failed: result.checks.filter((c) => !c.ok).map((c) => c.id) },
   });
-  if (error) console.error("[audit] lead", error.message);
+  if (error) reportError("audit-lead", error);
 
   await sendEmail({
     template: "audit_report", to: d.email, subject: `Auditul gratuit pentru ${new URL(result.finalUrl).hostname}`,
