@@ -325,15 +325,12 @@ export default function Landing() {
                 </div>
                 <div className="addon">
                   <div className="ico">Aa</div>
-                  <div>
-                    <h4>Limbă suplimentară</h4><p>Versiune completă în altă limbă, menținută lunar.</p><div className="pp">{fmt(ADDONS.lang[k], cur)} / lună / limbă</div>
-                    <div className="stepper">
-                      <button aria-label="Minus" onClick={() => setCart((c) => ({ ...c, langs: Math.max(0, c.langs - 1) }))}>−</button>
-                      <b>{cart.langs}</b>
-                      <button aria-label="Plus" onClick={() => setCart((c) => ({ ...c, langs: Math.min(5, c.langs + 1) }))}>+</button>
-                    </div>
+                  <div><h4>Limbă suplimentară</h4><p>Versiune completă în altă limbă, menținută lunar.</p><div className="pp">{fmt(ADDONS.lang[k], cur)} / lună / limbă</div></div>
+                  <div className="stepper">
+                    <button aria-label="Minus" onClick={() => setCart((c) => ({ ...c, langs: Math.max(0, c.langs - 1) }))}>−</button>
+                    <b>{cart.langs}</b>
+                    <button aria-label="Plus" onClick={() => setCart((c) => ({ ...c, langs: Math.min(5, c.langs + 1) }))}>+</button>
                   </div>
-                  <span />
                 </div>
               </div>
             </div>
