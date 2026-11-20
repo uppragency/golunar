@@ -5,7 +5,7 @@ import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 import { templates } from "@/lib/email";
 import { money } from "@/lib/format";
 import type { Currency } from "@/lib/plans";
-import { reportError } from "@/lib/report";
+import { reportError, rpcRetry } from "@/lib/report";
 
 export const maxDuration = 60;
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const key = process.env.RESEND_API_KEY;
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
-  const { data, error } = await db.rpc("daily_automation", { p_secret: secret });
+  const { data, error } = await rpcRetry(() => db.rpc("daily_automation", { p_secret: secret }));
   if (error) { reportError("cron-daily", error); return NextResponse.json({ error: error.message }, { status: 500 }); }
 
   const resend = key ? new Resend(key) : null;

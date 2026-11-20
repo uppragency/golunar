@@ -10,3 +10,18 @@ export function reportError(area: string, err: unknown, extra?: Record<string, u
     Sentry.captureException(e);
   });
 }
+
+type RpcResult<T> = { data: T | null; error: { message: string; code?: string } | null };
+
+/**
+ * Apel RPC cu o reîncercare la erorile temporare ale platformei (de ex. 5xx de la gateway-ul Supabase, fără cod Postgres).
+ * Erorile din baza de date (cu cod Postgres) nu se reîncearcă.
+ */
+export async function rpcRetry<T>(call: () => PromiseLike<RpcResult<T>>, delayMs = 2000): Promise<RpcResult<T>> {
+  const first = await call();
+  const transient = first.error && !first.error.code;
+  if (!transient) return first;
+  console.warn("[rpc] eroare temporară, reîncerc:", first.error?.message);
+  await new Promise((r) => setTimeout(r, delayMs));
+  return call();
+}

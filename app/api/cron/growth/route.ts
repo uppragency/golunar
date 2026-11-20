@@ -4,7 +4,7 @@ import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { renderGrowth, type GrowthJob } from "@/lib/growth-emails";
 import { unsubLinks } from "@/lib/unsub";
-import { reportError } from "@/lib/report";
+import { reportError, rpcRetry } from "@/lib/report";
 
 export const maxDuration = 60;
 
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
-  const { data, error } = await db.rpc("growth_queue", { p_secret: secret });
+  const { data, error } = await rpcRetry(() => db.rpc("growth_queue", { p_secret: secret }));
   if (error) { reportError("cron-growth", error); return NextResponse.json({ error: error.message }, { status: 500 }); }
 
   const stats: Record<string, number> = {};
