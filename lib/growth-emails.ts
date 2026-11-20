@@ -1,7 +1,7 @@
 import "server-only";
 import { SITE_URL } from "@/lib/env";
 import { layout, esc } from "@/lib/email";
-import { ADDONS, PLANS, annualTotal, cartLines, type Cart, type Currency, type PlanCode } from "@/lib/plans";
+import { ADDONS, PLANS, annualTotal, cartLines, hasAiAddon, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 import { LAUNCH } from "@/lib/discount";
 import { money } from "@/lib/format";
 
@@ -27,6 +27,7 @@ function resumeUrl(j: GrowthJob, c: string) {
   const q = new URLSearchParams({ comanda: "1", plan: cart.plan });
   if (cart.brand) q.set("brand", "1");
   if (cart.local) q.set("local", "1");
+  if (hasAiAddon(cart)) q.set("ai", "1");
   if (cart.langs) q.set("limbi", String(cart.langs));
   if (j.billing === "annual") q.set("anual", "1");
   if (j.currency === "EUR") q.set("moneda", "EUR");
@@ -37,7 +38,7 @@ function summary(j: GrowthJob) {
   const cart = j.cart ?? { plan: j.plan ?? "essential", brand: false, local: false, langs: 0 };
   const cur = j.currency ?? "RON";
   const { net } = cartLines(cart, cur);
-  const extras = [cart.brand && ADDONS.brand.name, cart.local && ADDONS.local.name, cart.langs > 0 && `${cart.langs} ${cart.langs > 1 ? "limbi suplimentare" : "limbă suplimentară"}`].filter(Boolean) as string[];
+  const extras = [cart.brand && ADDONS.brand.name, cart.local && ADDONS.local.name, hasAiAddon(cart) && ADDONS.ai.name, cart.langs > 0 && `${cart.langs} ${cart.langs > 1 ? "limbi suplimentare" : "limbă suplimentară"}`].filter(Boolean) as string[];
   const promo = cart.plan === "essential" && j.billing !== "annual";
   const today = j.billing === "annual" ? annualTotal(cart, cur).total : promo ? (cur === "EUR" ? LAUNCH.eur : LAUNCH.ron) + net - PLANS.essential[cur === "EUR" ? "eur" : "ron"] : net;
   const rows =

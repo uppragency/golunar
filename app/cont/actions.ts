@@ -221,10 +221,10 @@ export async function activateAddon(_: ActionState, form: FormData): Promise<Act
   const addon = String(form.get("addon"));
   const qty = Number(form.get("qty") || 1);
   const { data, error } = await ctx.supabase.rpc("portal_addon_activate", { p_company: ctx.companyId, p_addon: addon, p_qty: qty });
-  if (error) return { error: error.message.includes("exists") ? "Opțiunea este deja activă." : "Opțiunea nu a putut fi activată. Scrie-ne la hello@golunar.ro." };
+  if (error) return { error: error.message.includes("exists") ? "Opțiunea este deja activă." : error.message.includes("included") ? "Vizibilitatea în AI este deja inclusă în planul tău." : "Opțiunea nu a putut fi activată. Scrie-ne la hello@golunar.ro." };
   const r = data as { price: number; currency: string; installments: number };
   const { data: c } = await ctx.supabase.from("companies").select("name").eq("id", ctx.companyId).single();
-  const names: Record<string, string> = { brand: "Identitate vizuală", local: "Vizibilitate locală Google", lang: "Limbă suplimentară" };
+  const names: Record<string, string> = { brand: "Identitate vizuală", local: "Vizibilitate locală Google", ai: "Vizibilitate în AI", lang: "Limbă suplimentară" };
   await ctx.supabase.from("requests").insert({ company_id: ctx.companyId, created_by: ctx.user!.id, type: "billing", title: `Opțiune activată: ${names[addon] ?? addon}${addon === "lang" ? ` × ${qty}` : ""}` });
   await sendEmail({ template: "admin_addon", to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro", subject: `Opțiune activată: ${names[addon]} · ${c?.name ?? ""}`,
     html: templates.adminNotice("Client a activat o opțiune", { Firmă: c?.name, Opțiune: names[addon], Cantitate: String(qty), Preț: `${r.price} ${r.currency === "EUR" ? "€" : "lei"} / lună`, Rate: String(r.installments) }) });

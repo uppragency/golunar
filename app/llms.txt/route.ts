@@ -11,7 +11,7 @@ export function GET() {
   const plans = (["essential", "growth", "partner"] as const)
     .map((p) => `- Plan ${PLANS[p].name}: ${PLANS[p].ron} lei pe lună, TVA inclus (${PLANS[p].eur} EUR), ${PLANS[p].improvements} ${PLANS[p].improvements === 1 ? "îmbunătățire" : "îmbunătățiri"} pe lună, perioadă minimă ${PLANS[p].minMonths === 1 ? "o lună" : `${PLANS[p].minMonths} luni`}`)
     .join("\n");
-  const addons = Object.values(ADDONS).map((a) => `- ${a.name}: ${a.ron} lei pe lună`).join("\n");
+  const addons = Object.values(ADDONS).map((a) => `- ${a.name}: ${a.ron} lei pe lună${a === ADDONS.ai ? " (pentru planul Esențial; inclusă în Creștere și Partener)" : ""}`).join("\n");
   const faq = [...Object.values(FAQ), ...Object.values(FAQ_EXTRA)].flat().map(([q, a]) => `- ${q} ${a}`).join("\n");
   const body = `# LUNAR
 

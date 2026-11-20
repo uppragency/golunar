@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ADDONS, PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
+import { ADDONS, PLANS, cartLines, hasAiAddon, type Cart, type Currency } from "@/lib/plans";
 import { discountFor, type Discount } from "@/lib/discount";
 
 export type ProvisionInput = {
@@ -83,6 +83,7 @@ export async function provision(db: SupabaseClient, input: ProvisionInput) {
   const items: { addon: string; quantity: number; unit_price: number; max_cycles: number | null }[] = [];
   if (input.cart.brand) items.push({ addon: "brand", quantity: 1, unit_price: ADDONS.brand[k], max_cycles: 12 });
   if (input.cart.local) items.push({ addon: "local", quantity: 1, unit_price: ADDONS.local[k], max_cycles: null });
+  if (hasAiAddon(input.cart)) items.push({ addon: "ai", quantity: 1, unit_price: ADDONS.ai[k], max_cycles: null });
   if (input.cart.langs > 0) items.push({ addon: "lang", quantity: input.cart.langs, unit_price: ADDONS.lang[k], max_cycles: null });
   if (items.length) {
     const { error } = await db.from("subscription_items").insert(items.map((i) => ({ ...i, subscription_id: sub.id, company_id: company.id })));

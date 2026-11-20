@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient as createAnon } from "@supabase/supabase-js";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
-import { ADDONS, ANNUAL_OFF, PLANS, cartLines, round2, type Billing, type Cart, type Currency } from "@/lib/plans";
+import { ADDONS, ANNUAL_OFF, PLANS, cartLines, hasAiAddon, round2, type Billing, type Cart, type Currency } from "@/lib/plans";
 import { discountFor, type Discount } from "@/lib/discount";
 
 export type BankOrder = {
@@ -40,6 +40,7 @@ export async function provisionBankOrder(o: BankOrder) {
   const items = [
     ...(o.cart.brand ? [{ addon: "brand", quantity: 1, unit_price: ADDONS.brand[k], max_cycles: 12 }] : []),
     ...(o.cart.local ? [{ addon: "local", quantity: 1, unit_price: ADDONS.local[k], max_cycles: "" }] : []),
+    ...(hasAiAddon(o.cart) ? [{ addon: "ai", quantity: 1, unit_price: ADDONS.ai[k], max_cycles: "" }] : []),
     ...(o.cart.langs > 0 ? [{ addon: "lang", quantity: o.cart.langs, unit_price: ADDONS.lang[k], max_cycles: "" }] : []),
   ];
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });

@@ -65,6 +65,7 @@ export default function NewClientForm({ action }: { action: (s: State, f: FormDa
         <div className="grid2">
           <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="brand" />Identitate vizuală</label>
           <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="local" />Vizibilitate locală</label>
+          <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="ai" />Vizibilitate în AI (doar Esențial)</label>
         </div>
         <div className="fld"><label htmlFor="n-langs">Limbi suplimentare</label><input id="n-langs" name="langs" type="number" min={0} max={5} defaultValue={0} /></div>
         <label className="check" style={{ color: "var(--mute)" }}><input type="checkbox" name="first_paid" />Prima rată e deja încasată (pornește lansarea)</label>

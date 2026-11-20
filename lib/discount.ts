@@ -2,7 +2,7 @@
 export const LAUNCH = { code: "GOLUNAR", ron: 4.99, eur: 1 } as const;
 export const launchPrice = (cur: "RON" | "EUR") => (cur === "EUR" ? "1 €" : "4,99 lei");
 
-import { ADDONS, PLANS, cartLines, round2, type Cart, type Currency, type PlanCode } from "@/lib/plans";
+import { ADDONS, PLANS, cartLines, hasAiAddon, round2, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 
 /** Reducere validată (răspunsul RPC check_discount). */
 export type Discount = {
@@ -41,7 +41,7 @@ export function paymentSchedule(cart: Cart, cur: Currency, d: Discount | null, s
   const day = Math.min(28, start.getUTCDate());
   const plan = PLANS[cart.plan];
   const imp = `${plan.improvements} ${plan.improvements === 1 ? "îmbunătățire" : "îmbunătățiri"} incluse`;
-  const extras = [cart.brand && ADDONS.brand.name, cart.local && ADDONS.local.name, cart.langs > 0 && `${cart.langs} ${cart.langs > 1 ? "limbi suplimentare" : "limbă suplimentară"}`].filter(Boolean) as string[];
+  const extras = [cart.brand && ADDONS.brand.name, cart.local && ADDONS.local.name, hasAiAddon(cart) && ADDONS.ai.name, cart.langs > 0 && `${cart.langs} ${cart.langs > 1 ? "limbi suplimentare" : "limbă suplimentară"}`].filter(Boolean) as string[];
   return Array.from({ length: 12 }, (_, i) => {
     const n = i + 1;
     const disc = n <= (d?.months ?? 0) ? discountFor(d, net, cur) : 0;

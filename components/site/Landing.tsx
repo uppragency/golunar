@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Billing, type Cart, type Currency, type PlanCode } from "@/lib/plans";
+import { ADDONS, PLANS, PRICE_NOTE, aiIncluded, cartLines, type Billing, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 import { FAQ } from "@/lib/faq";
 import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDiscount, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
@@ -83,7 +83,7 @@ export default function Landing() {
     if (q.has("comanda")) {
       // Link din emailul de comandă abandonată: refacem exact alegerile.
       const langs = Math.max(0, Math.min(5, Number(q.get("limbi")) || 0));
-      setCart((c) => ({ ...c, plan, brand: q.get("brand") === "1" || c.brand, local: q.get("local") === "1" || c.local, langs: langs || c.langs }));
+      setCart((c) => ({ ...c, plan, brand: q.get("brand") === "1" || c.brand, local: q.get("local") === "1" || c.local, ai: q.get("ai") === "1" || c.ai, langs: langs || c.langs }));
       if (q.get("anual") === "1") setBilling("annual");
       if (q.get("moneda") === "EUR") setCur("EUR");
       setCheckout(true);
@@ -315,6 +315,13 @@ export default function Landing() {
                   <div className="ico">G</div>
                   <div><h4>Vizibilitate locală Google</h4><p>Google Business Profile și Maps, actualizări, monitorizare.</p><div className="pp">{fmt(ADDONS.local[k], cur)} / lună</div></div>
                   <button className={`tg${cart.local ? " on" : ""}`} role="switch" aria-checked={cart.local} aria-label="Vizibilitate locală" onClick={() => setCart((c) => ({ ...c, local: !c.local }))} />
+                </div>
+                <div className="addon">
+                  <div className="ico">AI</div>
+                  <div><h4>Vizibilitate în AI</h4><p>Apari în răspunsurile ChatGPT, Gemini și Perplexity. Optimizare și raport lunar.</p><div className="pp">{aiIncluded(cart.plan) ? `Inclusă în planul ${PLANS[cart.plan].name}` : `${fmt(ADDONS.ai[k], cur)} / lună`}</div></div>
+                  {aiIncluded(cart.plan) ? <span className="addon-inc" aria-label="Inclusă">✓</span> : (
+                    <button className={`tg${cart.ai ? " on" : ""}`} role="switch" aria-checked={Boolean(cart.ai)} aria-label="Vizibilitate în AI" onClick={() => setCart((c) => ({ ...c, ai: !c.ai }))} />
+                  )}
                 </div>
                 <div className="addon">
                   <div className="ico">Aa</div>

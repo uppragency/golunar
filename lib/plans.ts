@@ -1,5 +1,5 @@
 export type PlanCode = "essential" | "growth" | "partner";
-export type AddonCode = "brand" | "local" | "lang";
+export type AddonCode = "brand" | "local" | "ai" | "lang";
 export type Currency = "RON" | "EUR";
 
 export const PLANS: Record<PlanCode, { name: string; eur: number; ron: number; improvements: number; minMonths: number }> = {
@@ -11,6 +11,7 @@ export const PLANS: Record<PlanCode, { name: string; eur: number; ron: number; i
 export const ADDONS: Record<AddonCode, { name: string; eur: number; ron: number; maxCycles?: number; maxQty?: number }> = {
   brand: { name: "Identitate vizuală", eur: 79, ron: 399, maxCycles: 12 },
   local: { name: "Vizibilitate locală Google", eur: 19, ron: 99 },
+  ai: { name: "Vizibilitate în AI", eur: 19, ron: 99 },
   lang: { name: "Limbă suplimentară", eur: 29, ron: 149, maxQty: 5 },
 };
 
@@ -19,7 +20,11 @@ export const VAT_RATE = 0;
 export const PRICE_NOTE = "TVA inclus";
 export const EUR_RON = 5.09; // curs indicativ pentru afișare; facturile folosesc cursul BNR al zilei
 
-export type Cart = { plan: PlanCode; brand: boolean; local: boolean; langs: number };
+export type Cart = { plan: PlanCode; brand: boolean; local: boolean; ai?: boolean; langs: number };
+
+/** Vizibilitatea în AI e inclusă în Creștere și Partener; ca opțiune plătită există doar la Esențial. */
+export const aiIncluded = (plan: PlanCode) => plan !== "essential";
+export const hasAiAddon = (cart: Cart) => Boolean(cart.ai) && !aiIncluded(cart.plan);
 
 export function cartLines(cart: Cart, cur: Currency) {
   const k = cur === "EUR" ? "eur" : "ron";
@@ -28,6 +33,7 @@ export function cartLines(cart: Cart, cur: Currency) {
   ];
   if (cart.brand) lines.push({ code: "brand", label: "Identitate vizuală · 12 luni", qty: 1, unit: ADDONS.brand[k], total: ADDONS.brand[k] });
   if (cart.local) lines.push({ code: "local", label: ADDONS.local.name, qty: 1, unit: ADDONS.local[k], total: ADDONS.local[k] });
+  if (hasAiAddon(cart)) lines.push({ code: "ai", label: ADDONS.ai.name, qty: 1, unit: ADDONS.ai[k], total: ADDONS.ai[k] });
   if (cart.langs > 0)
     lines.push({
       code: "lang",

@@ -47,6 +47,7 @@ const NewClient = z.object({
   start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   brand: z.string().optional(),
   local: z.string().optional(),
+  ai: z.string().optional(),
   langs: z.coerce.number().int().min(0).max(5).default(0),
   first_paid: z.string().optional(),
   send_welcome: z.string().optional(),
@@ -62,7 +63,7 @@ export async function createClientAction(_: ActionState, form: FormData): Promis
     const res = await provision(s.supabase, {
       company: { cui: d.cui, name: d.name, regCom: d.reg_com, address: d.address, vatPayer: /^ro/i.test(d.cui), contact: d.contact, email: d.email, phone: d.phone },
       domain: d.domain,
-      cart: { plan: d.plan, brand: Boolean(d.brand), local: Boolean(d.local), langs: d.langs },
+      cart: { plan: d.plan, brand: Boolean(d.brand), local: Boolean(d.local), ai: Boolean(d.ai), langs: d.langs },
       currency: d.currency,
       mode: d.mode,
       start: new Date(`${d.start}T00:00:00Z`),

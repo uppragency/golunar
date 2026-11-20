@@ -8,7 +8,7 @@ const Body = z.object({
   company: z.string().trim().max(160).optional().default(""),
   currency: z.enum(["RON", "EUR"]).default("RON"),
   billing: z.enum(["monthly", "annual"]).default("monthly"),
-  cart: z.object({ plan: z.enum(["essential", "growth", "partner"]), brand: z.boolean(), local: z.boolean(), langs: z.number().int().min(0).max(5) }),
+  cart: z.object({ plan: z.enum(["essential", "growth", "partner"]), brand: z.boolean(), local: z.boolean(), ai: z.boolean().optional().default(false), langs: z.number().int().min(0).max(5) }),
 });
 
 /** Salvează comanda începută, ca să o putem aminti dacă nu e finalizată. */

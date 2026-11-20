@@ -31,6 +31,7 @@ const Body = z.object({
     plan: z.enum(["essential", "growth", "partner"]),
     brand: z.boolean(),
     local: z.boolean(),
+    ai: z.boolean().optional().default(false),
     langs: z.number().int().min(0).max(5),
   }),
 });
