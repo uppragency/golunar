@@ -15,10 +15,11 @@ type Send = {
   companyId?: string | null;
   db?: SupabaseClient | null;
   replyTo?: string;
+  headers?: Record<string, string>;
 };
 
 /** Sends via Resend and logs to email_log. Never throws: email must not break payments. */
-export async function sendEmail({ template, to, subject, html, billing, companyId, db, replyTo }: Send) {
+export async function sendEmail({ template, to, subject, html, billing, companyId, db, replyTo, headers }: Send) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn(`[email] RESEND_API_KEY missing, skipped ${template} → ${to}`);
@@ -32,6 +33,7 @@ export async function sendEmail({ template, to, subject, html, billing, companyI
       subject,
       html,
       replyTo: replyTo || "hello@golunar.ro",
+      ...(headers ? { headers } : {}),
     });
     if (error) throw new Error(error.message);
     await db?.from("email_log").insert({ company_id: companyId ?? null, template, to_email: to, resend_id: data?.id ?? null, status: "sent" });
@@ -43,13 +45,13 @@ export async function sendEmail({ template, to, subject, html, billing, companyI
   }
 }
 
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif";
 const MONO = "'SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace";
 
 /** Branded dark layout (same design as the Supabase auth emails). Single CTA. */
-export function layout({ preheader, title, titleDim, eyebrow = "LUNAR", body, cta, ctaUrl }: { preheader: string; title: string; titleDim?: string; eyebrow?: string; body: string; cta?: string; ctaUrl?: string }) {
+export function layout({ preheader, title, titleDim, eyebrow = "LUNAR", body, cta, ctaUrl, foot }: { preheader: string; title: string; titleDim?: string; eyebrow?: string; body: string; cta?: string; ctaUrl?: string; foot?: string }) {
   const btn = cta && ctaUrl
     ? `<tr><td class="px" style="padding:8px 40px 4px"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#FF5B1F" style="border-radius:999px;background:#FF5B1F"><a href="${ctaUrl}" target="_blank" style="display:inline-block;padding:8px 26px 8px 8px;font-family:${FONT};font-size:15px;font-weight:600;line-height:20px;color:#FFFFFF;text-decoration:none;border-radius:999px"><span style="display:inline-block;width:36px;height:36px;line-height:36px;text-align:center;border-radius:50%;background:#FFFFFF;color:#FF5B1F;font-size:17px;vertical-align:middle;margin-right:12px">&rarr;</span><span style="vertical-align:middle">${esc(cta)}</span></a></td></tr></table></td></tr>`
     : "";
@@ -66,7 +68,7 @@ export function layout({ preheader, title, titleDim, eyebrow = "LUNAR", body, ct
 <h1 class="h1" style="margin:16px 0 0;font-family:${FONT};font-size:34px;line-height:38px;font-weight:600;letter-spacing:-1.2px;color:#F5F5F6">${esc(title)}${titleDim ? `<br><span style="color:#5E5E65">${esc(titleDim)}</span>` : ""}</h1>
 <div style="margin:18px 0 24px;font-family:${FONT};font-size:15px;line-height:24px;color:#C4C4CA">${body}</div></td></tr>
 ${btn}
-<tr><td class="px" style="padding:28px 40px 36px"><p style="margin:0;font-family:${FONT};font-size:13px;line-height:20px;color:#5E5E65">Ai primit acest email pentru că ai un cont LUNAR. Întrebări? Răspunde direct la acest email.</p></td></tr>
+<tr><td class="px" style="padding:28px 40px 36px"><p style="margin:0;font-family:${FONT};font-size:13px;line-height:20px;color:#5E5E65">${foot ?? "Ai primit acest email pentru că ai un cont LUNAR. Întrebări? Răspunde direct la acest email."}</p></td></tr>
 </table></td></tr>
 <tr><td style="padding:26px 8px 0;font-family:${FONT};font-size:13px;line-height:20px;color:#8C8C93"><p style="margin:0;color:#F5F5F6">Website-ul tău, mai bun lună de lună.</p><p style="margin:6px 0 0"><a href="https://golunar.ro" style="color:#8C8C93;text-decoration:none">golunar.ro</a> &nbsp;·&nbsp; <a href="mailto:hello@golunar.ro" style="color:#8C8C93;text-decoration:none">hello@golunar.ro</a></p></td></tr>
 <tr><td style="padding:22px 4px 0;font-family:${FONT};font-size:96px;line-height:80px;font-weight:700;letter-spacing:-6px;color:#17171A;white-space:nowrap" aria-hidden="true">GO LUNAR</td></tr>

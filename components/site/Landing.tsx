@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Cart, type Currency, type PlanCode } from "@/lib/plans";
+import { ADDONS, PLANS, PRICE_NOTE, cartLines, type Billing, type Cart, type Currency, type PlanCode } from "@/lib/plans";
 import { FAQ } from "@/lib/faq";
 import { LAUNCH, PLAN_FEATURES, discountFor, discountLabel, launchPrice, toDiscount, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
@@ -37,6 +37,7 @@ function addWorkdays(d: Date, n: number) {
 export default function Landing() {
   const [cur, setCur] = useState<Currency>("RON");
   const [cart, setCart] = useState<Cart>({ plan: "essential", brand: false, local: false, langs: 0 });
+  const [billing, setBilling] = useState<Billing>("monthly");
   const [checkout, setCheckout] = useState(false);
   const [lead, setLead] = useState(false);
   const [faqCat, setFaqCat] = useState(0);
@@ -79,7 +80,14 @@ export default function Landing() {
     if (q.has("discutie")) setLead(true);
     const qp = q.get("plan");
     const plan = qp === "growth" || qp === "partner" ? qp : "essential";
-    if (q.has("comanda")) { setCart((c) => ({ ...c, plan })); setCheckout(true); }
+    if (q.has("comanda")) {
+      // Link din emailul de comandă abandonată: refacem exact alegerile.
+      const langs = Math.max(0, Math.min(5, Number(q.get("limbi")) || 0));
+      setCart((c) => ({ ...c, plan, brand: q.get("brand") === "1" || c.brand, local: q.get("local") === "1" || c.local, langs: langs || c.langs }));
+      if (q.get("anual") === "1") setBilling("annual");
+      if (q.get("moneda") === "EUR") setCur("EUR");
+      setCheckout(true);
+    }
     const c = q.get("cod")?.toUpperCase();
     if (c && /^[A-Z0-9_-]{3,24}$/.test(c)) setCodeParam(c);
   }, []);
@@ -177,7 +185,7 @@ export default function Landing() {
       <div id="mnav" className={`mnav${menu ? " on" : ""}`} aria-hidden={!menu} onClick={(e) => e.target === e.currentTarget && setMenu(false)}>
         <div className="mnav-in">
           <ul>
-            {[["#proces", "Proces"], ["#portofoliu", "Portofoliu"], ["#abonamente", "Abonamente"], ["#intrebari", "Întrebări"], ["#resurse", "Resurse"]].map(([href, label], i) => (
+            {[["#proces", "Proces"], ["#portofoliu", "Portofoliu"], ["#abonamente", "Abonamente"], ["#intrebari", "Întrebări"], ["#resurse", "Resurse"], ["/contact", "Contact"]].map(([href, label], i) => (
               <li key={href} style={{ transitionDelay: menu ? `${80 + i * 45}ms` : "0ms" }}>
                 <a href={href} tabIndex={menu ? 0 : -1} onClick={() => setMenu(false)}><span className="mono">0{i + 1}</span>{label}</a>
               </li>
@@ -409,7 +417,7 @@ export default function Landing() {
 
       <SiteFooter onLead={() => setLead(true)} />
 
-      <CheckoutModal open={checkout} onClose={() => setCheckout(false)} cart={cart} cur={cur} discount={discount} onDiscount={setDiscount} />
+      <CheckoutModal open={checkout} onClose={() => setCheckout(false)} cart={cart} cur={cur} discount={discount} onDiscount={setDiscount} initialBilling={billing} />
       <LeadModal open={lead} onClose={() => setLead(false)} plan={cart.plan} />
     </div>
   );

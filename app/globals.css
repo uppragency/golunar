@@ -790,7 +790,7 @@ footer.fb{position:relative;overflow:hidden;background:#070708;isolation:isolate
 .disc-x{font-size:12px;color:#C4C4CA;text-decoration:underline;background:none}
 .disc-line span:first-child{display:grid;gap:2px}
 .disc-line small{font-size:11px;color:var(--mute)}
-.disc-line span:last-child{color:var(--accent2)}
+.disc-line span:last-child{color:var(--accent2);white-space:nowrap}
 .co-side{display:flex;flex-direction:column;min-width:0}
 .co-h{font-family:var(--mono);font-size:12px;color:var(--mute);font-weight:400;text-transform:uppercase;letter-spacing:.08em}
 .co-line{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -1345,3 +1345,66 @@ html,body{overflow-x:clip}
 .addon-card select option{background:#17171A}
 input[type=file]{color:var(--mute);font-size:13px}
 input[type=file]::file-selector-button{height:30px;padding:0 14px;margin-right:10px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer}
+
+/* checkout: plată lunară / anuală, salvare comandă */
+.bill-seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 6px}
+.bill-seg button{padding:12px 14px;border-radius:14px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:#fff;text-align:left;transition:border-color .2s,background .2s}
+.bill-seg button.on{border-color:#fff;background:rgba(255,255,255,.08)}
+.bill-seg b{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
+.bill-seg b em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--accent2);background:rgba(255,91,31,.14);border-radius:999px;padding:2px 7px}
+.bill-seg span{display:block;font-size:12px;color:var(--mute);margin-top:3px}
+.co-save{font-size:12px;color:var(--inkmute);margin:-4px 0 4px;line-height:1.5}
+.mk-opt{font-size:13px}
+/* pagina Contact: formular în 2 pași */
+.ct-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+.ct{padding:36px;border-radius:28px}
+.ct-top{display:flex;align-items:center;gap:18px;margin-bottom:26px}
+.ct-step{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2);white-space:nowrap}
+.ct-bar{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.ct-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#FF5B1F,#FF7A45,#FFB08A);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.ct-h{font-size:clamp(24px,3vw,32px);letter-spacing:-.03em;font-weight:600;margin:0 0 20px;color:var(--text)}
+.ct{scroll-margin-top:100px}
+.ct-sub{color:var(--mute);margin:-8px 0 20px}
+.ct-opts{display:grid;gap:12px}
+.ct-opt{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;padding:20px 22px;border-radius:18px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--text);font-size:16px;font-weight:600;text-align:left;transition:border-color .2s,background .2s,transform .2s}
+.ct-opt svg{width:18px;height:18px;flex:none;color:var(--accent2);transition:transform .2s}
+.ct-opt:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.07)}
+.ct-opt:hover svg{transform:translateX(3px)}
+.ct-chosen{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px;border-radius:18px;border:1px solid rgba(255,91,31,.4);background:rgba(255,91,31,.1);margin-bottom:20px}
+.ct-chosen b{display:block;color:var(--text);font-size:15px}
+.ct-chosen span{display:block;color:var(--mute);font-size:13px;margin-top:3px}
+.ct-chosen button{background:none;color:var(--accent2);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px;flex:none}
+.ct-tip{font-size:13px;color:var(--mute);margin:-6px 0 16px}
+.ct-tip a{color:var(--text);text-decoration:underline}
+.ct-send{width:100%;justify-content:center;margin-top:6px}
+.ct-legal{font-size:13px;color:var(--mute);margin-top:18px}
+.ct-legal a{color:var(--text);text-decoration:underline}
+.ct-side{display:grid;gap:14px}
+.ct-box{padding:22px 24px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(160deg,var(--card2),var(--card))}
+.ct-box h3{font-family:var(--mono);font-size:12px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 10px}
+.ct-box a{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.ct-box>a{font-size:18px;font-weight:600;text-decoration:none}
+.ct-box p{font-size:14px;color:var(--mute);margin:6px 0 0;line-height:1.55}
+@media (max-width:860px){
+  .ct-grid{grid-template-columns:1fr}
+  .ct{padding:24px 20px;border-radius:22px}
+  .ct-opt{padding:18px;font-size:15px}
+}
+/* întrebări frecvente + migrare */
+.faq-toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px}
+.faq-toc a{padding:9px 16px;border-radius:999px;border:1px solid var(--line2);font-size:14px;color:var(--text);transition:border-color .2s}
+.faq-toc a:hover{border-color:var(--text)}
+.faq-sec{scroll-margin-top:110px}
+.faq-q{border-bottom:1px solid var(--line);padding:4px 0}
+.faq-q summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;padding:16px 0;font-weight:600;color:var(--text)}
+.faq-q summary::-webkit-details-marker{display:none}
+.faq-q summary::after{content:"+";font-family:var(--mono);color:var(--accent2);flex:none;transition:transform .2s}
+.faq-q[open] summary::after{transform:rotate(45deg)}
+.faq-q p{margin:0 0 16px;color:var(--mute)}
+.mig-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;margin:0 0 40px}
+.mig-steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mig-steps li{padding:26px}
+.mig-steps .mono{font-size:12px;color:var(--accent2);letter-spacing:.08em}
+.mig-steps h3{font-size:18px;letter-spacing:-.02em;margin:12px 0 8px}
+.mig-steps p{font-size:14px;color:var(--mute);margin:0;line-height:1.55}
+@media (max-width:860px){.mig-steps{grid-template-columns:1fr}.mig-steps li{padding:22px}}

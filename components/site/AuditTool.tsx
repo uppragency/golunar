@@ -77,6 +77,7 @@ export default function AuditTool() {
           <div className="fld"><label htmlFor="au-email">Email pentru raport</label><input id="au-email" name="email" type="email" required autoComplete="email" /></div>
         </div>
         <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hp" aria-hidden="true" />
+        <label className="check mk-opt"><input type="checkbox" name="marketing" value="1" /><span>Vreau și 5 emailuri scurte cu sfaturi și oferte LUNAR, în 14 zile. Mă pot dezabona oricând.</span></label>
         <p className="audit-note">Primești raportul și pe email. Te putem contacta o singură dată despre rezultate. <a href="/legal/confidentialitate">Confidențialitate</a></p>
         {err && <p className="err" role="alert">{err}</p>}
         <button className="btn btn-accent" disabled={busy}><span className="ic"><Arrow /></span>{busy ? "Analizăm…" : "Pornește auditul gratuit"}</button>

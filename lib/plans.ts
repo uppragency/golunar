@@ -41,4 +41,14 @@ export function cartLines(cart: Cart, cur: Currency) {
 }
 
 export const round2 = (n: number) => Math.round(n * 100) / 100;
+
+/** Plata anuală: 12 luni plătite o dată, cu reducere; proprietatea se transferă după plată. */
+export const ANNUAL_OFF = 0.1;
+export type Billing = "monthly" | "annual";
+export function annualTotal(cart: Cart, cur: Currency) {
+  const { net } = cartLines(cart, cur);
+  const full = round2(net * 12);
+  const off = round2(full * ANNUAL_OFF);
+  return { net, full, off, total: round2(full - off) };
+}
 export const toEur = (amount: number, cur: Currency) => (cur === "EUR" ? amount : amount / EUR_RON);

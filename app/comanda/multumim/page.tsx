@@ -7,11 +7,11 @@ import TrackPurchase from "@/components/site/TrackPurchase";
 
 export const metadata: Metadata = { title: "Comanda a fost înregistrată", robots: { index: false, follow: false } };
 
-export default async function ThankYou({ searchParams }: { searchParams: Promise<{ ref?: string; suma?: string; lunar?: string; plan?: string; email?: string; cont?: string; v?: string; m?: string; cur?: string; pc?: string }> }) {
+export default async function ThankYou({ searchParams }: { searchParams: Promise<{ ref?: string; suma?: string; lunar?: string; plan?: string; email?: string; cont?: string; anual?: string; v?: string; m?: string; cur?: string; pc?: string }> }) {
   const q = await searchParams;
   const ref = /^LNR-\d{3,6}$/.test(q.ref ?? "") ? q.ref! : null;
   const amount = (q.suma ?? "").slice(0, 30) || null;
-  const monthly = (q.lunar ?? "").slice(0, 30) || null;
+  const monthly = q.anual ? null : (q.lunar ?? "").slice(0, 30) || null;
   const plan = (q.plan ?? "").slice(0, 30) || null;
   const email = /^[^@\s]+@[^@\s]+$/.test(q.email ?? "") ? q.email! : "";
   const hasAccount = q.cont === "1";
@@ -28,7 +28,7 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
       <div className="wide-block">
         <div className="ty-grid">
           <div className="card ty-card">
-            <span className="offer-k">Pasul 1 · Plătește prima rată</span>
+            <span className="offer-k">{q.anual ? "Pasul 1 · Plătește anul întreg" : "Pasul 1 · Plătește prima rată"}</span>
             <h2>Datele pentru transfer</h2>
             {(ref || amount) && (
               <div className="order-sum">

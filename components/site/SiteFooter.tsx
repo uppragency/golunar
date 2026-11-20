@@ -72,12 +72,13 @@ export default function SiteFooter({ onLead }: { onLead?: () => void }) {
             </div>
             <div>
               <h6>Explorează</h6>
-              <Link href="/#proces">Proces</Link><Link href="/portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/#intrebari">Întrebări</Link>
-              <Link href="/website-4-99-lei">Website de la 4,99 lei</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/garantii">Garanții</Link><Link href="/audit">Audit SEO gratuit</Link>
+              <Link href="/#proces">Proces</Link><Link href="/portofoliu">Portofoliu</Link><Link href="/#abonamente">Abonamente</Link><Link href="/intrebari-frecvente">Întrebări frecvente</Link>
+              <Link href="/website-4-99-lei">Website de la 4,99 lei</Link><Link href="/cum-lucram">Cum lucrăm</Link><Link href="/garantii">Garanții</Link><Link href="/migrare-website">Migrare gratuită</Link><Link href="/contact">Contact</Link>
             </div>
             <div>
               <h6>Resurse</h6>
-              {RESOURCES.slice(0, 3).map((r) => <Link key={r.slug} href={`/resurse/${r.slug}`}>{r.title.split(":")[0]}</Link>)}
+              <Link href="/audit">Audit SEO gratuit</Link>
+              {RESOURCES.slice(0, 2).map((r) => <Link key={r.slug} href={`/resurse/${r.slug}`}>{r.title.split(":")[0]}</Link>)}
               <Link href="/lunar-vs-agentie-vs-ai">LUNAR vs agenție vs AI</Link><Link href="/tehnologii">Tehnologii</Link>
               <Link href="/resurse">Toate resursele →</Link>
             </div>

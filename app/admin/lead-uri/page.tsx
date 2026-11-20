@@ -1,4 +1,5 @@
 import { getOps, LEAD_STATUS, SOURCE_LABEL } from "@/lib/admin-ops";
+import { getAdminData } from "@/lib/admin-data";
 import { date } from "@/lib/format";
 import { PLAN_NAME } from "@/lib/labels";
 import { sendLeadOffer, updateLead } from "@/app/admin/actions";
@@ -8,12 +9,21 @@ export const metadata = { title: "Lead-uri" };
 
 export default async function LeadsPage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
   const d = await getOps();
+  const db = (await getAdminData()).s.supabase;
+  const since = new Date(Date.now() - 30 * 864e5).toISOString();
+  const [{ data: drafts }, { data: nurture }, { count: optouts }] = await Promise.all([
+    db.from("checkout_drafts").select("email, name, company, plan, billing, created_at, completed_at, recover_1_at, recover_2_at").gte("created_at", since).order("created_at", { ascending: false }).limit(200),
+    db.from("nurture").select("step, stopped_at, stop_reason"),
+    db.from("email_optout").select("email", { count: "exact", head: true }),
+  ]);
+  const dr = drafts ?? [], nu = nurture ?? [];
+  const recovered = dr.filter((x) => x.completed_at && x.recover_1_at).length;
   const { s = "open" } = await searchParams;
   const list = d.leads.filter((l) => l.source !== "checkout").filter((l) => (s === "all" ? true : s === "open" ? l.status === "new" || l.status === "contacted" : l.status === s));
   const count = (k: string) => d.leads.filter((l) => l.source !== "checkout" && (k === "open" ? l.status === "new" || l.status === "contacted" : k === "all" ? true : l.status === k)).length;
   return (
     <div>
-      <div className="topbar"><div><h1>Lead-uri</h1><p>Audit gratuit, discuții programate și recomandări. Sursa este prima vizită (UTM, Google, Facebook sau site-ul de proveniență).</p></div></div>
+      <div className="topbar"><div><h1>Lead-uri</h1><p>Audit gratuit, discuții programate, pagina Contact și recomandări. Sursa este prima vizită (UTM, Google, Facebook sau site-ul de proveniență).</p></div></div>
       <div className="g g-21">
         <div>
           <div className="filters" style={{ marginBottom: 12 }}>
@@ -54,12 +64,30 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
             )) : <div className="empty">Niciun lead aici.</div>}
           </div>
         </div>
+        <div style={{ display: "grid", gap: 16, alignContent: "start" }}>
         <div className="panel">
           <h3>Surse · toate lead-urile și comenzile</h3>
           {d.sources.length ? d.sources.map((x) => (
             <div className="kv" key={x.source}><span>{x.source}</span><b>{x.leads} <span className="muted" style={{ fontWeight: 400 }}>· {x.won} conversii</span></b></div>
           )) : <div className="empty">Încă nu sunt date.</div>}
           <p className="muted" style={{ fontSize: 12, marginTop: 14 }}>Conversie = lead câștigat sau comandă plasată. Sursele se înregistrează de pe 20 noiembrie 2026.</p>
+        </div>
+        <div className="panel">
+          <h3>Comenzi abandonate · 30 de zile</h3>
+          <div className="kv"><span>Comenzi începute</span><b>{dr.length}</b></div>
+          <div className="kv"><span>Încă deschise</span><b>{dr.filter((x) => !x.completed_at).length}</b></div>
+          <div className="kv"><span>Amintiri trimise (1h / 24h)</span><b>{dr.filter((x) => x.recover_1_at).length} / {dr.filter((x) => x.recover_2_at).length}</b></div>
+          <div className="kv"><span>Recuperate după amintire</span><b>{recovered}</b></div>
+          {dr.filter((x) => !x.completed_at).slice(0, 6).map((x) => (
+            <div className="kv" key={x.email}><span><a href={`mailto:${x.email}`}>{x.company || x.name || x.email}</a></span><b className="muted" style={{ fontWeight: 400 }}>{PLAN_NAME[x.plan as keyof typeof PLAN_NAME] ?? ""}{x.billing === "annual" ? " · anual" : ""} · {date(x.created_at)}</b></div>
+          ))}
+          <h3 style={{ marginTop: 22 }}>Secvența de nurturing</h3>
+          <div className="kv"><span>Active</span><b>{nu.filter((x) => !x.stopped_at).length}</b></div>
+          <div className="kv"><span>Finalizate (5 emailuri)</span><b>{nu.filter((x) => x.stop_reason === "finalizat").length}</b></div>
+          <div className="kv"><span>Devenite clienți</span><b>{nu.filter((x) => x.stop_reason === "client" || x.stop_reason === "comandă").length}</b></div>
+          <div className="kv"><span>Dezabonați (total)</span><b>{optouts ?? 0}</b></div>
+          <p className="muted" style={{ fontSize: 12, marginTop: 14 }}>Intră în nurturing doar lead-urile care bifează acordul pentru emailuri (audit, discuție, contact). Amintirile de comandă pleacă la 1h și la 24h.</p>
+        </div>
         </div>
       </div>
     </div>

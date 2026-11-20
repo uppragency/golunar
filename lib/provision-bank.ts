@@ -1,12 +1,12 @@
 import "server-only";
 import { createClient as createAnon } from "@supabase/supabase-js";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
-import { ADDONS, PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
+import { ADDONS, ANNUAL_OFF, PLANS, cartLines, round2, type Billing, type Cart, type Currency } from "@/lib/plans";
 import { discountFor, type Discount } from "@/lib/discount";
 
 export type BankOrder = {
   cui: string; name: string; regCom?: string; address?: string; vatPayer: boolean; contact: string; email: string; phone?: string;
-  domain?: string; cart: Cart; currency: Currency; ip?: string | null; ref?: string | null; discount?: Discount | null;
+  domain?: string; cart: Cart; currency: Currency; ip?: string | null; ref?: string | null; discount?: Discount | null; billing?: Billing;
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -26,13 +26,17 @@ export async function provisionBankOrder(o: BankOrder) {
   const { net } = cartLines(o.cart, o.currency);
   const planAmt = PLANS[o.cart.plan][k];
   const disc = discountFor(o.discount ?? null, net, o.currency);
-  const installments = Array.from({ length: 12 }, (_, i) => ({
-    number: i + 1,
-    due_date: iso(i === 0 ? start : addMonths(start, i, day)),
-    amount_plan: planAmt,
-    amount_addons: net - planAmt,
-    amount_discount: i < (o.discount?.months ?? 0) ? disc : 0,
-  }));
+  const annual = o.billing === "annual";
+  // Plata anuală: o singură rată cu anul întreg (ratele 2–12 se adaugă ca incluse când rata 1 e plătită).
+  const installments = annual
+    ? [{ number: 1, due_date: iso(start), amount_plan: planAmt * 12, amount_addons: (net - planAmt) * 12, amount_discount: round2(net * 12 * ANNUAL_OFF) }]
+    : Array.from({ length: 12 }, (_, i) => ({
+        number: i + 1,
+        due_date: iso(i === 0 ? start : addMonths(start, i, day)),
+        amount_plan: planAmt,
+        amount_addons: net - planAmt,
+        amount_discount: i < (o.discount?.months ?? 0) ? disc : 0,
+      }));
   const items = [
     ...(o.cart.brand ? [{ addon: "brand", quantity: 1, unit_price: ADDONS.brand[k], max_cycles: 12 }] : []),
     ...(o.cart.local ? [{ addon: "local", quantity: 1, unit_price: ADDONS.local[k], max_cycles: "" }] : []),
@@ -44,7 +48,7 @@ export async function provisionBankOrder(o: BankOrder) {
     p: {
       cui: o.cui, name: o.name, reg_com: o.regCom ?? "", address: o.address ?? "", vat_payer: o.vatPayer, contact: o.contact, email: o.email, phone: o.phone ?? "",
       currency: o.currency, plan: o.cart.plan, min_months: PLANS[o.cart.plan].minMonths, items, installments, domain: o.domain ?? "",
-      ip: o.ip ?? "", ref: o.ref ?? "", discount: o.discount ?? null,
+      ip: o.ip ?? "", ref: o.ref ?? "", discount: annual ? null : o.discount ?? null, billing_cycle: annual ? "annual" : "monthly",
     },
   });
   if (error) throw new Error(error.message);

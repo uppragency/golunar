@@ -33,7 +33,7 @@ export const STAGES: { key: Stage; label: string }[] = [
 export const LEAD_STATUS: Record<string, [string, "acc" | "warn" | "ok" | "bad"]> = {
   new: ["Nou", "acc"], contacted: ["Contactat", "warn"], won: ["Câștigat", "ok"], lost: ["Pierdut", "bad"],
 };
-export const SOURCE_LABEL: Record<string, string> = { "discutie-gratuita": "Discuție gratuită", audit: "Audit gratuit", checkout: "Comandă", site: "Site" };
+export const SOURCE_LABEL: Record<string, string> = { "discutie-gratuita": "Discuție gratuită", audit: "Audit gratuit", checkout: "Comandă", contact: "Contact", site: "Site" };
 
 export const getOps = cache(async () => {
   const d = await getAdminData();

@@ -13,6 +13,7 @@ const Body = z.object({
   email: z.email().max(200),
   name: z.string().trim().min(2).max(120),
   website: z.string().optional(), // honeypot
+  marketing: z.union([z.literal("1"), z.boolean()]).optional(),
 });
 
 // Limită simplă per instanță: 5 audituri / oră / IP.
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
   const { error } = await supabase.rpc("submit_lead", {
     p_name: d.name, p_email: d.email, p_phone: "", p_company: "", p_message: `Audit: ${result.finalUrl}`,
     p_plan: "", p_source: "audit", p_ref: ref ?? "",
-    p_meta: { src: await getSource(), url: result.finalUrl, psi: result.psi, scores: s, failed: result.checks.filter((c) => !c.ok).map((c) => c.id) },
+    p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1", url: result.finalUrl, psi: result.psi, scores: s, failed: result.checks.filter((c) => !c.ok).map((c) => c.id) },
   });
   if (error) console.error("[audit] lead", error.message);
 

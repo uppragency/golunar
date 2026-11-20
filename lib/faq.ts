@@ -10,8 +10,9 @@ export const FAQ: Record<string, [string, string][]> = {
     ["Cum plătesc?", "Momentan prin transfer bancar, în lei, către UPPRMARKETING S.R.L. Primești datele de plată imediat după comandă și înainte de fiecare scadență. Plata cu cardul va fi disponibilă în curând."],
     ["Cum funcționează oferta de 4,99 lei?", "Pentru clienții noi, prima lună pe planul Esențial costă 4,99 lei (1 €), TVA inclus. Codul GOLUNAR se aplică automat când alegi planul Esențial. Din luna a doua plătești 269 lei (53 €) pe lună. Perioada minimă a planului este de 3 luni."],
     ["Cum folosesc un cod de reducere?", "Introdu codul la „Ai un cod de reducere?”, în rezumatul abonamentului sau în pagina de plată. Reducerea se aplică ratelor indicate de cod și apare în desfășurătorul de plată."],
-    ["Primesc factură fiscală?", "Da. Fiecare plată generează factură, transmisă automat în SPV prin e-Factura și disponibilă în contul tău."],
-    ["Ce se întâmplă dacă plata eșuează?", "Reîncercăm automat de 3 ori în 7 zile și te anunțăm pe email. După 14 zile fără plată, site-ul intră în mentenanță."],
+    ["Primesc factură fiscală?", "Da. Pentru fiecare plată emitem factură fiscală pe CUI-ul firmei, transmisă în SPV prin e-Factura și disponibilă în contul tău."],
+    ["Pot plăti tot anul o dată?", "Da. La comandă alegi plata anuală: plătești 12 luni o singură dată, cu 10% reducere, iar website-ul devine al tău imediat după confirmarea plății. Plata anuală nu se cumulează cu alte coduri de reducere."],
+    ["Ce se întâmplă dacă întârzii o plată?", "Îți trimitem amintiri pe email în zilele 1, 5 și 10 după scadență. După 14 zile fără plată, site-ul poate fi suspendat temporar, până la plata ratei."],
   ],
   "Anulare și proprietate": [
     ["Există o perioadă minimă?", "Da: 3 luni la planul Esențial, 2 luni la Creștere și o lună la Partener. După această perioadă anulezi oricând, iar abonamentul se oprește la finalul lunii deja plătite."],
@@ -24,5 +25,19 @@ export const FAQ: Record<string, [string, string][]> = {
     ["Ce înseamnă o îmbunătățire?", "O modificare delimitată: conținut, o secțiune nouă, o ajustare de navigare sau o integrare. Cererile mari se împart, cu acordul tău."],
     ["Se reportează îmbunătățirile nefolosite?", "Nu. Fiecare lună are propriul număr de îmbunătățiri."],
     ["Garantați poziții în Google?", "Nu. Nimeni nu poate garanta poziții, trafic sau mențiuni în răspunsurile AI. Garantăm munca, raportarea și transparența."],
+  ],
+};
+
+/** Întrebări în plus, afișate doar pe pagina /intrebari-frecvente. */
+export const FAQ_EXTRA: Record<string, [string, string][]> = {
+  "Migrare și site existent": [
+    ["Am deja un site. Îl puteți muta la LUNAR?", "Da, gratuit. Preluăm textele, imaginile și paginile importante, construim site-ul nou în 10 zile lucrătoare și facem redirecturi de pe adresele vechi."],
+    ["Pierd pozițiile din Google la mutare?", "Riscul e mic dacă mutarea se face corect: păstrăm adresele importante sau le redirecționăm permanent (301) și verificăm după lansare că paginile vechi duc unde trebuie."],
+    ["Ce se întâmplă cu emailurile pe domeniu?", "Nu se întrerup. Mutăm doar website-ul, iar înregistrările de email ale domeniului rămân neschimbate."],
+    ["Ce nu migrăm gratuit?", "Magazine online cu comenzi și conturi de clienți sau funcționalități construite pe pluginuri specifice. Le discutăm separat, înainte de comandă."],
+  ],
+  Contact: [
+    ["Cum vă contactez?", "Din pagina de contact sau la hello@golunar.ro. Răspundem în cel mult o zi lucrătoare."],
+    ["Pot vorbi cu cineva înainte să comand?", "Da. Programează o discuție gratuită de 20 de minute pe Google Meet din pagina principală."],
   ],
 };

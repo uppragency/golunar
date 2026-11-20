@@ -49,6 +49,7 @@ export function LeadModal({ open, onClose, plan }: { open: boolean; onClose: () 
               </div>
               <div className="fld"><label htmlFor="ld-msg">Ce face afacerea ta?</label><textarea id="ld-msg" name="message" rows={4} placeholder="Ex: clinică stomatologică în Iași, avem site vechi din 2018" /></div>
               <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hp" aria-hidden="true" />
+              <label className="check mk-opt"><input type="checkbox" name="marketing" value="1" /><span>Vreau și 5 emailuri scurte cu sfaturi și oferte LUNAR, în 14 zile. Mă pot dezabona oricând.</span></label>
               {err && <p className="err" role="alert">{err}</p>}
               <button className="btn btn-ink" style={{ width: "100%", justifyContent: "space-between", marginTop: 8 }} disabled={busy}>
                 <span className="ic"><Arrow /></span><span>{busy ? "Se trimite…" : "Trimite"}</span><span style={{ width: 8 }} />

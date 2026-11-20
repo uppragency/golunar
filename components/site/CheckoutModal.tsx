@@ -1,9 +1,9 @@
 "use client";
 
 import { track } from "@/lib/track";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { PLANS, cartLines, type Cart, type Currency } from "@/lib/plans";
+import { ANNUAL_OFF, PLANS, annualTotal, cartLines, type Billing, type Cart, type Currency } from "@/lib/plans";
 import { allFeatures, discountLabel, paymentSchedule, type Discount } from "@/lib/discount";
 import { DiscountField } from "./DiscountField";
 import { checks, type Check, type FieldKey } from "@/lib/validate";
@@ -16,9 +16,14 @@ const fmt = (v: number, cur: Currency, d?: number) => {
 
 type Form = { cui: string; name: string; regCom: string; address: string; contact: string; email: string; phone: string; domain: string };
 
-export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }: { open: boolean; onClose: () => void; cart: Cart; cur: Currency; discount: Discount | null; onDiscount: (d: Discount | null) => void }) {
+export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, initialBilling = "monthly" }: { open: boolean; onClose: () => void; cart: Cart; cur: Currency; discount: Discount | null; onDiscount: (d: Discount | null) => void; initialBilling?: Billing }) {
   const [f, setF] = useState<Form>({ cui: "", name: "", regCom: "", address: "", contact: "", email: "", phone: "", domain: "" });
   const [vatPayer, setVatPayer] = useState(true);
+  const [billing, setBilling] = useState<Billing>(initialBilling);
+  useEffect(() => setBilling(initialBilling), [initialBilling]);
+  const annual = billing === "annual";
+  const yearly = annualTotal(cart, cur);
+  const draftSig = useRef("");
   const [shown, setShown] = useState(3);
   const [pm, setPm] = useState<"card" | "bank_transfer">("bank_transfer");
   const [accept, setAccept] = useState(true);
@@ -36,7 +41,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
   const [done, setDone] = useState<string | null>(null);
   const { lines } = cartLines(cart, cur);
   const schedule = paymentSchedule(cart, cur, discount);
-  const today = schedule[0].total;
+  const today = annual ? yearly.total : schedule[0].total;
   const yearTotal = schedule.reduce((a, r) => a + r.total, 0);
   const dfmt = (d: Date) => d.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" });
 
@@ -55,6 +60,19 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
+
+  // Comanda începută se salvează la introducerea emailului (pentru amintirea de comandă abandonată).
+  function saveDraft() {
+    if (!checks.email(f.email)?.ok) return;
+    const body = JSON.stringify({ email: f.email, name: f.contact, company: f.name, currency: cur, billing, cart });
+    if (body === draftSig.current) return;
+    draftSig.current = body;
+    fetch("/api/checkout/draft", { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true }).catch(() => {});
+  }
+  useEffect(() => {
+    if (open && draftSig.current) saveDraft();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [billing, cart, cur]);
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => setF((x) => ({ ...x, [k]: e.target.value }));
 
@@ -90,7 +108,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
       const r = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...f, vatPayer, paymentMode: pm, currency: cur, cart, accept, discountCode: discount?.code ?? "" }),
+        body: JSON.stringify({ ...f, vatPayer, paymentMode: pm, currency: cur, cart, accept, billing, discountCode: annual ? "" : discount?.code ?? "" }),
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Comanda nu a putut fi trimisă");
@@ -134,13 +152,14 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
               </div>
               <div className="fld"><label htmlFor="co-addr">Adresă sediu</label><span className="vwrap"><input id="co-addr" value={f.address} onChange={set("address")} onBlur={touch("address")} required autoComplete="street-address" aria-invalid={st("address")?.ok === false} />{mark("address")}</span></div>
               <div className="grid2">
-                <div className="fld"><label htmlFor="co-contact">Persoană de contact</label><span className="vwrap"><input id="co-contact" value={f.contact} onChange={set("contact")} onBlur={touch("contact")} placeholder="Nume Prenume" required autoComplete="name" aria-invalid={st("contact")?.ok === false} />{mark("contact")}</span></div>
-                <div className="fld"><label htmlFor="co-email">Email (cont și facturi)</label><span className="vwrap"><input id="co-email" type="email" value={f.email} onChange={set("email")} onBlur={touch("email")} placeholder="contabilitate@firma.ro" required autoComplete="email" aria-invalid={st("email")?.ok === false} />{mark("email")}</span></div>
+                <div className="fld"><label htmlFor="co-contact">Persoană de contact</label><span className="vwrap"><input id="co-contact" value={f.contact} onChange={set("contact")} onBlur={() => { touch("contact")(); saveDraft(); }} placeholder="Nume Prenume" required autoComplete="name" aria-invalid={st("contact")?.ok === false} />{mark("contact")}</span></div>
+                <div className="fld"><label htmlFor="co-email">Email (cont și facturi)</label><span className="vwrap"><input id="co-email" type="email" value={f.email} onChange={set("email")} onBlur={() => { touch("email")(); saveDraft(); }} placeholder="contabilitate@firma.ro" required autoComplete="email" aria-invalid={st("email")?.ok === false} />{mark("email")}</span></div>
               </div>
               <div className="grid2">
                 <div className="fld"><label htmlFor="co-phone">Telefon</label><span className="vwrap"><input id="co-phone" type="tel" value={f.phone} onChange={set("phone")} onBlur={touch("phone")} placeholder="+40 7xx xxx xxx" autoComplete="tel" aria-invalid={st("phone")?.ok === false} />{mark("phone")}</span></div>
                 <div className="fld"><label htmlFor="co-dom">Domeniu dorit</label><span className="vwrap"><input id="co-dom" value={f.domain} onChange={set("domain")} onBlur={touch("domain")} placeholder="firmata.ro" aria-invalid={st("domain")?.ok === false} />{mark("domain")}</span></div>
               </div>
+              <p className="co-save">Îți salvăm comanda pe acest email. Dacă nu o finalizezi, îți trimitem cel mult două amintiri.</p>
               <span className="eyebrow" style={{ marginTop: 20 }}>Pasul 2 din 2</span>
               <h3 style={{ marginTop: 14, fontSize: 22 }}>Metodă de plată</h3>
               <div className="pm">
@@ -167,20 +186,29 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
         </div>
         <div className="s co-side">
           <h4 className="co-h">Comanda ta</h4>
-          <div style={{ marginTop: 14 }}>
+          <div className="bill-seg" role="radiogroup" aria-label="Mod de plată">
+            <button type="button" role="radio" aria-checked={!annual} className={!annual ? "on" : ""} onClick={() => setBilling("monthly")}><b>Lunar</b><span>{fmt(yearly.net, cur)} / lună</span></button>
+            <button type="button" role="radio" aria-checked={annual} className={annual ? "on" : ""} onClick={() => setBilling("annual")}><b>Anual <em>−{Math.round(ANNUAL_OFF * 100)}%</em></b><span>al tău imediat</span></button>
+          </div>
+          <div style={{ marginTop: 6 }}>
             {lines.map((l) => (
-              <div key={l.code} className="co-line"><span>{l.label}</span><span>{fmt(l.total, cur)}</span></div>
+              <div key={l.code} className="co-line"><span>{l.label}</span><span>{fmt(l.total, cur)}{annual ? " / lună" : ""}</span></div>
             ))}
-            {discount && schedule[0].discount > 0 && (
+            {annual ? (
+              <>
+                <div className="co-line"><span>12 luni</span><span>{fmt(yearly.full, cur)}</span></div>
+                <div className="co-line disc-line"><span>Plată anuală<small>{Math.round(ANNUAL_OFF * 100)}% reducere, nu se cumulează cu alte coduri</small></span><span>−{fmt(yearly.off, cur)}</span></div>
+              </>
+            ) : discount && schedule[0].discount > 0 && (
               <div className="co-line disc-line"><span>Cod {discount.code}<small>{discountLabel(discount, cur)}</small></span><span>−{fmt(schedule[0].discount, cur)}</span></div>
             )}
           </div>
-          <div style={{ marginTop: 12 }}><DiscountField plan={cart.plan} value={discount} onChange={onDiscount} /></div>
+          {!annual && <div style={{ marginTop: 12 }}><DiscountField plan={cart.plan} value={discount} onChange={onDiscount} /></div>}
           <div className="co-today">
-            <span>Azi plătești</span>
+            <span>{annual ? "Plătești o dată" : "Azi plătești"}</span>
             <b>{fmt(today, cur)}</b>
           </div>
-          <p className="co-note">TVA inclus. Factura fiscală ajunge automat în SPV și pe email.</p>
+          <p className="co-note co-inv">Factură fiscală pe CUI-ul firmei, {annual ? "pentru plata anuală" : "pentru fiecare plată"}. Prețul este final, TVA inclus.</p>
 
           <h4 className="co-h" style={{ marginTop: 28 }}>Ce primești</h4>
           <ul className="co-feat">
@@ -188,6 +216,17 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
             <li>Lansare în 10 zile lucrătoare, garantată</li>
           </ul>
 
+          {annual ? (
+            <>
+              <h4 className="co-h" style={{ marginTop: 28 }}>Plata anuală</h4>
+              <ul className="co-feat">
+                <li>Plătești o singură dată pentru 12 luni și economisești {fmt(yearly.off, cur)}</li>
+                <li>Website-ul devine al tău imediat după confirmarea plății</li>
+                <li>Fără rate lunare și fără perioadă minimă</li>
+                <li>După 12 luni continui cu găzduirea și îmbunătățirile sau muți site-ul unde vrei</li>
+              </ul>
+            </>
+          ) : (<>
           <h4 className="co-h" style={{ marginTop: 28 }}>Desfășurător de plată</h4>
           <p className="co-note" style={{ marginTop: 6 }}>Următoarele 11 rate, după plata de azi · total 12 luni {fmt(yearTotal, cur)} · perioadă minimă {PLANS[cart.plan].minMonths === 1 ? "o lună" : `${PLANS[cart.plan].minMonths} luni`}</p>
           <div className="co-sched">
@@ -210,6 +249,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount }
               <button type="button" className="co-more" onClick={() => setShown(3)}>Arată mai puțin</button>
             )}
           </div>
+          </>)}
         </div>
         <button type="button" className="x" onClick={onClose} aria-label="Închide">✕</button>
       </form>

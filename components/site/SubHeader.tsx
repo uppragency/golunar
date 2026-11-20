@@ -5,7 +5,7 @@ import Link from "next/link";
 import { LeadModal } from "./LeadModal";
 import PromoBar from "./PromoBar";
 
-const LINKS: [string, string][] = [["/#proces", "Proces"], ["/#portofoliu", "Portofoliu"], ["/#abonamente", "Abonamente"], ["/resurse", "Resurse"], ["/#intrebari", "Întrebări"]];
+const LINKS: [string, string][] = [["/#proces", "Proces"], ["/#portofoliu", "Portofoliu"], ["/#abonamente", "Abonamente"], ["/resurse", "Resurse"], ["/intrebari-frecvente", "Întrebări"], ["/contact", "Contact"]];
 
 export default function SubHeader() {
   const [lead, setLead] = useState(false);

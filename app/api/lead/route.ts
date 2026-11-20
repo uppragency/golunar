@@ -12,6 +12,7 @@ const Lead = z.object({
   message: z.string().trim().max(3000).optional().default(""),
   plan: z.enum(["essential", "growth", "partner"]).optional(),
   website: z.string().optional(), // honeypot
+  marketing: z.union([z.literal("1"), z.boolean()]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
   const ref = await getRef();
   const { error } = await supabase.rpc("submit_lead", {
     p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: d.message,
-    p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource() },
+    p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1" },
   });
   if (error) console.error("[lead]", error.message);
   await sendEmail({

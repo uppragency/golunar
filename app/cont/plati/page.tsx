@@ -12,7 +12,7 @@ export default async function BillingPage() {
   const nextIdx = d.installments.findIndex((i) => i.status !== "paid");
   return (
     <div>
-      <div className="topbar"><div><h1>Plăți și facturi</h1><p>Facturile sunt transmise automat în SPV (e-Factura). Sume finale, în {cur === "EUR" ? "euro" : "lei"}, TVA inclus.</p></div></div>
+      <div className="topbar"><div><h1>Plăți și facturi</h1><p>Facturile sunt transmise în SPV (e-Factura). Sume finale, în {cur === "EUR" ? "euro" : "lei"}, TVA inclus.</p></div></div>
       <div className="g g-4">
         <div className="panel kpi"><span className="l">Plătit până acum</span><b>{money(d.sum(d.paid), cur)}</b><span className="d" style={{ color: "var(--mute)" }}>{d.paid.length} {d.paid.length === 1 ? "rată" : "rate"}</span></div>
         <div className="panel kpi"><span className="l">Rămas până la proprietate</span><b>{money(d.sum(d.open), cur)}</b><span className="d" style={{ color: "var(--mute)" }}>{d.open.length} rate</span></div>

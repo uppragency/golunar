@@ -32,13 +32,14 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
 
         <h2>4. Lansarea și garanția de lansare</h2>
         <p>Lansăm website-ul în 10 zile lucrătoare de la data la care primim brief-ul complet prin portalul de client. Zilele în care așteptăm de la tine materiale, răspunsuri sau aprobări nu se numără.</p>
-        <p>Dacă depășim termenul de 10 zile lucrătoare din motive care ne aparțin, rata lunară următoare este gratuită. Aceasta este singura compensație pentru întârziere: nu returnăm sume deja plătite.</p>
+        <p>Dacă depășim termenul de 10 zile lucrătoare din motive care ne aparțin, rata lunară următoare este gratuită. Aceasta este singura compensație pentru întârziere: nu returnăm sume deja plătite. La plata anuală, compensația este o lună suplimentară de găzduire, mentenanță și îmbunătățiri, adăugată după cele 12 luni plătite.</p>
         <p>Îți trimitem propunerea de design spre aprobare în portal. Aprobarea ta pornește dezvoltarea. Modificările cerute după aprobarea finală se tratează ca îmbunătățiri lunare.</p>
 
         <h2>5. Prețuri, plată și facturare</h2>
         <p>Prețurile sunt cele afișate pe golunar.ro la data comenzii și sunt prețuri finale, fără TVA adăugat la factură. Prețul lunar al abonamentului tău rămâne cel din momentul comenzii pe toată perioada primelor 12 luni.</p>
         <p>Prima rată se plătește la comandă, iar următoarele lunar, la scadențele afișate în portal. Plata se face prin transfer bancar în contul UPPRMARKETING S.R.L. indicat în portal și pe email, cu referința comenzii. Pentru fiecare plată emitem factură fiscală.</p>
         <p>Codurile de reducere și ofertele promoționale (de exemplu prima lună la 4,99 lei pe planul Esențial, pentru clienți noi) se aplică doar în condițiile afișate pentru fiecare cod, nu se cumulează și nu se pot transforma în bani.</p>
+        <p>Poți alege și plata anuală: plătești o singură dată 12 luni de abonament, cu reducerea afișată la comandă (în prezent 10%). Plata anuală nu se cumulează cu alte coduri de reducere sau oferte, iar suma plătită nu se returnează în caz de anulare.</p>
         <p>O comandă neplătită în 10 zile de la plasare se anulează automat, fără costuri.</p>
 
         <h2>6. Întârzieri la plată</h2>
@@ -54,7 +55,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
         <p>Putem rezilia contractul cu notificare de 30 de zile sau imediat în caz de încălcare gravă a acestor termeni (de exemplu conținut ilegal sau neplata repetată).</p>
 
         <h2>8. Proprietatea asupra website-ului</h2>
-        <p>Domeniul este înregistrat pe numele firmei tale din prima zi. Website-ul (designul și conținutul creat pentru tine) devine proprietatea ta după 12 plăți lunare și încheierea primei perioade de 12 luni. La transfer primești un proces-verbal de predare și, la cerere, codul-sursă și fișierele, în cel mult 15 zile lucrătoare.</p>
+        <p>Domeniul este înregistrat pe numele firmei tale din prima zi. Website-ul (designul și conținutul creat pentru tine) devine proprietatea ta după 12 plăți lunare și încheierea primei perioade de 12 luni. La plata anuală, website-ul devine proprietatea ta după confirmarea plății integrale a celor 12 luni. La transfer primești un proces-verbal de predare și, la cerere, codul-sursă și fișierele, în cel mult 15 zile lucrătoare.</p>
         <p>Componentele terțe (fonturi, biblioteci, imagini licențiate, servicii externe) rămân sub licențele proprii. Până la transfer, LUNAR păstrează drepturile asupra designului și codului, iar tu ai drept de utilizare pe durata abonamentului.</p>
         <p>După transfer poți continua cu LUNAR pentru găzduire, mentenanță și îmbunătățiri, la prețul comunicat atunci, sau poți muta website-ul la alt furnizor.</p>
 
@@ -97,7 +98,8 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
         <ul>
           <li><b>Date de comandă și cont:</b> numele firmei, CUI, număr de înregistrare, adresă, numele reprezentantului și al persoanei de contact, email, telefon, plan ales, istoricul plăților.</li>
           <li><b>Date din brief și cereri:</b> informațiile despre afacere, textele, imaginile și fișierele pe care le încarci în portal.</li>
-          <li><b>Date din formulare:</b> numele, emailul, telefonul și mesajul trimise prin formularul de discuție gratuită sau prin auditul gratuit (inclusiv adresa website-ului analizat).</li>
+          <li><b>Date din formulare:</b> numele, emailul, telefonul și mesajul trimise prin formularul de discuție gratuită, formularul de contact sau auditul gratuit (inclusiv adresa website-ului analizat).</li>
+          <li><b>Comenzi începute:</b> emailul, numele și alegerile din formularul de comandă, salvate când introduci emailul, ca să îți putem trimite cel mult două amintiri dacă nu finalizezi comanda.</li>
           <li><b>Date tehnice:</b> adresa IP, tipul de browser și dispozitiv, paginile vizitate, sursa vizitei (de exemplu Google sau o campanie), în condițiile din <a className="inl" href="/legal/cookies">Politica de cookie-uri</a>.</li>
           <li><b>Comunicări:</b> emailurile trimise și primite, inclusiv starea livrării.</li>
         </ul>
@@ -106,8 +108,8 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
         <ul>
           <li><b>Încheierea și executarea contractului</b> (art. 6 alin. 1 lit. b GDPR): procesarea comenzii, crearea și întreținerea website-ului, portalul de client, suportul, emailurile despre comandă, lansare și plăți.</li>
           <li><b>Obligații legale</b> (lit. c): facturare, contabilitate, arhivare fiscală.</li>
-          <li><b>Interes legitim</b> (lit. f): securitatea serviciului, prevenirea fraudei, răspunsul la solicitări trimise prin formulare, îmbunătățirea serviciului, recuperarea creanțelor, programul de recomandare.</li>
-          <li><b>Consimțământ</b> (lit. a): cookie-urile de analiză și marketing și eventualele comunicări comerciale către persoane care nu sunt clienți. Îți poți retrage consimțământul oricând.</li>
+          <li><b>Interes legitim</b> (lit. f): securitatea serviciului, prevenirea fraudei, răspunsul la solicitări trimise prin formulare, îmbunătățirea serviciului, recuperarea creanțelor, programul de recomandare și cel mult două amintiri despre o comandă începută și netrimisă.</li>
+          <li><b>Consimțământ</b> (lit. a): cookie-urile de analiză și marketing și emailurile de prezentare (cel mult 5, în 14 zile), trimise doar dacă bifezi opțiunea din formular. Îți poți retrage consimțământul oricând, din linkul de dezabonare din fiecare email.</li>
         </ul>
 
         <h2>4. Cui transmitem datele</h2>
