@@ -1410,3 +1410,14 @@ input[type=file]::file-selector-button{height:30px;padding:0 14px;margin-right:1
 @media (max-width:860px){.mig-steps{grid-template-columns:1fr}.mig-steps li{padding:22px}}
 
 .addon-inc{width:44px;height:28px;display:grid;place-items:center;border-radius:999px;background:rgba(61,214,140,.14);color:var(--ok);font-weight:700;font-size:14px}
+/* articole lungi: cuprins și tabele */
+.r-toc{margin:0 0 44px;padding:22px 26px;border-radius:var(--r-md);border:1px solid var(--line);background:rgba(255,255,255,.02)}
+.r-toc b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.r-toc ol{margin:12px 0 0;padding-left:20px;display:grid;gap:6px}
+.r-toc a{color:var(--text);text-decoration:none;font-size:15px}
+.r-toc a:hover{color:var(--accent2)}
+.article h2[id]{scroll-margin-top:110px}
+.tbl-wrap{overflow-x:auto;margin:20px 0;-webkit-overflow-scrolling:touch}
+.tbl-wrap table{min-width:560px}
+.article .callout{margin:28px 0}
+.article .callout p+p{margin-top:8px}
