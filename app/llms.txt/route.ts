@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/env";
+import { RATE_PAGES } from "@/lib/rate-pages";
 import { PLANS, ADDONS } from "@/lib/plans";
 import { RESOURCES } from "@/lib/resources";
 import { CITIES, INDUSTRIES } from "@/lib/landings";
@@ -59,6 +60,10 @@ ${INDUSTRIES.map((l) => `- [${l.metaTitle.replace(" · LUNAR", "")}](${SITE_URL}
 ## Creare site pe orașe
 
 ${CITIES.map((l) => `- [${l.metaTitle.replace(" · LUNAR", "")}](${SITE_URL}/${l.slug}): ${l.desc}`).join("\n")}
+
+## Site în rate și pe abonament
+
+${RATE_PAGES.map((p) => `- [${p.metaTitle.replace(" · LUNAR", "")}](${SITE_URL}/${p.slug}): ${p.desc}`).join("\n")}
 
 ## Ghiduri
 

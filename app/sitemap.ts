@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/env";
 import { RESOURCES } from "@/lib/resources";
 import { CITIES, INDUSTRIES } from "@/lib/landings";
+import { RATE_PAGES } from "@/lib/rate-pages";
 
 const SITE_UPDATED = "2026-11-19";
 
@@ -26,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u("/lunar-vs-agentie-vs-ai", SITE_UPDATED, "monthly", 0.7),
     ...INDUSTRIES.map((l) => u(`/${l.slug}`, l.updated, "monthly", 0.8)),
     ...CITIES.map((l) => u(`/${l.slug}`, l.updated, "monthly", 0.8)),
+    ...RATE_PAGES.map((p) => u(`/${p.slug}`, p.updated, "monthly", 0.8)),
     u("/resurse", SITE_UPDATED, "weekly", 0.7),
     ...RESOURCES.map((r) => u(`/resurse/${r.slug}`, r.updated, "monthly", 0.7)),
     u("/status", new Date().toISOString().slice(0, 10), "daily", 0.3),

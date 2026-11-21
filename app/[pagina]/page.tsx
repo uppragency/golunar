@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/site/PageShell";
@@ -6,17 +7,21 @@ import { CITIES, INDUSTRIES, LANDINGS, landingBySlug, type City, type Industry }
 import { PLANS } from "@/lib/plans";
 import { CITY_LINKS, INDUSTRY_LINKS } from "@/lib/landing-links";
 import { SITE_URL } from "@/lib/env";
+import { RATE_PAGES, ratePageBySlug, type RatePage } from "@/lib/rate-pages";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
   const linked = [...INDUSTRY_LINKS, ...CITY_LINKS].map(([s]) => s).sort().join();
   if (linked !== LANDINGS.map((l) => l.slug).sort().join()) throw new Error("lib/landing-links.ts nu corespunde cu lib/landings.ts");
-  return LANDINGS.map((l) => ({ pagina: l.slug }));
+  return [...LANDINGS, ...RATE_PAGES].map((l) => ({ pagina: l.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ pagina: string }> }): Promise<Metadata> {
-  const l = landingBySlug((await params).pagina);
+  const slug = (await params).pagina;
+  const r = ratePageBySlug(slug);
+  if (r) return { title: { absolute: r.metaTitle }, description: r.desc, alternates: { canonical: `/${r.slug}` }, openGraph: { title: `${r.h1} ${r.h1Dim}`, description: r.desc, url: `/${r.slug}`, type: "website" } };
+  const l = landingBySlug(slug);
   if (!l) return {};
   return {
     title: { absolute: l.metaTitle },
@@ -134,8 +139,39 @@ function CityPage({ l }: { l: City }) {
   );
 }
 
+function RatePageView({ r }: { r: RatePage }) {
+  const others = RATE_PAGES.filter((x) => x.slug !== r.slug);
+  return (
+    <PageShell
+      crumbs={[[`/${r.slug}`, r.eyebrow]]}
+      eyebrow={r.eyebrow}
+      title={<>{r.h1} <span className="dim">{r.h1Dim}</span></>}
+      lede={r.lede}
+      meta={<><span className="pill acc"><span className="d" />Lansare în 10 zile lucrătoare</span><Link href="/website-4-99-lei" className="pill acc">Prima lună 4,99 lei</Link><span className="pill">Apoi {PLANS.essential.ron} lei / lună, TVA inclus</span><span className="pill">Al tău după 12 plăți</span></>}
+      jsonLd={[serviceLd(r.metaTitle.replace(" · LUNAR", ""), r.desc, `${SITE_URL}/${r.slug}`), faqLd(r.faq)]}
+    >
+      <article className="article">
+        {r.sections.map((s) => (
+          <Fragment key={s.h}>
+            <h2>{s.h}</h2>
+            {s.p?.map((t) => <p key={t}>{t}</p>)}
+            {s.ul && <ul>{s.ul.map((t) => <li key={t}>{t}</li>)}</ul>}
+          </Fragment>
+        ))}
+        <div className="callout"><b>Începe cu prima lună la 4,99 lei</b><p>Comanzi online în 2 minute, completezi brief-ul în portal și lansăm în 10 zile lucrătoare. <Link className="inl" href="/website-4-99-lei">Vezi oferta</Link> sau <Link className="inl" href="/contact?subiect=nou">scrie-ne</Link> dacă ai întrebări.</p></div>
+        <Faq faq={r.faq} />
+        <h2>Citește și</h2>
+        <ul className="lp-links">{others.map((o) => <li key={o.slug}><Link href={`/${o.slug}`}>{o.eyebrow}</Link></li>)}</ul>
+      </article>
+    </PageShell>
+  );
+}
+
 export default async function LandingPage({ params }: { params: Promise<{ pagina: string }> }) {
-  const l = landingBySlug((await params).pagina);
+  const slug = (await params).pagina;
+  const r = ratePageBySlug(slug);
+  if (r) return <RatePageView r={r} />;
+  const l = landingBySlug(slug);
   if (!l) notFound();
   return l.kind === "industry" ? <IndustryPage l={l} /> : <CityPage l={l} />;
 }
