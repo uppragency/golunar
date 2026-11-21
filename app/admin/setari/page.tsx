@@ -17,7 +17,7 @@ export default async function SettingsPage() {
   const retention = (ret?.value ?? { enabled: true, percent: 50 }) as { enabled: boolean; percent: number };
   const rows: [string, boolean, string][] = [
     ["Supabase (bază de date, auth)", true, "Conectat"],
-    ["Supabase service role (webhook-uri, checkout transfer)", has.serviceRole(), "SUPABASE_SERVICE_ROLE_KEY"],
+    ["Supabase service role (doar webhook Stripe, pentru plata cu cardul)", has.serviceRole(), "SUPABASE_SERVICE_ROLE_KEY"],
     ["Stripe (card, abonamente)", has.stripe(), "STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET"],
     ["Resend (emailuri)", has.resend(), "RESEND_API_KEY"],
     ["SmartBill (e-Factura)", has.smartbill(), "SMARTBILL_USER, SMARTBILL_TOKEN, SMARTBILL_CIF"],
