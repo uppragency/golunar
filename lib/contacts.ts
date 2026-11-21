@@ -27,7 +27,7 @@ const split = (name?: string | null) => {
  * cu excepția unei bife noi și explicite de acord. Nu aruncă erori: nu trebuie să blocheze formularele.
  */
 export async function syncContact({ email, name, kind, marketing }: Sync) {
-  const key = process.env.RESEND_API_KEY;
+  const key = process.env.RESEND_CONTACTS_API_KEY || process.env.RESEND_API_KEY;
   if (!key || !email) return;
   const resend = new Resend(key);
   const mail = email.trim().toLowerCase();
@@ -59,7 +59,7 @@ export async function syncContact({ email, name, kind, marketing }: Sync) {
 
 /** Dezabonare din linkul din email: marcăm contactul și în Resend, ca broadcast-urile să îl excludă. */
 export async function unsubscribeContact(email: string) {
-  const key = process.env.RESEND_API_KEY;
+  const key = process.env.RESEND_CONTACTS_API_KEY || process.env.RESEND_API_KEY;
   if (!key || !email) return;
   try {
     const r = await new Resend(key).contacts.update({ email: email.trim().toLowerCase(), unsubscribed: true });
