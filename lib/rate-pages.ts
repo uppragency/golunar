@@ -74,13 +74,13 @@ export const RATE_PAGES: RatePage[] = [
         "Alegi planul, completezi datele firmei și plătești prima rată. Primești acces în portal, unde completezi brief-ul. Din acel moment avem 10 zile lucrătoare să lansăm site-ul.",
         "Plătești apoi o rată lunară fixă, cu factură pe firmă. După 12 rate, website-ul devine al tău. Nu există dobândă, comision de acordare sau verificare la bancă, pentru că nu este un credit, ci un serviciu plătit lunar.",
       ] },
-      { h: "Ce intră în rata lunară", ul: INCLUDES },
+      { h: "Ce intră în rata lunară a unui site în rate", ul: INCLUDES },
       { h: "Cât costă un site în rate", p: [OFFER], ul: PLANS_UL },
       { h: "De ce rate și nu plată integrală", p: [
         "Pentru o firmă mică, 4.000 sau 6.000 de lei plătiți la început înseamnă bani scoși din stoc, din salarii sau din reclame. O rată lunară îți lasă banii în firmă, iar costul site-ului se acoperă din clienții pe care îi aduce.",
         "Contează și ce primești după lansare. Multe site-uri plătite integral rămân neactualizate, fără backup și fără cineva care să răspundă când apare o problemă. În rata LUNAR, mentenanța și îmbunătățirile sunt incluse până la final.",
       ] },
-      { h: "Pentru cine este potrivit", ul: [
+      { h: "Pentru cine este potrivit un site în rate", ul: [
         "Firme noi care au nevoie de un site profesionist din prima lună, fără să blocheze capitalul.",
         "Firme care au un site vechi, lent pe telefon, și vor să îl înlocuiască fără o cheltuială mare dintr-o dată.",
         "Clinici, saloane, cabinete, firme de servicii și construcții care primesc clienți din Google.",
@@ -93,8 +93,13 @@ export const RATE_PAGES: RatePage[] = [
         "Dacă hostingul, mentenanța și modificările sunt incluse sau se plătesc separat.",
         "Dacă primești factură fiscală pe firmă pentru fiecare rată.",
       ], p: [OWNERSHIP] },
+      { h: "Site în rate cu factură pe firmă", p: ["Fiecare rată a site-ului în rate este facturată pe CUI-ul firmei, cu prețul final, TVA inclus. Pentru contabilitate, abonamentul este o cheltuială lunară de servicii, ușor de urmărit.", "Toate ratele, plătite și viitoare, se văd în portalul clientului, împreună cu facturile și contractul. Știi oricând câte rate mai ai până când site-ul devine al tău."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Pot plăti site-ul în rate și ca PFA?", "Da. Comanda se face pe CUI, iar persoanele fizice autorizate, întreprinderile individuale și firmele au același proces și aceleași prețuri."],
+      ["Pot plăti site-ul în rate mai repede?", "Da. Poți plăti oricând ratele rămase până la 12 și preiei site-ul. Dacă alegi de la început plata anuală, primești 20% reducere."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -112,9 +117,9 @@ export const RATE_PAGES: RatePage[] = [
         "Creditul sau leasingul: împarți costul, dar plătești dobândă, comisioane și treci printr-o verificare. Rar se aprobă pentru un serviciu digital.",
         "Abonamentul cu proprietate: plătești o rată lunară fixă fără dobândă, iar după 12 luni website-ul este al tău. Este modelul LUNAR.",
       ] },
-      { h: "Ce primești de la prima rată", ul: INCLUDES },
+      { h: "Ce primești la un website în rate, de la prima rată", ul: INCLUDES },
       { h: "Prețuri pentru website în rate", p: [OFFER], ul: PLANS_UL },
-      { h: "Cum decurge proiectul", ul: [
+      { h: "Cum decurge proiectul de website în rate", ul: [
         "Ziua 0: comanzi online și plătești prima rată prin transfer bancar.",
         "Ziua 1: completezi brief-ul în portal, cu serviciile, clienții și exemplele care îți plac.",
         "Zilele 2–6: primești designul pe link și îl aprobi sau ceri modificări.",
@@ -125,8 +130,13 @@ export const RATE_PAGES: RatePage[] = [
         "O firmă abia înființată are nevoie de credibilitate rapid, dar rar are bugetul pentru un site plătit integral. Rata lunară rezolvă ambele probleme: lansezi în două săptămâni și plătești din încasări.",
         OWNERSHIP,
       ] },
+      { h: "Website în rate sau constructor de site-uri", p: ["Un constructor de site-uri pare ieftin, dar construcția, textele, SEO-ul și întreținerea rămân în sarcina ta. La un website în rate LUNAR, le facem noi, iar tu plătești doar rata lunară.", "Diferența cea mai mare apare după lansare: la constructor plătești abonamentul pentru totdeauna, iar site-ul nu devine al tău. La LUNAR, după 12 rate, website-ul îți aparține."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Ce diferență este între site în rate și website în rate?", "Niciuna: sunt două denumiri pentru același serviciu. Plătești lunar, fără avans, iar după 12 plăți website-ul devine al tău."],
+      ["Pot avea website în rate în mai multe limbi?", "Da. Fiecare limbă suplimentară costă 149 lei pe lună și se adaugă la rata planului ales."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -143,8 +153,8 @@ export const RATE_PAGES: RatePage[] = [
         "La multe servicii de tip abonament, site-ul rămâne al furnizorului: dacă oprești plata, pierzi tot. La LUNAR, după 12 plăți lunare website-ul îți aparține și primești codul-sursă la cerere.",
         "Domeniul este înregistrat pe firma ta din prima zi, așa că adresa site-ului și emailurile pe domeniu rămân ale tale oricum.",
       ] },
-      { h: "Ce include abonamentul", ul: INCLUDES },
-      { h: "Planuri și prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Ce include un site pe abonament LUNAR", ul: INCLUDES },
+      { h: "Prețuri pentru site pe abonament", p: [OFFER], ul: PLANS_UL },
       { h: "Abonament față de plata unică", ul: [
         "Cost la început: abonamentul cere doar prima lună, plata unică cere tot bugetul.",
         "Mentenanță: inclusă în abonament, separată și adesea uitată la plata unică.",
@@ -155,8 +165,13 @@ export const RATE_PAGES: RatePage[] = [
       { h: "Când merită un site pe abonament", p: [
         "Merită când vrei un site care evoluează: pagini noi pentru servicii, oferte sezoniere, SEO și măsurarea cererilor. Dacă ai nevoie doar de o pagină de contact pe care nu o atingi ani de zile, plata unică poate fi mai ieftină.",
       ] },
+      { h: "Cum alegi un site pe abonament", p: ["Înainte să semnezi pentru orice site pe abonament, cere trei răspunsuri clare: al cui este site-ul după ce plătești, al cui este domeniul și ce se întâmplă cu site-ul dacă oprești abonamentul.", "La LUNAR, răspunsurile sunt scrise în termenii contractului: site-ul devine al tău după 12 plăți, domeniul este al tău din prima zi, iar după perioada minimă poți anula oricând."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Pot schimba planul abonamentului?", "Da. Poți trece pe alt plan, iar diferența se aplică de la rata următoare, cu respectarea perioadei minime a noului plan."],
+      ["Rămâne site-ul online dacă opresc abonamentul înainte de 12 luni?", "Nu, dacă nu preiei site-ul. Ai însă oricând varianta să plătești ratele rămase până la 12 și să îl păstrezi."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -172,8 +187,8 @@ export const RATE_PAGES: RatePage[] = [
       { h: "Ce înseamnă website as a service", p: [
         "În loc să cumperi un site o dată și apoi să cauți pe cineva pentru fiecare problemă, plătești un abonament care acoperă crearea, găzduirea și întreținerea. Furnizorul răspunde de funcționarea site-ului în fiecare lună.",
       ] },
-      { h: "Ce acoperă abonamentul LUNAR", ul: INCLUDES },
-      { h: "Costuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Ce acoperă un website pe abonament LUNAR", ul: INCLUDES },
+      { h: "Cât costă un website pe abonament", p: [OFFER], ul: PLANS_UL },
       { h: "Cât te costă pe 3 ani", p: [
         `Pe planul Esențial, primele 12 luni costă în total ${fmt(4.99 + E * 11)} lei cu oferta de lansare, iar site-ul devine al tău. Din anul al doilea alegi: continui cu mentenanța și îmbunătățirile sau muți site-ul unde vrei.`,
         "La un site plătit integral, la prețul de creare se adaugă hostingul, domeniul, certificatul, actualizările și fiecare modificare cerută. Pe 3 ani, diferența este de obicei mai mică decât pare, iar la abonament ai pe cineva responsabil în fiecare lună.",
@@ -181,8 +196,13 @@ export const RATE_PAGES: RatePage[] = [
       { h: "Pentru ce tip de site funcționează", p: [
         "Pentru orice tip de site: de prezentare, landing page pentru campanii sau magazin online. Prețul este același abonament, indiferent de tipul site-ului.",
       ] },
+      { h: "De ce aleg firmele website pe abonament", p: ["Un website pe abonament mută responsabilitatea tehnică de pe firma ta pe furnizor. Nu mai cauți programator când apare o eroare, nu urmărești expirarea domeniului și nu plătești separat fiecare modificare.", "Pentru firmele care cresc, avantajul este flexibilitatea: începi cu planul Esențial și treci pe Creștere sau Partener când ai nevoie de SEO, campanii sau automatizări, fără să refaci site-ul."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Ce este website as a service?", "Este modelul în care plătești lunar pentru crearea, găzduirea și întreținerea website-ului, în loc să îl cumperi o dată și să plătești separat fiecare serviciu."],
+      ["Website pe abonament înseamnă că nu îl dețin?", "La multe servicii, da. La LUNAR, website-ul pe abonament devine al tău după 12 plăți."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -195,25 +215,30 @@ export const RATE_PAGES: RatePage[] = [
     h1Dim: "O sumă fixă, fără surprize la factură.",
     lede: "Știi de la început cât plătești în fiecare lună și ce primești. Nu există costuri ascunse pentru hosting, certificat sau actualizări.",
     sections: [
-      { h: "Cum plătești", p: [
+      { h: "Cum plătești un site cu plată lunară", p: [
         "Plata se face lunar prin transfer bancar, în lei, cu factură fiscală pe CUI-ul firmei. Primești datele de plată după comandă și înainte de fiecare scadență, iar în portal vezi toate ratele, plătite și viitoare.",
         "Dacă preferi, poți plăti tot anul o dată, cu 20% reducere. În acest caz website-ul devine al tău imediat după confirmarea plății.",
       ] },
       { h: "Ce acoperă plata lunară", ul: INCLUDES },
-      { h: "Prețuri lunare", p: [OFFER], ul: PLANS_UL },
+      { h: "Prețuri pentru site cu plată lunară", p: [OFFER], ul: PLANS_UL },
       { h: "Ce se întâmplă dacă întârzii o plată", p: [
         "Primești amintiri pe email în zilele 1, 5 și 10 după scadență. După 14 zile fără plată, site-ul poate fi suspendat temporar, până la plata ratei.",
       ] },
       { h: "Proprietate", p: [OWNERSHIP] },
+      { h: "De ce un site cu plată lunară ajută bugetul", p: ["Un site cu plată lunară transformă o investiție mare într-un cost fix, la fel ca chiria sau contabilitatea. Știi din prima zi cât te costă site-ul în fiecare lună, iar suma nu crește când ai nevoie de modificări incluse în plan.", "Pentru firmele mici, previzibilitatea contează mai mult decât prețul total: banii rămân disponibili pentru stoc, oameni și reclame."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Când se plătește rata lunară?", "În aceeași zi a fiecărei luni, aleasă la comandă. Primești un email înainte de scadență cu datele de plată și referința."],
+      ["Pot plăti site-ul cu plată lunară prin card?", "Momentan plata se face prin transfer bancar. Plata cu cardul va fi disponibilă în curând."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
     slug: "site-fara-avans",
     keyword: "site fără avans",
     metaTitle: "Site fără avans și fără taxă de creare · LUNAR",
-    desc: "Site pentru firma ta fără avans și fără taxă de creare. Plătești doar prima lună, iar pentru clienții noi prima lună pe Esențial costă 4,99 lei.",
+    desc: "Site fără avans și fără taxă de creare pentru firma ta. Plătești doar prima lună: pentru clienții noi, prima lună pe Esențial costă 4,99 lei.",
     eyebrow: "Site fără avans",
     h1: "Site fără avans.",
     h1Dim: "Plătești doar prima lună, nu tot proiectul.",
@@ -227,18 +252,23 @@ export const RATE_PAGES: RatePage[] = [
         "Lucrăm cu un proces standardizat: brief în portal, design aprobat pe link, lansare în 10 zile lucrătoare. Costul nostru se recuperează în timp, din abonament, nu din avansul clientului.",
         "Riscul pentru tine este mic: dacă lansarea întârzie din vina noastră, luna următoare este gratuită, iar după perioada minimă poți anula oricând.",
       ] },
-      { h: "Ce primești fără avans", ul: INCLUDES },
-      { h: "Prețuri", ul: PLANS_UL },
+      { h: "Ce primești la un site fără avans", ul: INCLUDES },
+      { h: "Prețuri pentru site fără avans", ul: PLANS_UL },
       { h: "Proprietate", p: [OWNERSHIP] },
+      { h: "Site fără avans: ce riști și ce nu", p: ["La un site fără avans, riscul principal al clientului dispare: nu plătești sume mari înainte să vezi designul. Aprobi designul pe link înainte de construcție, iar lansarea are termen garantat.", "Singurul angajament este perioada minimă a planului ales: 3 luni la Esențial, 2 la Creștere și o lună la Partener."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["De ce alte firme cer avans pentru site?", "Pentru că încasează proiectul o singură dată și vor să își acopere munca înainte de livrare. La LUNAR costul se recuperează lunar, din abonament."],
+      ["Site fără avans înseamnă calitate mai slabă?", "Nu. Designul este personalizat, iar site-ul este construit pe aceeași tehnologie ca proiectele plătite integral. Diferă doar modul de plată."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
     slug: "site-de-prezentare-in-rate",
     keyword: "site de prezentare în rate",
     metaTitle: "Site de prezentare în rate, lansat în 10 zile · LUNAR",
-    desc: `Site de prezentare în rate pentru firme: pagini de servicii, contact, Google Maps și formular de ofertă. Fără avans, de la ${E} lei pe lună, al tău după 12 plăți.`,
+    desc: `Site de prezentare în rate: pagini de servicii, contact, hartă și formular de ofertă. Fără avans, de la ${E} lei pe lună, al tău după 12 plăți.`,
     eyebrow: "Site de prezentare în rate",
     h1: "Site de prezentare în rate.",
     h1Dim: "Complet la lansare, plătit lunar.",
@@ -252,14 +282,19 @@ export const RATE_PAGES: RatePage[] = [
         "Contact cu formular, telefon cu un clic, WhatsApp și hartă.",
         "Pagini legale: termeni, confidențialitate și cookie-uri.",
       ] },
-      { h: "Ce intră în rată", ul: INCLUDES },
+      { h: "Ce intră în rata unui site de prezentare în rate", ul: INCLUDES },
       { h: "Prețul unui site de prezentare în rate", p: [OFFER], ul: PLANS_UL },
-      { h: "Site de prezentare care aduce cereri", p: [
+      { h: "Site de prezentare în rate care aduce cereri", p: [
         "Fiecare pagină are un singur scop: să ducă vizitatorul spre apel sau cerere de ofertă. Site-ul se încarcă rapid pe telefon, are datele firmei marcate pentru Google și poate fi legat de profilul Google Business.",
       ] },
       { h: "Proprietate", p: [OWNERSHIP] },
+      { h: "Când ai nevoie de un site de prezentare în rate", p: ["Un site de prezentare în rate se potrivește firmelor de servicii: clinici, cabinete, saloane, construcții, consultanță, transport. Clientul vrea să vadă rapid ce faci, unde ești și cum te contactează.", "Dacă vinzi produse online, varianta potrivită este un magazin online, la același preț de abonament."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Câte pagini are un site de prezentare în rate?", "Câte are nevoie afacerea ta, de obicei între 5 și 12 pagini, stabilite împreună în brief. Paginile noi se adaugă apoi din îmbunătățirile lunare."],
+      ["Pot muta site-ul de prezentare existent?", "Da, gratuit. Preluăm textele, imaginile și paginile importante și facem redirecturi de pe adresele vechi."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -272,8 +307,8 @@ export const RATE_PAGES: RatePage[] = [
     h1Dim: "Calculul complet, pe 12 luni și pe 3 ani.",
     lede: "Rata lunară spune doar o parte din poveste. Ca să compari corect, uită-te la totalul pe 12 luni, la ce este inclus și la ce se întâmplă după.",
     sections: [
-      { h: "Rata lunară pe fiecare plan", ul: PLANS_UL },
-      { h: "Totalul pe primele 12 luni", ul: [
+      { h: "Cât costă un site în rate pe fiecare plan", ul: PLANS_UL },
+      { h: "Cât costă un site în rate în primele 12 luni", ul: [
         `Esențial: ${fmt(4.99 + E * 11)} lei cu oferta de 4,99 lei în prima lună, sau ${fmt(E * 12)} lei fără ofertă.`,
         `Creștere: ${fmt(G * 12)} lei.`,
         `Partener: ${fmt(P * 12)} lei.`,
@@ -285,8 +320,13 @@ export const RATE_PAGES: RatePage[] = [
         "Pe 3 ani, diferența dintre cele două variante se reduce mult. Avantajul ratelor este că nu blochezi bani la început și ai pe cineva responsabil de site în fiecare lună.",
       ] },
       { h: "După 12 luni", p: [OWNERSHIP, "Dacă păstrezi site-ul la noi, continui cu același plan sau treci pe altul. Dacă îl muți, primești codul-sursă la cerere."] },
+      { h: "Ce poate crește costul unui site în rate", p: ["Costul unui site în rate crește doar dacă adaugi opțiuni: identitate vizuală (399 lei pe lună, timp de 12 luni), vizibilitate locală Google (99 lei pe lună), vizibilitate în AI pe planul Esențial (99 lei pe lună) sau limbi suplimentare (149 lei pe lună pentru fiecare).", "Fără opțiuni, rata rămâne cea a planului. Nu există taxe de setup, de lansare sau de transfer al proprietății."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Cât costă un site în rate pe lună?", "Între 269 și 1379 de lei pe lună, în funcție de plan, TVA inclus. Prima lună pe planul Esențial costă 4,99 lei pentru clienții noi."],
+      ["Cât costă în total un site în rate?", "Pe planul Esențial, primele 12 luni costă 2.963,99 lei cu oferta de lansare. După aceste 12 plăți, site-ul este al tău."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -299,12 +339,12 @@ export const RATE_PAGES: RatePage[] = [
     h1Dim: "Începi să vinzi fără să plătești tot proiectul la început.",
     lede: "Un magazin online făcut la comandă costă de obicei de la câteva mii până la zeci de mii de lei, plătiți înainte de prima vânzare. La LUNAR plătești un abonament lunar, iar după 12 plăți magazinul este al tău.",
     sections: [
-      { h: "Cum funcționează", p: [
+      { h: "Cum funcționează un magazin online în rate", p: [
         "Alegi planul, plătești prima lună și completezi brief-ul în portal: ce vinzi, câte produse ai, cum livrezi și cum vrei să încasezi. Lansăm în 10 zile lucrătoare de la brief, iar produsele le încărcăm împreună cu tine.",
         "Plătești apoi o rată lunară fixă, fără dobândă și fără verificare la bancă, pentru că nu este un credit. Prețul este același ca pentru orice site LUNAR: plătești abonamentul, indiferent de tipul site-ului.",
       ] },
-      { h: "Ce primește magazinul tău", ul: SHOP_INCLUDES },
-      { h: "Prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Ce include un magazin online în rate", ul: SHOP_INCLUDES },
+      { h: "Cât costă un magazin online în rate", p: [OFFER], ul: PLANS_UL },
       { h: "Ce plan se potrivește unui magazin", ul: [
         "Esențial, dacă ai puține produse și vrei să începi să vinzi online repede.",
         "Creștere, dacă vrei trafic din Google pe categorii și produse, plus măsurarea vânzărilor din reclame.",
@@ -314,8 +354,11 @@ export const RATE_PAGES: RatePage[] = [
         "La un magazin nou, banii sunt mai utili în stoc și în reclame decât blocați în dezvoltare. Cu rata lunară începi să vinzi în două săptămâni, iar costul magazinului se acoperă din comenzi.",
         OWNERSHIP,
       ] },
+      { h: "Magazin online în rate sau platformă de comerț", p: ["Pe o platformă de comerț plătești lunar pentru totdeauna, adesea cu comision din vânzări, iar magazinul nu devine al tău. La un magazin online în rate LUNAR, rata este fixă, fără comision pe comenzi, iar după 12 plăți magazinul îți aparține.", "Și designul diferă: magazinul tău nu pornește dintr-o temă folosită de mii de alte magazine."] },
     ],
     faq: [
+      ["Pot muta un magazin online existent?", "Da. Mutarea unui magazin cu comenzi și conturi de clienți o discutăm înainte de comandă, ca să stabilim ce date se preiau."],
+      ["Primesc factură pentru fiecare rată a magazinului online?", "Da. Fiecare rată este facturată pe CUI-ul firmei, cu prețul final, TVA inclus."],
       ["Costă mai mult un magazin online decât un site de prezentare?", "Nu. Prețul este același abonament, indiferent de tipul site-ului. Diferă doar planul pe care îl alegi, în funcție de ce ai nevoie lunar."],
       ...FAQ_COMMON,
     ],
@@ -337,11 +380,16 @@ export const RATE_PAGES: RatePage[] = [
         "Design: la LUNAR este făcut pentru brandul tău, nu ales dintr-o listă de teme.",
         "Muncă: la LUNAR construim și întreținem noi magazinul; pe o platformă îl configurezi singur.",
       ] },
-      { h: "Ce include abonamentul", ul: SHOP_INCLUDES },
-      { h: "Prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Ce include un magazin online pe abonament", ul: SHOP_INCLUDES },
+      { h: "Cât costă un magazin online pe abonament", p: [OFFER], ul: PLANS_UL },
       { h: "Proprietate", p: [OWNERSHIP, "Comisioanele procesatorului de plăți și tarifele curierului se plătesc direct către aceștia, ca la orice magazin online."] },
+      { h: "Pentru cine este un magazin online pe abonament", p: ["Un magazin online pe abonament se potrivește firmelor care vând deja offline și vor să înceapă online fără o investiție mare, producătorilor locali și brandurilor mici care vor un magazin propriu în locul unui marketplace.", "Pe un marketplace concurezi pe aceeași pagină cu alți vânzători. În magazinul tău, clientul vede doar produsele tale."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Ce plăți online pot accepta?", "Integrăm procesatorul de plăți pe care îl folosești sau pe care îl alegi, plus plata la livrare. Comisioanele procesatorului se plătesc direct către acesta."],
+      ["Pot schimba planul magazinului online pe abonament?", "Da. Poți trece pe alt plan, iar diferența se aplică de la rata următoare."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
   {
@@ -354,7 +402,7 @@ export const RATE_PAGES: RatePage[] = [
     h1Dim: "Toate costurile, nu doar prețul de creare.",
     lede: "Prețul de creare este doar începutul. Un magazin online are costuri lunare de găzduire, securitate, actualizări și modificări, plus comisioanele de plată și livrare. Iată calculul complet.",
     sections: [
-      { h: "Costurile unui magazin online", ul: [
+      { h: "Din ce se compune costul unui magazin online", ul: [
         "Dezvoltarea: designul, catalogul, coșul, checkout-ul și integrările.",
         "Domeniul și hostingul, plătite anual sau lunar.",
         "Mentenanța: actualizări de securitate, backup și verificarea că plățile funcționează.",
@@ -368,13 +416,16 @@ export const RATE_PAGES: RatePage[] = [
         `Partener: ${fmt(P * 12)} lei.`,
         "Cu plata anuală primești 20% reducere, iar magazinul devine al tău imediat după plată.",
       ] },
-      { h: "Ce este inclus", ul: SHOP_INCLUDES },
-      { h: "Comparația cu plata integrală", p: [
+      { h: "Ce este inclus în costul unui magazin online LUNAR", ul: SHOP_INCLUDES },
+      { h: "Cât costă un magazin online plătit integral", p: [
         "La plata integrală, dezvoltarea unui magazin la comandă se plătește înainte de lansare, iar mentenanța și modificările se facturează separat după aceea. În abonament, toate acestea sunt incluse și împărțite în rate egale.",
         OWNERSHIP,
       ] },
+      { h: "De la ce depinde cât costă un magazin online", p: ["Prețul unui magazin online plătit integral depinde de numărul de produse, de integrări (facturare, stoc, curier), de designul personalizat și de cine încarcă produsele. De aceea ofertele diferă atât de mult de la o firmă la alta.", "La LUNAR costul nu depinde de aceste lucruri: plătești abonamentul planului ales, iar munca se împarte în îmbunătățirile lunare incluse."] },
     ],
     faq: [
+      ["Cât costă un magazin online pe lună?", "La LUNAR, între 269 și 1.379 de lei pe lună, TVA inclus, în funcție de plan. Prima lună pe Esențial costă 4,99 lei pentru clienții noi."],
+      ["Cât costă un magazin online mic?", "Un magazin cu puține produse poate porni pe planul Esențial, la 269 de lei pe lună, fără avans și fără taxă de creare."],
       ["Plătesc comision din vânzări către LUNAR?", "Nu. Plătești doar abonamentul lunar. Comisioanele de plată și livrare merg direct la procesatorul de plăți și la curier."],
       ...FAQ_COMMON,
     ],
@@ -390,21 +441,26 @@ export const RATE_PAGES: RatePage[] = [
     h1Dim: "De la brief la prima comandă în 10 zile lucrătoare.",
     lede: "Îți construim magazinul online pe brandul tău și îl plătești lunar. Fără avans, fără taxă de creare și fără să cauți separat hosting, programator sau pe cineva pentru mentenanță.",
     sections: [
-      { h: "Cum decurge crearea magazinului", ul: [
+      { h: "Cum decurge crearea unui magazin online în rate", ul: [
         "Comanzi online și plătești prima lună.",
         "Completezi brief-ul în portal: produse, categorii, livrare, plăți și exemple de magazine care îți plac.",
         "Primești designul pe link și îl aprobi sau ceri modificări.",
         "Construim magazinul, conectăm plățile și livrarea și testăm o comandă completă pe telefon.",
         "Lansăm pe domeniul tău. După lansare, îmbunătățirile lunare sunt incluse.",
       ] },
-      { h: "Ce include magazinul", ul: SHOP_INCLUDES },
-      { h: "Prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Ce include crearea magazinului online", ul: SHOP_INCLUDES },
+      { h: "Prețuri pentru creare magazin online în rate", p: [OFFER], ul: PLANS_UL },
       { h: "Garanția de lansare", p: [
         "Dacă lansarea depășește 10 zile lucrătoare de la brief din vina noastră, luna următoare de abonament este gratuită. Zilele în care așteptăm produse sau materiale de la tine nu se numără.",
         OWNERSHIP,
       ] },
+      { h: "Ce pregătești înainte de creare", p: ["Crearea unui magazin online în rate merge cel mai repede când ai pregătite lista de produse cu prețuri, fotografiile, condițiile de livrare și retur și datele procesatorului de plăți.", "Dacă nu le ai pe toate, începem cu ce există: lansăm cu produsele principale și adăugăm restul din îmbunătățirile lunare."] },
     ],
-    faq: FAQ_COMMON,
+    faq: [
+      ["Cine încarcă produsele în magazin?", "Le încărcăm împreună: tu ne dai lista și fotografiile, noi le structurăm în categorii și le publicăm. Produsele noi se adaugă apoi din îmbunătățirile lunare."],
+      ["Cât durează crearea unui magazin online?", "10 zile lucrătoare de la brief. Zilele în care așteptăm produse sau materiale de la tine nu se numără."],
+      ...FAQ_COMMON,
+    ],
     updated: UPDATED,
   },
 ];
