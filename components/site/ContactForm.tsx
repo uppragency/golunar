@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { track } from "@/lib/track";
+import { mkCustom, mkIdentify } from "@/lib/mktr";
 import { Arrow } from "./visuals";
 import { CONTACT_TOPICS, type Topic } from "@/lib/contact";
 
@@ -49,6 +50,8 @@ export default function ContactForm() {
       if (!r.ok) throw new Error(j.error || "Mesajul nu a putut fi trimis.");
       setOk(true);
       track("generate_lead", { lead_source: "contact", category: topic });
+      mkIdentify(String(data.email ?? ""), String(data.name ?? ""), String(data.phone ?? ""));
+      mkCustom("lead_contact", String(data.email ?? ""), { subiect: topic });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Eroare neașteptată.");
     } finally {

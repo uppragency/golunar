@@ -1,0 +1,2 @@
+/** Slug-urile paginilor din lib/rate-pages.ts (fără conținut, pentru codul din browser). */
+export const RATE_SLUGS = ["site-in-rate", "website-in-rate", "site-pe-abonament", "website-pe-abonament", "site-cu-plata-lunara", "site-fara-avans", "site-de-prezentare-in-rate", "cat-costa-un-site-in-rate", "magazin-online-in-rate", "magazin-online-pe-abonament", "cat-costa-un-magazin-online", "creare-magazin-online-in-rate"] as const;

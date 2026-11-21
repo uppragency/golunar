@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@/lib/track";
+import { mk, mkCartDiff, mkCustom, mkIdentify, mkPhone, mkStashOrder, mkViewPlan } from "@/lib/mktr";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ANNUAL_OFF, PLANS, annualTotal, cartLines, type Billing, type Cart, type Currency } from "@/lib/plans";
@@ -24,6 +25,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
   const annual = billing === "annual";
   const yearly = annualTotal(cart, cur);
   const draftSig = useRef("");
+  const mkCart = useRef<Cart | null>(null);
   const [shown, setShown] = useState(3);
   const [pm, setPm] = useState<"card" | "bank_transfer">("bank_transfer");
   const [accept, setAccept] = useState(true);
@@ -46,9 +48,25 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
   const dfmt = (d: Date) => d.toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" });
 
   useEffect(() => {
-    if (open) track("begin_checkout", { plan: cart.plan, currency: cur });
+    if (open) {
+      track("begin_checkout", { plan: cart.plan, currency: cur });
+      mkViewPlan(cart.plan);
+      mkCartDiff(null, cart, cur);
+      mk("initiate_checkout");
+      mkCart.current = cart;
+    } else if (mkCart.current) {
+      mkCart.current = null;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // Schimbările de plan sau de opțiuni din comanda deschisă: evenimente add/remove pentru theMarketer.
+  useEffect(() => {
+    if (!open || !mkCart.current) return;
+    mkCartDiff(mkCart.current, cart, cur);
+    mkCart.current = cart;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart]);
 
   useEffect(() => {
     if (!open) return;
@@ -64,6 +82,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
   // Comanda începută se salvează la introducerea emailului (pentru amintirea de comandă abandonată).
   function saveDraft() {
     if (!checks.email(f.email)?.ok) return;
+    mkIdentify(f.email, f.contact, f.phone);
     const body = JSON.stringify({ email: f.email, name: f.contact, company: f.name, currency: cur, billing, cart });
     if (body === draftSig.current) return;
     draftSig.current = body;
@@ -112,6 +131,8 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "Comanda nu a putut fi trimisă");
+      mkStashOrder({ email: f.email, name: f.contact, phone: f.phone, address: f.address, company: f.name, discountCode: annual ? "" : discount?.code ?? "", discountValue: annual ? 0 : schedule[0].discount, total: today, cart, currency: cur });
+      if (!annual && discount?.code) mkCustom("cod_reducere_aplicat", f.email, { cod: discount.code, plan: cart.plan });
       if (j.url || j.redirect) {
         window.location.href = j.url || j.redirect;
         return;
@@ -156,7 +177,7 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
                 <div className="fld"><label htmlFor="co-email">Email (cont și facturi)</label><span className="vwrap"><input id="co-email" type="email" value={f.email} onChange={set("email")} onBlur={() => { touch("email")(); saveDraft(); }} placeholder="contabilitate@firma.ro" required autoComplete="email" aria-invalid={st("email")?.ok === false} />{mark("email")}</span></div>
               </div>
               <div className="grid2">
-                <div className="fld"><label htmlFor="co-phone">Telefon</label><span className="vwrap"><input id="co-phone" type="tel" value={f.phone} onChange={set("phone")} onBlur={touch("phone")} placeholder="+40 7xx xxx xxx" autoComplete="tel" aria-invalid={st("phone")?.ok === false} />{mark("phone")}</span></div>
+                <div className="fld"><label htmlFor="co-phone">Telefon</label><span className="vwrap"><input id="co-phone" type="tel" value={f.phone} onChange={set("phone")} onBlur={() => { touch("phone")(); mkPhone(f.phone); }} placeholder="+40 7xx xxx xxx" autoComplete="tel" aria-invalid={st("phone")?.ok === false} />{mark("phone")}</span></div>
                 <div className="fld"><label htmlFor="co-dom">Domeniu dorit</label><span className="vwrap"><input id="co-dom" value={f.domain} onChange={set("domain")} onBlur={touch("domain")} placeholder="firmata.ro" aria-invalid={st("domain")?.ok === false} />{mark("domain")}</span></div>
               </div>
               <p className="co-save">Îți salvăm comanda pe acest email. Dacă nu o finalizezi, îți trimitem cel mult două amintiri.</p>

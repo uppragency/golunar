@@ -1,5 +1,6 @@
 "use client";
 
+import { mkCustom, mkIdentify } from "@/lib/mktr";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -38,6 +39,8 @@ export default function LoginForm({ next, email: initialEmail, mode: initialMode
     e.preventDefault();
     setErr(null);
     const mail = email.trim();
+    mkIdentify(mail);
+    mkCustom("login_portal", mail, { mod: mode });
     if (mode === "signup") {
       if (password.length < 8) return setErr("Parola trebuie să aibă minimum 8 caractere.");
       if (password !== confirm) return setErr("Parolele nu coincid.");

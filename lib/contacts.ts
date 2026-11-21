@@ -55,6 +55,26 @@ export async function syncContact({ email, name, kind, marketing }: Sync) {
   } catch (e) {
     reportError("resend-contact", e);
   }
+  if (subscribed) await mktrSubscribe(mail, name, kind);
+}
+
+/**
+ * theMarketer: abonat nou (REST add_subscriber), doar pentru cine a acceptat emailurile de marketing.
+ * theMarketer trimite emailul de confirmare (double opt-in) din setările contului.
+ */
+async function mktrSubscribe(email: string, name: string | null | undefined, kind: "lead" | "client") {
+  const k = process.env.MKTR_REST_KEY, u = process.env.MKTR_CUSTOMER_ID;
+  if (!k || !u) return;
+  try {
+    const body = new URLSearchParams({ k, u, email, add_tags: kind === "client" ? "client" : "lead" });
+    const { firstName, lastName } = split(name);
+    if (firstName) body.set("firstname", firstName);
+    if (lastName) body.set("lastname", lastName);
+    const r = await fetch("https://t.themarketer.com/api/v1/add_subscriber", { method: "POST", body, signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error(`theMarketer ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  } catch (e) {
+    reportError("themarketer-subscriber", e);
+  }
 }
 
 /** Dezabonare din linkul din email: marcăm contactul și în Resend, ca broadcast-urile să îl excludă. */

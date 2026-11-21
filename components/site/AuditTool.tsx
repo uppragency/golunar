@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@/lib/track";
+import { mkCustom, mkIdentify } from "@/lib/mktr";
 import { useEffect, useState } from "react";
 import { Arrow } from "./visuals";
 
@@ -56,6 +57,8 @@ export default function AuditTool() {
       if (!r.ok) throw new Error(j.error || "Auditul nu a putut fi realizat.");
       setRes(j);
       track("generate_lead", { lead_source: "audit" });
+      mkIdentify(String(data.email ?? ""), String(data.name ?? ""));
+      mkCustom("lead_audit", String(data.email ?? ""), { url: String(data.url ?? "") });
       requestAnimationFrame(() => document.getElementById("rezultat")?.scrollIntoView({ behavior: "smooth", block: "start" }));
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Eroare");

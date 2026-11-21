@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@/lib/track";
+import { mkCustom, mkIdentify } from "@/lib/mktr";
 import { useState } from "react";
 import type { PlanCode } from "@/lib/plans";
 import { Arrow } from "./visuals";
@@ -21,6 +22,8 @@ export function LeadModal({ open, onClose, plan }: { open: boolean; onClose: () 
       if (!r.ok) throw new Error(j.error || "Mesajul nu a putut fi trimis");
       setOk(true);
       track("generate_lead", { lead_source: "discutie-gratuita", plan: plan ?? null });
+      mkIdentify(String(data.email ?? ""), String(data.name ?? ""), String(data.phone ?? ""));
+      mkCustom("lead_discutie_gratuita", String(data.email ?? ""), { plan });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Eroare");
     } finally {
