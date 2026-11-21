@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1" },
   });
   if (error) reportError("lead", error);
-  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", marketing: d.marketing === true || d.marketing === "1" }));
+  after(() => syncContact({ email: d.email, name: d.name, phone: d.phone, kind: "lead", marketing: d.marketing === true || d.marketing === "1", tags: ["lead-discutie-gratuita", ...(d.plan ? [`interes-${d.plan}`] : [])] }));
   await sendEmail({
     template: "admin_lead",
     to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro",

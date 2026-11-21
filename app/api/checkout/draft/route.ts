@@ -20,6 +20,6 @@ export async function POST(req: Request) {
   const sb = await createClient();
   const { error } = await sb.rpc("save_checkout_draft", { p_email: d.email, p_name: d.name, p_company: d.company, p_cart: d.cart, p_currency: d.currency, p_billing: d.billing });
   if (error) console.error("[draft]", error.message);
-  after(() => syncContact({ email: d.email, name: d.name, kind: "lead" }));
+  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", tags: ["comanda-inceputa"] }));
   return NextResponse.json({ ok: true });
 }

@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1", url: result.finalUrl, psi: result.psi, scores: s, failed: result.checks.filter((c) => !c.ok).map((c) => c.id) },
   });
   if (error) reportError("audit-lead", error);
-  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", marketing: d.marketing === true || d.marketing === "1" }));
+  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", marketing: d.marketing === true || d.marketing === "1", tags: ["lead-audit"] }));
 
   await sendEmail({
     template: "audit_report", to: d.email, subject: `Auditul gratuit pentru ${new URL(result.finalUrl).hostname}`,

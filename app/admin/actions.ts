@@ -71,7 +71,7 @@ export async function createClientAction(_: ActionState, form: FormData): Promis
       firstPaid: Boolean(d.first_paid),
     });
     companyId = res.companyId;
-    await syncContact({ email: d.email, name: d.contact, kind: "client" });
+    await syncContact({ email: d.email, name: d.contact, kind: "client", tags: ["client-adaugat-manual"] });
     if (d.send_welcome) await sendEmail({ db: s.supabase, companyId, template: "welcome", to: d.email, subject: "Bun venit la LUNAR · contul tău e gata", html: templates.welcome(d.contact) });
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Clientul nu a putut fi creat." };

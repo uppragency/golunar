@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     // Comanda a fost trimisă: oprim recuperarea și nurturing-ul pentru acest email.
     const secret = process.env.CRON_SECRET;
     if (secret) await createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } }).rpc("checkout_done", { p_secret: secret, p_email: d.email }).then(({ error }) => error && reportError("checkout-done", error));
-    after(() => syncContact({ email: d.email, name: d.contact, kind: "client" }));
+    after(() => syncContact({ email: d.email, name: d.contact, phone: d.phone, kind: "client", tags: [`plan-${d.cart.plan}`, annual ? "plata-anuala" : "plata-lunara", ...(discount ? [`cod-${discount.code}`] : [])] }));
     if (res.error === "exists") {
       return NextResponse.json({ error: "Firma cu acest CUI are deja un cont LUNAR. Intră în cont sau scrie-ne la hello@golunar.ro." }, { status: 409 });
     }

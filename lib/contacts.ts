@@ -1,90 +1,83 @@
 import "server-only";
-import { Resend } from "resend";
 import { reportError } from "@/lib/report";
 
-/** Segmentele din Resend (Audience → Segments). */
-const SEGMENT = {
-  lead: process.env.RESEND_SEGMENT_LEADS || "15057e4d-f6ee-4ca8-b272-86fe9c3002b6",
-  client: process.env.RESEND_SEGMENT_CLIENTS || "edada754-bbad-4efb-9354-fe6422899813",
-} as const;
+/**
+ * Contactele (lead-uri și clienți) se păstrează în theMarketer, cu tag-uri pe sursă.
+ * Abonarea la emailurile de marketing doar cu acord: lead-urile fără bifă sunt salvate ca contacte nedezabonate de nimic,
+ * dar fără canalul email activ. Clienții sunt abonați (relație contractuală existentă, cu dezabonare în fiecare email).
+ * Emailurile tranzacționale (confirmări, amintiri, facturi) rămân în Resend (lib/email.ts).
+ */
+
+const API = "https://t.themarketer.com/api/v1";
 
 type Sync = {
   email: string;
   name?: string | null;
+  phone?: string | null;
   kind: "lead" | "client";
-  /** Lead: bifa de acord pentru emailuri de marketing. Clienții sunt abonați implicit (relație contractuală existentă, cu dezabonare în fiecare email). */
+  /** Lead: bifa de acord pentru emailuri de marketing. */
   marketing?: boolean;
+  /** Tag-uri suplimentare, de exemplu sursa lead-ului sau planul comandat. */
+  tags?: string[];
+};
+
+const creds = () => {
+  const k = process.env.MKTR_REST_KEY, u = process.env.MKTR_CUSTOMER_ID;
+  return k && u ? { k, u } : null;
 };
 
 const split = (name?: string | null) => {
   const p = (name || "").trim().split(/\s+/).filter(Boolean);
-  return { firstName: p[0] || undefined, lastName: p.slice(1).join(" ") || undefined };
+  return { firstname: p[0] || "", lastname: p.slice(1).join(" ") || "" };
 };
 
+async function call(path: string, params: Record<string, string>, method: "GET" | "POST" = "POST") {
+  const c = creds()!;
+  const q = new URLSearchParams({ ...c, ...params });
+  const r = method === "GET"
+    ? await fetch(`${API}/${path}?${q}`, { signal: AbortSignal.timeout(8000) })
+    : await fetch(`${API}/${path}`, { method: "POST", body: q, signal: AbortSignal.timeout(8000) });
+  const text = await r.text();
+  if (!r.ok) throw new Error(`theMarketer ${path} ${r.status}: ${text.slice(0, 200)}`);
+  try { return JSON.parse(text) as Record<string, unknown>; } catch { return {}; }
+}
+
+const slug = (t: string) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
 /**
- * Adaugă sau actualizează contactul în Resend și îl pune în segmentul potrivit.
- * Un client iese din segmentul Lead-uri. Nu abonează niciodată din nou pe cineva care s-a dezabonat,
- * cu excepția unei bife noi și explicite de acord. Nu aruncă erori: nu trebuie să blocheze formularele.
+ * Salvează contactul în theMarketer cu tag-urile lui. Nu aruncă erori: nu trebuie să blocheze formularele.
+ * Un contact deja abonat rămâne abonat; unul fără acord este salvat cu canalul email dezactivat.
  */
-export async function syncContact({ email, name, kind, marketing }: Sync) {
-  const key = process.env.RESEND_CONTACTS_API_KEY || process.env.RESEND_API_KEY;
-  if (!key || !email) return;
-  const resend = new Resend(key);
+export async function syncContact({ email, name, phone, kind, marketing, tags = [] }: Sync) {
+  if (!creds() || !email) return;
   const mail = email.trim().toLowerCase();
-  const { firstName, lastName } = split(name);
-  const subscribed = kind === "client" || marketing === true;
+  const subscribe = kind === "client" || marketing === true;
+  const allTags = [...new Set([kind, ...tags].map(slug).filter(Boolean))].join(",");
   try {
-    const existing = await resend.contacts.get({ email: mail });
-    const created = existing.data ? null : await resend.contacts.create({
-      email: mail, firstName, lastName, unsubscribed: !subscribed, segments: [{ id: SEGMENT[kind] }],
+    const status = await call("status_subscriber", { email: mail }, "GET").catch((): Record<string, unknown> => ({}));
+    const wasSubscribed = Array.isArray(status.subscribed) && (status.subscribed as string[]).includes("email");
+    const { firstname, lastname } = split(name);
+    await call("add_subscriber_sync", {
+      email: mail,
+      add_tags: allTags,
+      channels: "email",
+      ...(firstname ? { firstname } : {}),
+      ...(lastname ? { lastname } : {}),
+      ...(phone ? { phone } : {}),
     });
-    if (!created || created.error) {
-      // Contactul există deja: actualizăm numele, segmentul și (doar la acord nou) abonarea.
-      // Starea de abonare existentă nu se schimbă altfel (un client care completează formularul rămâne abonat, un dezabonat rămâne dezabonat).
-      const upd = await resend.contacts.update({
-        email: mail,
-        ...(firstName ? { firstName } : {}),
-        ...(lastName ? { lastName } : {}),
-        ...(marketing === true ? { unsubscribed: false } : {}),
-      });
-      if (upd.error) throw new Error(`${created?.error?.message ?? "exists"} / ${upd.error.message}`);
-      const add = await resend.contacts.segments.add({ email: mail, segmentId: SEGMENT[kind] });
-      if (add.error && !/already/i.test(add.error.message)) throw new Error(add.error.message);
-    }
-    if (kind === "client") await resend.contacts.segments.remove({ email: mail, segmentId: SEGMENT.lead }).catch(() => null);
+    // Fără acord și fără abonare anterioară: contactul rămâne salvat, dar nu primește marketing.
+    if (!subscribe && !wasSubscribed) await call("remove_subscriber", { email: mail, channels: "email" });
   } catch (e) {
-    reportError("resend-contact", e);
-  }
-  if (subscribed) await mktrSubscribe(mail, name, kind);
-}
-
-/**
- * theMarketer: abonat nou (REST add_subscriber), doar pentru cine a acceptat emailurile de marketing.
- * theMarketer trimite emailul de confirmare (double opt-in) din setările contului.
- */
-async function mktrSubscribe(email: string, name: string | null | undefined, kind: "lead" | "client") {
-  const k = process.env.MKTR_REST_KEY, u = process.env.MKTR_CUSTOMER_ID;
-  if (!k || !u) return;
-  try {
-    const body = new URLSearchParams({ k, u, email, add_tags: kind === "client" ? "client" : "lead" });
-    const { firstName, lastName } = split(name);
-    if (firstName) body.set("firstname", firstName);
-    if (lastName) body.set("lastname", lastName);
-    const r = await fetch("https://t.themarketer.com/api/v1/add_subscriber", { method: "POST", body, signal: AbortSignal.timeout(8000) });
-    if (!r.ok) throw new Error(`theMarketer ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  } catch (e) {
-    reportError("themarketer-subscriber", e);
+    reportError("themarketer-contact", e);
   }
 }
 
-/** Dezabonare din linkul din email: marcăm contactul și în Resend, ca broadcast-urile să îl excludă. */
+/** Dezabonare din linkul din emailurile LUNAR: se propagă în theMarketer. */
 export async function unsubscribeContact(email: string) {
-  const key = process.env.RESEND_CONTACTS_API_KEY || process.env.RESEND_API_KEY;
-  if (!key || !email) return;
+  if (!creds() || !email) return;
   try {
-    const r = await new Resend(key).contacts.update({ email: email.trim().toLowerCase(), unsubscribed: true });
-    if (r.error && !/not.?found/i.test(r.error.message)) throw new Error(r.error.message);
+    await call("remove_subscriber", { email: email.trim().toLowerCase(), channels: "email" });
   } catch (e) {
-    reportError("resend-unsubscribe", e);
+    reportError("themarketer-unsubscribe", e);
   }
 }

@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: `[${label}] ${d.message}`,
     p_plan: "", p_source: "contact", p_ref: ref ?? "", p_meta: { src: await getSource(), category: d.category, marketing },
   });
-  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", marketing }));
+  after(() => syncContact({ email: d.email, name: d.name, phone: d.phone, kind: "lead", marketing, tags: ["lead-contact", `contact-${d.category}`] }));
   if (error) reportError("contact", error, { category: d.category });
 
   await sendEmail({
