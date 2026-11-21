@@ -50,6 +50,15 @@ const FAQ_COMMON: [string, string][] = [
   ["În cât timp e gata site-ul?", "În 10 zile lucrătoare de la primirea brief-ului. Dacă întârziem din vina noastră, luna următoare de abonament este gratuită."],
 ];
 
+const SHOP_INCLUDES = [
+  "Magazin online cu design personalizat, gândit întâi pentru telefon, unde se fac majoritatea comenzilor.",
+  "Catalog de produse cu categorii, filtre, variante (mărime, culoare) și căutare.",
+  "Coș, checkout simplu și integrare cu procesatorul de plăți și curierul pe care le folosești.",
+  "Pagini legale pentru comerț online: termeni, politica de retur, confidențialitate, ANPC și SAL.",
+  "Domeniu .ro, hosting în Uniunea Europeană, certificat SSL, backup zilnic și monitorizare la fiecare 10 minute.",
+  "Îmbunătățiri lunare incluse, factură pe firmă pentru fiecare plată, preț final cu TVA inclus.",
+];
+
 export const RATE_PAGES: RatePage[] = [
   {
     slug: "site-in-rate",
@@ -169,9 +178,8 @@ export const RATE_PAGES: RatePage[] = [
         `Pe planul Esențial, primele 12 luni costă în total ${fmt(4.99 + E * 11)} lei cu oferta de lansare, iar site-ul devine al tău. Din anul al doilea alegi: continui cu mentenanța și îmbunătățirile sau muți site-ul unde vrei.`,
         "La un site plătit integral, la prețul de creare se adaugă hostingul, domeniul, certificatul, actualizările și fiecare modificare cerută. Pe 3 ani, diferența este de obicei mai mică decât pare, iar la abonament ai pe cineva responsabil în fiecare lună.",
       ] },
-      { h: "Pentru cine nu este potrivit", ul: [
-        "Pentru magazinele online mari, cu mii de produse și integrări complexe, lucrăm pe ofertă separată.",
-        "Pentru cine vrea să își administreze singur fiecare detaliu tehnic, o platformă de tip constructor poate fi suficientă.",
+      { h: "Pentru ce tip de site funcționează", p: [
+        "Pentru orice tip de site: de prezentare, landing page pentru campanii sau magazin online. Prețul este același abonament, indiferent de tipul site-ului.",
       ] },
     ],
     faq: FAQ_COMMON,
@@ -277,6 +285,124 @@ export const RATE_PAGES: RatePage[] = [
         "Pe 3 ani, diferența dintre cele două variante se reduce mult. Avantajul ratelor este că nu blochezi bani la început și ai pe cineva responsabil de site în fiecare lună.",
       ] },
       { h: "După 12 luni", p: [OWNERSHIP, "Dacă păstrezi site-ul la noi, continui cu același plan sau treci pe altul. Dacă îl muți, primești codul-sursă la cerere."] },
+    ],
+    faq: FAQ_COMMON,
+    updated: UPDATED,
+  },
+  {
+    slug: "magazin-online-in-rate",
+    keyword: "magazin online în rate",
+    metaTitle: "Magazin online în rate, fără avans · LUNAR",
+    desc: `Magazin online în rate pentru firma ta: fără avans, fără dobândă, al tău după 12 plăți. Hosting, mentenanță și îmbunătățiri incluse, de la ${E} lei pe lună.`,
+    eyebrow: "Magazin online în rate",
+    h1: "Magazin online în rate.",
+    h1Dim: "Începi să vinzi fără să plătești tot proiectul la început.",
+    lede: "Un magazin online făcut la comandă costă de obicei de la câteva mii până la zeci de mii de lei, plătiți înainte de prima vânzare. La LUNAR plătești un abonament lunar, iar după 12 plăți magazinul este al tău.",
+    sections: [
+      { h: "Cum funcționează", p: [
+        "Alegi planul, plătești prima lună și completezi brief-ul în portal: ce vinzi, câte produse ai, cum livrezi și cum vrei să încasezi. Lansăm în 10 zile lucrătoare de la brief, iar produsele le încărcăm împreună cu tine.",
+        "Plătești apoi o rată lunară fixă, fără dobândă și fără verificare la bancă, pentru că nu este un credit. Prețul este același ca pentru orice site LUNAR: plătești abonamentul, indiferent de tipul site-ului.",
+      ] },
+      { h: "Ce primește magazinul tău", ul: SHOP_INCLUDES },
+      { h: "Prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Ce plan se potrivește unui magazin", ul: [
+        "Esențial, dacă ai puține produse și vrei să începi să vinzi online repede.",
+        "Creștere, dacă vrei trafic din Google pe categorii și produse, plus măsurarea vânzărilor din reclame.",
+        "Partener, dacă rulezi campanii constant și ai nevoie de landing pages, optimizarea conversiilor și automatizări.",
+      ] },
+      { h: "De ce rate și nu plată integrală", p: [
+        "La un magazin nou, banii sunt mai utili în stoc și în reclame decât blocați în dezvoltare. Cu rata lunară începi să vinzi în două săptămâni, iar costul magazinului se acoperă din comenzi.",
+        OWNERSHIP,
+      ] },
+    ],
+    faq: [
+      ["Costă mai mult un magazin online decât un site de prezentare?", "Nu. Prețul este același abonament, indiferent de tipul site-ului. Diferă doar planul pe care îl alegi, în funcție de ce ai nevoie lunar."],
+      ...FAQ_COMMON,
+    ],
+    updated: UPDATED,
+  },
+  {
+    slug: "magazin-online-pe-abonament",
+    keyword: "magazin online pe abonament",
+    metaTitle: "Magazin online pe abonament lunar · LUNAR",
+    desc: `Magazin online pe abonament: design, hosting, securitate, mentenanță și îmbunătățiri într-un singur cost lunar. De la ${E} lei pe lună, al tău după 12 plăți.`,
+    eyebrow: "Magazin online pe abonament",
+    h1: "Magazin online pe abonament.",
+    h1Dim: "Fără comisioane pe vânzări, fără să rămână închiriat.",
+    lede: "Platformele de magazine pe abonament te țin legat de ele pentru totdeauna și adesea iau comision din fiecare vânzare. La LUNAR plătești un abonament fix, fără comision pe comenzi, iar după 12 plăți magazinul este al tău.",
+    sections: [
+      { h: "Abonament LUNAR față de o platformă de magazine", ul: [
+        "Proprietate: la LUNAR magazinul devine al tău după 12 plăți; pe o platformă rămâne închiriat.",
+        "Comisioane: LUNAR nu ia comision din vânzări; abonamentul este fix.",
+        "Design: la LUNAR este făcut pentru brandul tău, nu ales dintr-o listă de teme.",
+        "Muncă: la LUNAR construim și întreținem noi magazinul; pe o platformă îl configurezi singur.",
+      ] },
+      { h: "Ce include abonamentul", ul: SHOP_INCLUDES },
+      { h: "Prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Proprietate", p: [OWNERSHIP, "Comisioanele procesatorului de plăți și tarifele curierului se plătesc direct către aceștia, ca la orice magazin online."] },
+    ],
+    faq: FAQ_COMMON,
+    updated: UPDATED,
+  },
+  {
+    slug: "cat-costa-un-magazin-online",
+    keyword: "cât costă un magazin online",
+    metaTitle: "Cât costă un magazin online în 2027 · LUNAR",
+    desc: `Cât costă un magazin online: dezvoltare, hosting, plăți, curierat și mentenanță. Varianta în rate de la ${E} lei pe lună, comparată cu plata integrală.`,
+    eyebrow: "Cât costă un magazin online",
+    h1: "Cât costă un magazin online.",
+    h1Dim: "Toate costurile, nu doar prețul de creare.",
+    lede: "Prețul de creare este doar începutul. Un magazin online are costuri lunare de găzduire, securitate, actualizări și modificări, plus comisioanele de plată și livrare. Iată calculul complet.",
+    sections: [
+      { h: "Costurile unui magazin online", ul: [
+        "Dezvoltarea: designul, catalogul, coșul, checkout-ul și integrările.",
+        "Domeniul și hostingul, plătite anual sau lunar.",
+        "Mentenanța: actualizări de securitate, backup și verificarea că plățile funcționează.",
+        "Modificările: produse noi, campanii, pagini sezoniere.",
+        "Comisioanele procesatorului de plăți și tarifele curierului, plătite direct către aceștia.",
+      ] },
+      { h: "Varianta LUNAR: un abonament pentru tot", p: [OFFER, "Prețul este același ca pentru orice site LUNAR: abonamentul nu crește pentru că site-ul este un magazin."], ul: PLANS_UL },
+      { h: "Totalul pe primele 12 luni", ul: [
+        `Esențial: ${fmt(4.99 + E * 11)} lei cu oferta de 4,99 lei în prima lună.`,
+        `Creștere: ${fmt(G * 12)} lei.`,
+        `Partener: ${fmt(P * 12)} lei.`,
+        "Cu plata anuală primești 20% reducere, iar magazinul devine al tău imediat după plată.",
+      ] },
+      { h: "Ce este inclus", ul: SHOP_INCLUDES },
+      { h: "Comparația cu plata integrală", p: [
+        "La plata integrală, dezvoltarea unui magazin la comandă se plătește înainte de lansare, iar mentenanța și modificările se facturează separat după aceea. În abonament, toate acestea sunt incluse și împărțite în rate egale.",
+        OWNERSHIP,
+      ] },
+    ],
+    faq: [
+      ["Plătesc comision din vânzări către LUNAR?", "Nu. Plătești doar abonamentul lunar. Comisioanele de plată și livrare merg direct la procesatorul de plăți și la curier."],
+      ...FAQ_COMMON,
+    ],
+    updated: UPDATED,
+  },
+  {
+    slug: "creare-magazin-online-in-rate",
+    keyword: "creare magazin online în rate",
+    metaTitle: "Creare magazin online în rate, lansat în 10 zile · LUNAR",
+    desc: `Creare magazin online în rate: fără avans, fără dobândă, lansare în 10 zile lucrătoare de la brief. De la ${E} lei pe lună, al tău după 12 plăți.`,
+    eyebrow: "Creare magazin online în rate",
+    h1: "Creare magazin online în rate.",
+    h1Dim: "De la brief la prima comandă în 10 zile lucrătoare.",
+    lede: "Îți construim magazinul online pe brandul tău și îl plătești lunar. Fără avans, fără taxă de creare și fără să cauți separat hosting, programator sau pe cineva pentru mentenanță.",
+    sections: [
+      { h: "Cum decurge crearea magazinului", ul: [
+        "Comanzi online și plătești prima lună.",
+        "Completezi brief-ul în portal: produse, categorii, livrare, plăți și exemple de magazine care îți plac.",
+        "Primești designul pe link și îl aprobi sau ceri modificări.",
+        "Construim magazinul, conectăm plățile și livrarea și testăm o comandă completă pe telefon.",
+        "Lansăm pe domeniul tău. După lansare, îmbunătățirile lunare sunt incluse.",
+      ] },
+      { h: "Ce include magazinul", ul: SHOP_INCLUDES },
+      { h: "Prețuri", p: [OFFER], ul: PLANS_UL },
+      { h: "Garanția de lansare", p: [
+        "Dacă lansarea depășește 10 zile lucrătoare de la brief din vina noastră, luna următoare de abonament este gratuită. Zilele în care așteptăm produse sau materiale de la tine nu se numără.",
+        OWNERSHIP,
+      ] },
     ],
     faq: FAQ_COMMON,
     updated: UPDATED,
