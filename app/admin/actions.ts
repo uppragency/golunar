@@ -7,6 +7,7 @@ import { z } from "zod";
 import { requireAdmin, VIEW_AS_COOKIE } from "@/lib/session";
 import { provision, startLaunch } from "@/lib/provision";
 import { createSmartbillInvoice } from "@/lib/smartbill";
+import { syncContact } from "@/lib/contacts";
 import { sendEmail, templates } from "@/lib/email";
 import { money } from "@/lib/format";
 import type { Currency } from "@/lib/plans";
@@ -70,6 +71,7 @@ export async function createClientAction(_: ActionState, form: FormData): Promis
       firstPaid: Boolean(d.first_paid),
     });
     companyId = res.companyId;
+    await syncContact({ email: d.email, name: d.contact, kind: "client" });
     if (d.send_welcome) await sendEmail({ db: s.supabase, companyId, template: "welcome", to: d.email, subject: "Bun venit la LUNAR · contul tău e gata", html: templates.welcome(d.contact) });
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Clientul nu a putut fi creat." };

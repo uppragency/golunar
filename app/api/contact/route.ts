@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { syncContact } from "@/lib/contacts";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -44,6 +45,7 @@ export async function POST(req: Request) {
     p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: `[${label}] ${d.message}`,
     p_plan: "", p_source: "contact", p_ref: ref ?? "", p_meta: { src: await getSource(), category: d.category, marketing },
   });
+  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", marketing }));
   if (error) reportError("contact", error, { category: d.category });
 
   await sendEmail({

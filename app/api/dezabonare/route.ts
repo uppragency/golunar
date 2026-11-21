@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient as createAnon } from "@supabase/supabase-js";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/env";
 import { unsubValid } from "@/lib/unsub";
+import { unsubscribeContact } from "@/lib/contacts";
 
 /** Dezabonare cu un click (antetul List-Unsubscribe-Post, RFC 8058). */
 export async function POST(req: Request) {
@@ -11,5 +12,6 @@ export async function POST(req: Request) {
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
   const { error } = await db.rpc("email_unsubscribe", { p_secret: process.env.CRON_SECRET, p_email: email, p_source: "one-click" });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await unsubscribeContact(email);
   return NextResponse.json({ ok: true });
 }

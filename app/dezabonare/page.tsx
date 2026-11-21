@@ -12,6 +12,7 @@ async function unsubscribe(formData: FormData) {
   if (!unsubValid(email, t)) return;
   const db = createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
   await db.rpc("email_unsubscribe", { p_secret: process.env.CRON_SECRET, p_email: email, p_source: "pagina" });
+  await (await import("@/lib/contacts")).unsubscribeContact(email);
   const { redirect } = await import("next/navigation");
   redirect("/dezabonare?gata=1");
 }

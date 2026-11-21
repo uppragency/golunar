@@ -1,4 +1,5 @@
 import type { Discount } from "@/lib/discount";
+import { syncContact } from "@/lib/contacts";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -98,6 +99,7 @@ async function ensureProvisioned(db: SupabaseClient, sub: Stripe.Subscription, f
   const m = sub.metadata;
   const cart = JSON.parse(m.cart || "{}") as Cart;
   try {
+    if (m.email) await syncContact({ email: m.email, name: m.contact, kind: "client" });
     return await provision(db, {
       company: { cui: m.cui, name: m.name, regCom: m.reg_com, address: m.address, vatPayer: m.vat_payer !== "false", contact: m.contact, email: m.email, phone: m.phone },
       domain: m.domain, cart, currency: (m.currency as Currency) || "RON", mode: "card", start: new Date(sub.start_date * 1000), firstPaid,

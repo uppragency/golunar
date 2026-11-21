@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { syncContact } from "@/lib/contacts";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -77,6 +78,7 @@ export async function POST(req: Request) {
     // Comanda a fost trimisă: oprim recuperarea și nurturing-ul pentru acest email.
     const secret = process.env.CRON_SECRET;
     if (secret) await createAnon(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } }).rpc("checkout_done", { p_secret: secret, p_email: d.email }).then(({ error }) => error && reportError("checkout-done", error));
+    after(() => syncContact({ email: d.email, name: d.contact, kind: "client" }));
     if (res.error === "exists") {
       return NextResponse.json({ error: "Firma cu acest CUI are deja un cont LUNAR. Intră în cont sau scrie-ne la hello@golunar.ro." }, { status: 409 });
     }

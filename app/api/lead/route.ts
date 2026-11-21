@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { syncContact } from "@/lib/contacts";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail, templates } from "@/lib/email";
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
     p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1" },
   });
   if (error) reportError("lead", error);
+  after(() => syncContact({ email: d.email, name: d.name, kind: "lead", marketing: d.marketing === true || d.marketing === "1" }));
   await sendEmail({
     template: "admin_lead",
     to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro",
