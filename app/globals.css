@@ -1499,3 +1499,8 @@ input[type=file]::file-selector-button{height:30px;padding:0 14px;margin-right:1
 @media (max-width:1100px){.ads-pains,.ads-inc{grid-template-columns:1fr 1fr}.ads-proof{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){.ads-folio,.ads-ben,.ads-steps,.rev-grid{grid-template-columns:1fr}.ads-obj,.ads-fit{grid-template-columns:1fr}.ads-folio{grid-template-columns:1fr 1fr}}
 @media (max-width:600px){.ads-pains,.ads-inc,.ads-folio{grid-template-columns:1fr}.ads-bar-cta{padding:0 14px;font-size:13px}.ads-sum{padding:20px}.ads-sum .btn{width:100%}}
+.co-talk{margin-top:12px;text-align:center;font-size:13px;color:var(--inkmute);line-height:1.5}
+.co-talk button{font-size:13px;color:var(--inkmute);text-decoration:underline;text-underline-offset:3px}
+.co-talk button:hover{color:var(--ink)}
+.co-talk p button{color:var(--ink);font-weight:500}
+.co-talk .err{display:block;margin-top:6px}

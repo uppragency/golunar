@@ -41,6 +41,8 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
   const [busy, setBusy] = useState<"anaf" | "pay" | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+  const [talk, setTalk] = useState<"closed" | "open" | "busy" | "sent">("closed");
+  const [talkErr, setTalkErr] = useState<string | null>(null);
   const { lines } = cartLines(cart, cur);
   const schedule = paymentSchedule(cart, cur, discount);
   const today = annual ? yearly.total : schedule[0].total;
@@ -145,6 +147,28 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
     }
   }
 
+  // „Vreau să vorbim mai întâi”: salvează un lead cu datele deja completate, fără să trimită comanda.
+  async function askCall() {
+    setTalkErr(null);
+    if (!f.contact.trim() || !/\S+@\S+\.\S+/.test(f.email) || f.phone.replace(/\D/g, "").length < 9) {
+      setTalkErr("Completează numele, emailul și telefonul de mai sus.");
+      return;
+    }
+    setTalk("busy");
+    try {
+      const r = await fetch("/api/lead", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: f.contact, email: f.email, phone: f.phone, company: f.name, plan: cart.plan, source: "checkout", message: f.domain ? `Domeniu dorit: ${f.domain}` : "" }) });
+      const j = await r.json().catch((): Record<string, unknown> => ({}));
+      if (!r.ok) throw new Error(String(j.error || "Nu am putut trimite cererea"));
+      setTalk("sent");
+      track("generate_lead", { lead_source: "checkout", plan: cart.plan });
+      mkIdentify(f.email, f.contact, f.phone);
+      mkCustom("lead_din_checkout", f.email, { plan: cart.plan });
+    } catch (e) {
+      setTalk("open");
+      setTalkErr(e instanceof Error ? e.message : "Eroare");
+    }
+  }
+
   return (
     <div className={`modal${open ? " on" : ""}`} role="dialog" aria-modal="true" aria-label="Finalizează abonamentul" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <form className="sheet" style={{ position: "relative" }} onSubmit={submit}>
@@ -202,6 +226,18 @@ export function CheckoutModal({ open, onClose, cart, cur, discount, onDiscount, 
                 <span>{busy === "pay" ? "Se procesează…" : pm === "card" ? `Plătește ${fmt(today, cur)}` : `Trimite comanda · ${fmt(today, cur)}`}</span>
                 <span style={{ width: 8 }} />
               </button>
+              <div className="co-talk">
+                {talk === "sent" ? (
+                  <p role="status">Mulțumim! Te sunăm în cel mult o zi lucrătoare. Comanda rămâne salvată.</p>
+                ) : talk === "closed" ? (
+                  <button type="button" onClick={() => setTalk("open")}>Ai întrebări? Vreau să vorbim mai întâi</button>
+                ) : (
+                  <p>Te sunăm la numărul de mai sus, în cel mult o zi lucrătoare. Nu plătești nimic acum.{" "}
+                    <button type="button" onClick={askCall} disabled={talk === "busy"}>{talk === "busy" ? "Se trimite…" : "Sună-mă"}</button>
+                    {talkErr && <span className="err" role="alert">{talkErr}</span>}
+                  </p>
+                )}
+              </div>
             </>
           )}
         </div>

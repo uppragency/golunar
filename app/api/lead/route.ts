@@ -13,6 +13,7 @@ const Lead = z.object({
   company: z.string().trim().max(160).optional().default(""),
   message: z.string().trim().max(3000).optional().default(""),
   plan: z.enum(["essential", "growth", "partner"]).optional(),
+  source: z.enum(["checkout"]).optional(),
   website: z.string().optional(), // honeypot
   marketing: z.union([z.literal("1"), z.boolean()]).optional(),
 });
@@ -22,19 +23,21 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Verifică numele și adresa de email." }, { status: 400 });
   const d = parsed.data;
   if (d.website) return NextResponse.json({ ok: true }); // bot
+  const fromCheckout = d.source === "checkout";
+  if (fromCheckout && d.phone.replace(/\D/g, "").length < 9) return NextResponse.json({ error: "Lasă-ne un număr de telefon valid." }, { status: 400 });
   const supabase = await createClient();
   const ref = await getRef();
   const { error } = await supabase.rpc("submit_lead", {
     p_name: d.name, p_email: d.email, p_phone: d.phone, p_company: d.company, p_message: d.message,
-    p_plan: d.plan ?? "", p_source: "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1" },
+    p_plan: d.plan ?? "", p_source: fromCheckout ? "checkout-discutie" : "discutie-gratuita", p_ref: ref ?? "", p_meta: { src: await getSource(), marketing: d.marketing === true || d.marketing === "1" },
   });
   if (error) reportError("lead", error);
-  after(() => syncContact({ email: d.email, name: d.name, phone: d.phone, kind: "lead", marketing: d.marketing === true || d.marketing === "1", tags: ["lead-discutie-gratuita", ...(d.plan ? [`interes-${d.plan}`] : [])] }));
+  after(() => syncContact({ email: d.email, name: d.name, phone: d.phone, kind: "lead", marketing: d.marketing === true || d.marketing === "1", tags: [fromCheckout ? "lead-din-checkout" : "lead-discutie-gratuita", ...(d.plan ? [`interes-${d.plan}`] : [])] }));
   await sendEmail({
     template: "admin_lead",
     to: process.env.ADMIN_NOTIFY_EMAIL || "hello@golunar.ro",
-    subject: `Discuție nouă: ${d.company || d.name}`,
-    html: templates.adminNotice("Cerere de discuție gratuită", { Nume: d.name, Firmă: d.company, Email: d.email, Telefon: d.phone, Plan: d.plan, Mesaj: d.message, Recomandare: ref ?? "" }),
+    subject: fromCheckout ? `Sună-l înainte de comandă: ${d.company || d.name} · ${d.phone}` : `Discuție nouă: ${d.company || d.name}`,
+    html: templates.adminNotice(fromCheckout ? "Vrea să vorbim înainte de comandă (din checkout)" : "Cerere de discuție gratuită", { Nume: d.name, Firmă: d.company, Email: d.email, Telefon: d.phone, Plan: d.plan, Mesaj: d.message, Recomandare: ref ?? "" }),
     replyTo: d.email,
   });
   return NextResponse.json({ ok: true });
