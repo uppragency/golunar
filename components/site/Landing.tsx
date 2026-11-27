@@ -13,6 +13,7 @@ import { Arrow, Matrix, Tower } from "./visuals";
 import { CheckoutModal } from "./CheckoutModal";
 import { LeadModal } from "./LeadModal";
 import SiteFooter from "./SiteFooter";
+import Reviews from "./Reviews";
 import { RESOURCES } from "@/lib/resources";
 
 const fmt = (v: number, cur: Currency, d?: number) => {
@@ -286,6 +287,8 @@ export default function Landing() {
         </div>
       </section>
 
+      <Reviews />
+
       <PortalPreview onOrder={orderNow} />
 
       <section className="sec light dots-ink" id="abonamente">
@@ -454,7 +457,7 @@ function Step({ n, num, t, d }: { n: number; num: string; t: string; d: string }
   );
 }
 
-function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag, promo }: {
+export function PlanCard({ code, sel, onPick, price, lead, items, cls = "", tag, promo }: {
   code: PlanCode; sel: PlanCode; onPick: (p: PlanCode) => void; price: string; lead: string; items: string[]; cls?: string; tag?: string; promo?: string;
 }) {
   const on = sel === code;

@@ -17,6 +17,10 @@ export type RatePage = {
   sections: { h: string; p?: string[]; ul?: string[] }[];
   faq: [string, string][];
   updated: string;
+  /** Orașul, pentru paginile locale (areaServed în schema Service). */
+  area?: string;
+  /** Pagina publică „creare site <oraș>” legată de pagina locală. */
+  related?: string;
 };
 
 const E = PLANS.essential.ron, G = PLANS.growth.ron, P = PLANS.partner.ron;
@@ -58,6 +62,105 @@ const SHOP_INCLUDES = [
   "Domeniu .ro, hosting în Uniunea Europeană, certificat SSL, backup zilnic și monitorizare la fiecare 10 minute.",
   "Îmbunătățiri lunare incluse, factură pe firmă pentru fiecare plată, preț final cu TVA inclus.",
 ];
+
+
+/** Pagini locale „site în rate <oraș>”: aceeași ofertă, context local scris separat pentru fiecare oraș. */
+type CityRate = { slug: string; city: string; inCity: string; related: string; intro: string; local: string; areas: string[]; sectors: string[]; faq: [string, string][] };
+
+const CITY_RATES: CityRate[] = [
+  {
+    slug: "site-in-rate-bucuresti", city: "București", inCity: "în București", related: "creare-site-bucuresti",
+    intro: "În București, o firmă mică concurează pe aceeași căutare cu zeci de firme din același sector. Chiria, salariile și reclamele costă mai mult decât în restul țării, așa că mii de lei plătiți la început pentru un site sunt greu de justificat. Un site în rate rezolvă asta: plătești lunar, iar banii rămân în firmă.",
+    local: "Căutările din București se fac des cu sectorul sau cartierul. Scriem conținutul pentru zonele în care lucrezi efectiv și includem localitățile din Ilfov, unde se mută tot mai multe firme și clienți.",
+    areas: ["Toate cele 6 sectoare", "Pipera, Floreasca și Băneasa", "Militari, Drumul Taberei și Ghencea", "Titan, Berceni și Vitan", "Voluntari, Otopeni și Corbeanca", "Chiajna, Popești-Leordeni și Bragadiru"],
+    sectors: ["Clinici și cabinete medicale", "Avocatură, contabilitate și consultanță", "Restaurante, cafenele și catering", "Construcții, amenajări și instalații", "Saloane, fitness și centre de înfrumusețare"],
+    faq: [
+      ["Pot lua un site în rate dacă firma are sediul în Ilfov?", "Da. Lucrăm cu firme din București și din tot județul Ilfov, cu aceleași prețuri și aceleași condiții. Factura se emite pe firma ta, indiferent de sediu."],
+      ["Puteți optimiza site-ul pe un sector anume?", "Da. Construim conținutul în jurul sectorului și cartierelor în care ai clienți și conectăm site-ul cu profilul tău Google Business, ca să apari și în hartă."],
+    ],
+  },
+  {
+    slug: "site-in-rate-cluj", city: "Cluj-Napoca", inCity: "în Cluj-Napoca", related: "creare-site-cluj",
+    intro: "Clienții din Cluj-Napoca compară mult online înainte să sune: verifică site-ul, recenziile și cât de repede răspunde firma. Un site vechi sau lent te scoate din listă din primele secunde. Cu un site în rate ai un site actual fără să plătești totul la început.",
+    local: "Optimizăm pentru căutările din oraș și din zona metropolitană, unde locuiesc tot mai mulți dintre clienții tăi. Conținutul se scrie pe cartiere și localități reale, nu prin înlocuirea numelui orașului.",
+    areas: ["Centru, Zorilor și Andrei Mureșanu", "Mărăști și Gheorgheni", "Mănăștur și Grigorescu", "Bună Ziua și Borhanci", "Florești", "Baciu, Apahida și Feleacu"],
+    sectors: ["Clinici medicale și stomatologice", "Firme IT și servicii pentru companii", "Educație, cursuri și meditații", "Construcții și dezvoltare rezidențială", "Restaurante și cafenele"],
+    faq: [
+      ["Aveți birou în Cluj?", "Nu, lucrăm online cu firme din Cluj-Napoca și din toată țara: discuția pe Google Meet, brief-ul în portal, designul aprobat pe link. Așa păstrăm prețul mic și termenul de 10 zile lucrătoare."],
+      ["Pot avea site-ul și în engleză?", "Da. Limba suplimentară se adaugă din abonament, cu traducere și actualizare lunară. E util dacă lucrezi cu clienți străini sau cu firme din IT."],
+    ],
+  },
+  {
+    slug: "site-in-rate-iasi", city: "Iași", inCity: "în Iași", related: "creare-site-iasi",
+    intro: "În Iași, multe firme mici încă se bazează pe recomandări și pe o pagină de Facebook. Clienții noi caută însă pe Google, iar fără un site credibil ajung la concurență. Un site în rate îți dă un site profesionist cu o plată lunară previzibilă, fără avans.",
+    local: "Scriem conținutul pentru cartierele din Iași și pentru localitățile din jur unde ai clienți. Pentru clinici, cabinete și centre educaționale, care sunt multe în oraș, structurăm site-ul în jurul programării sau al înscrierii.",
+    areas: ["Centru și Copou", "Tătărași și Țicău", "Păcurari și Canta", "Nicolina și CUG", "Galata și Podu Roș", "Miroslava, Valea Lupului și Tomești"],
+    sectors: ["Clinici medicale și stomatologice", "Educație, meditații și cursuri", "Servicii profesionale", "Restaurante și evenimente", "Construcții și amenajări"],
+    faq: [
+      ["Lucrați cu firme din Iași doar online?", "Da. Totul se face online, în 10 zile lucrătoare de la brief. Nu ai nevoie de întâlniri față în față, iar progresul îl vezi în portal."],
+      ["Pot face programări sau înscrieri din site?", "Da. Pentru clinici, cabinete și centre educaționale includem formular de programare sau înscriere, cu notificare pe email la fiecare cerere."],
+    ],
+  },
+  {
+    slug: "site-in-rate-timisoara", city: "Timișoara", inCity: "în Timișoara", related: "creare-site-timisoara",
+    intro: "Timișoara are multe firme B2B, de producție și servicii care lucrează cu parteneri din străinătate. Pentru ele, site-ul este primul document pe care îl vede un client nou. Un site în rate îți dă un site la nivelul partenerilor tăi fără o investiție mare la început.",
+    local: "Optimizăm pentru căutările din Timișoara și din localitățile din jur, unde s-au mutat mulți clienți și firme. Pentru firmele care lucrează cu parteneri străini adăugăm versiunea în engleză sau germană.",
+    areas: ["Centru și Cetate", "Fabric și Elisabetin", "Iosefin și Complexul Studențesc", "Circumvalațiunii și Dâmbovița", "Dumbrăvița și Giroc", "Ghiroda și Moșnița Nouă"],
+    sectors: ["Firme B2B și producție", "Clinici medicale și stomatologice", "Servicii profesionale", "Restaurante și HoReCa", "Construcții și dezvoltare rezidențială"],
+    faq: [
+      ["Pot avea site-ul în engleză sau germană?", "Da. Fiecare limbă suplimentară este o versiune completă a site-ului, tradusă și actualizată lunar, cu un cost lunar separat afișat la comandă."],
+      ["Aveți experiență cu firme B2B?", "Da. Pentru firme B2B construim site-ul în jurul cererii de ofertă: servicii clare, capabilități, certificări și un formular care cere exact informațiile de care ai nevoie ca să răspunzi."],
+    ],
+  },
+  {
+    slug: "site-in-rate-constanta", city: "Constanța", inCity: "în Constanța", related: "creare-site-constanta",
+    intro: "În Constanța, multe afaceri depind de sezon. Banii intră vara, iar investițiile se fac înainte, când încasările sunt mici. Un site în rate se potrivește acestui ritm: îl lansezi înainte de sezon, plătești lunar și nu blochezi banii de care ai nevoie pentru pregătiri.",
+    local: "Scriem conținutul pentru Constanța și pentru stațiunile din jur, unde caută turiștii. Pentru cazare și restaurante adăugăm versiuni în alte limbi și legături directe spre rezervare, telefon sau WhatsApp.",
+    areas: ["Centru și Peninsula", "Tomis Nord și Tomis III", "Faleză Nord și Inel", "Mamaia și Năvodari", "Ovidiu și Lumina", "Eforie și Techirghiol"],
+    sectors: ["Cazare și turism", "Restaurante și beach bar-uri", "Clinici și servicii medicale", "Logistică și servicii pentru port", "Construcții și amenajări"],
+    faq: [
+      ["Cât de devreme ar trebui să comand site-ul înainte de sezon?", "Lansarea are loc în 10 zile lucrătoare de la brief, dar Google are nevoie de câteva săptămâni să indexeze și să poziționeze paginile. Ideal comanzi cu 2 sau 3 luni înainte de sezon."],
+      ["Pot primi rezervări din site?", "Da. Includem formular de rezervare sau legătura cu platforma de rezervări pe care o folosești deja, plus butoane de apel și WhatsApp pe mobil."],
+    ],
+  },
+  {
+    slug: "site-in-rate-brasov", city: "Brașov", inCity: "în Brașov", related: "creare-site-brasov",
+    intro: "Brașovul combină turismul cu industria și serviciile pentru firme. Turiștii caută din telefon, iar clienții B2B verifică site-ul înainte de o cerere de ofertă. Un site în rate îți dă un site care servește ambele tipuri de clienți, fără o plată mare la început.",
+    local: "Optimizăm pentru căutările din Brașov, Poiana Brașov și localitățile din jur. Pentru cazare și restaurante adăugăm versiuni în alte limbi, iar pentru firmele B2B structurăm site-ul în jurul cererii de ofertă.",
+    areas: ["Centrul Vechi și Schei", "Tractorul și Coresi", "Răcădău și Astra", "Noua și Dârste", "Poiana Brașov", "Ghimbav, Sânpetru și Cristian"],
+    sectors: ["Cazare și turism", "Restaurante și cafenele", "Clinici și servicii medicale", "Construcții și amenajări", "Industrie și firme B2B"],
+    faq: [
+      ["Pot avea site-ul în mai multe limbi pentru turiști?", "Da. Fiecare limbă suplimentară este o versiune completă a site-ului, menținută lunar. Pentru cazare recomandăm cel puțin engleza."],
+      ["Lucrați și cu firme din afara orașului?", "Da. Lucrăm online cu firme din tot județul Brașov și din toată țara, cu aceleași prețuri și același termen de lansare."],
+    ],
+  },
+];
+
+const cityPage = (c: CityRate): RatePage => ({
+  slug: c.slug,
+  keyword: `site în rate ${c.city}`,
+  metaTitle: `Site în rate ${c.city}, fără avans · LUNAR`,
+  desc: `Site în rate ${c.inCity} pentru firme: fără avans și fără dobândă, lansare în 10 zile lucrătoare. De la ${E} lei pe lună, al tău după 12 plăți.`,
+  eyebrow: `Site în rate ${c.city}`,
+  h1: `Site în rate ${c.inCity}.`,
+  h1Dim: "Fără avans, fără dobândă, al tău după 12 plăți.",
+  lede: c.intro,
+  sections: [
+    { h: `Cum funcționează un site în rate ${c.inCity}`, p: [
+      "Alegi planul, completezi datele firmei și plătești prima lună. Primești acces în portal, unde completezi brief-ul, iar din acel moment avem 10 zile lucrătoare să lansăm site-ul.",
+      "Plătești apoi o rată lunară fixă, cu factură pe firmă. Nu este un credit: nu există dobândă, comision sau verificare la bancă. După 12 rate, site-ul devine al tău.",
+    ] },
+    { h: "Ce intră în rata lunară", ul: INCLUDES },
+    { h: `Cât costă un site în rate ${c.inCity}`, p: [OFFER, "Prețurile sunt aceleași în toată țara și includ TVA. Nu există costuri de deplasare sau taxe locale, pentru că lucrăm online."], ul: PLANS_UL },
+    { h: `Site în rate pentru firme din ${c.city} și împrejurimi`, p: [c.local], ul: c.areas },
+    { h: `Domenii pentru care facem des site-uri ${c.inCity}`, ul: c.sectors },
+    { h: "Proprietate și garanții", p: [OWNERSHIP, "Dacă lansarea depășește 10 zile lucrătoare de la brief din vina noastră, luna următoare de abonament este gratuită."] },
+  ],
+  faq: [...c.faq, ...FAQ_COMMON],
+  updated: "2026-11-27",
+  area: c.city,
+  related: c.related,
+});
 
 export const RATE_PAGES: RatePage[] = [
   {
@@ -463,6 +566,7 @@ export const RATE_PAGES: RatePage[] = [
     ],
     updated: UPDATED,
   },
+  ...CITY_RATES.map(cityPage),
 ];
 
 export const ratePageBySlug = (slug: string) => RATE_PAGES.find((p) => p.slug === slug);

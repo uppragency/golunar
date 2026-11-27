@@ -67,13 +67,13 @@ export function WhySection({ onOrder }: { onOrder: () => void }) {
 }
 
 /* ---------- comparație ---------- */
-export function CompareSection({ onOrder }: { onOrder: () => void }) {
+export function CompareSection({ onOrder, guide = true }: { onOrder: () => void; guide?: boolean }) {
   return (
     <section className="sec compare" id="comparatie">
       <div className="wrap">
         <div className="sec-head reveal">
           <div><div className="eyebrow">Comparație</div><h2 style={{ marginTop: 20 }}>LUNAR, agenție sau AI. <span className="dim">Pe scurt.</span></h2></div>
-          <p>Am pus alături cele trei drumuri pe care le au antreprenorii. Detaliile sunt în <Link href="/resurse/diy-ai-builder-sau-agentie" className="inl">ghidul complet</Link>.</p>
+          <p>Am pus alături cele trei drumuri pe care le au antreprenorii.{guide && <> Detaliile sunt în <Link href="/resurse/diy-ai-builder-sau-agentie" className="inl">ghidul complet</Link>.</>}</p>
         </div>
         <div className="cmp-scroll reveal">
           <table className="cmp">

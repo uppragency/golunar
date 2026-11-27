@@ -148,7 +148,7 @@ function RatePageView({ r }: { r: RatePage }) {
       title={<>{r.h1} <span className="dim">{r.h1Dim}</span></>}
       lede={r.lede}
       meta={<><span className="pill acc"><span className="d" />Lansare în 10 zile lucrătoare</span><Link href="/website-4-99-lei" className="pill acc">Prima lună 4,99 lei</Link><span className="pill">Apoi {PLANS.essential.ron} lei / lună, TVA inclus</span><span className="pill">Al tău după 12 plăți</span></>}
-      jsonLd={[serviceLd(r.metaTitle.replace(" · LUNAR", ""), r.desc, `${SITE_URL}/${r.slug}`), faqLd(r.faq)]}
+      jsonLd={[serviceLd(r.metaTitle.replace(" · LUNAR", ""), r.desc, `${SITE_URL}/${r.slug}`, r.area), faqLd(r.faq)]}
     >
       <article className="article">
         {r.sections.map((s) => (
@@ -159,6 +159,7 @@ function RatePageView({ r }: { r: RatePage }) {
           </Fragment>
         ))}
         <div className="callout"><b>Începe cu prima lună la 4,99 lei</b><p>Comanzi online în 2 minute, completezi brief-ul în portal și lansăm în 10 zile lucrătoare. <Link className="inl" href="/website-4-99-lei">Vezi oferta</Link> sau <Link className="inl" href="/contact?subiect=nou">scrie-ne</Link> dacă ai întrebări.</p></div>
+        {r.related && r.area && <p>Vezi și pagina despre <Link className="inl" href={`/${r.related}`}>crearea de site-uri în {r.area}</Link>.</p>}
         <Faq faq={r.faq} />
         <h2>Citește și</h2>
         <ul className="lp-links">{others.map((o) => <li key={o.slug}><Link href={`/${o.slug}`}>{o.eyebrow}</Link></li>)}</ul>

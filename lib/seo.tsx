@@ -1,5 +1,6 @@
 import { SITE_URL } from "@/lib/env";
 import { PLANS } from "@/lib/plans";
+import { REVIEWS, ratingSummary } from "@/lib/reviews";
 
 export const ORG_ID = `${SITE_URL}/#org`;
 export const SITE_ID = `${SITE_URL}/#website`;
@@ -13,6 +14,12 @@ export const organizationLd = {
   "@id": ORG_ID,
   name: "LUNAR",
   alternateName: "GO LUNAR",
+  legalName: "UPPRMARKETING S.R.L.",
+  taxID: "52762670",
+  address: { "@type": "PostalAddress", streetAddress: "Str. Sergent Ilie Petre Nr. 84", addressLocality: "Chiajna", addressRegion: "Ilfov", addressCountry: "RO" },
+  foundingDate: "2025",
+  slogan: "Website-ul tău, live în 10 zile. O echipă care îl face mai bun în fiecare lună.",
+  knowsAbout: ["Web design", "Dezvoltare website", "Magazine online", "SEO", "Vizibilitate în AI", "Google Business Profile", "Optimizarea conversiilor"],
   url: SITE_URL,
   logo: { "@type": "ImageObject", url: `${SITE_URL}/logo-512.png`, width: 512, height: 512 },
   email: "hello@golunar.ro",
@@ -20,6 +27,16 @@ export const organizationLd = {
   areaServed: { "@type": "Country", name: "România" },
   knowsLanguage: ["ro", "en"],
   contactPoint: { "@type": "ContactPoint", contactType: "customer service", email: "hello@golunar.ro", availableLanguage: ["Romanian", "English"], areaServed: "RO" },
+};
+
+/** Rating agregat + recenzii, doar când există recenzii reale afișate pe pagină (lib/reviews.ts). */
+export const reviewsLd = () => {
+  const r = ratingSummary();
+  if (!r) return {};
+  return {
+    aggregateRating: { "@type": "AggregateRating", ratingValue: r.value, reviewCount: r.count, bestRating: 5, worstRating: 1 },
+    review: REVIEWS.map((x) => ({ "@type": "Review", author: { "@type": "Person", name: x.author }, datePublished: x.date, reviewBody: x.text, reviewRating: { "@type": "Rating", ratingValue: x.rating, bestRating: 5 } })),
+  };
 };
 
 export const websiteLd = {
@@ -42,6 +59,7 @@ export const offerCatalogLd = {
   provider: { "@id": ORG_ID },
   areaServed: { "@type": "Country", name: "România" },
   url: SITE_URL,
+  ...reviewsLd(),
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Abonamente LUNAR",

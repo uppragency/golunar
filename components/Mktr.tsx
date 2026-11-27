@@ -8,7 +8,7 @@ import { RATE_SLUGS } from "@/lib/rate-slugs";
 const KEY = process.env.NEXT_PUBLIC_MKTR_TRACKING_KEY;
 
 /** Pagini care prezintă oferta: raportate ca „categorie” (planurile și opțiunile din feed). */
-const OFFER_PAGES = new Set(["/website-4-99-lei", "/cum-lucram", "/garantii", ...RATE_SLUGS.map((s) => `/${s}`)]);
+const OFFER_PAGES = new Set(["/website-4-99-lei", "/oferta", "/cum-lucram", "/garantii", ...RATE_SLUGS.map((s) => `/${s}`)]);
 
 function load() {
   if (!KEY || document.getElementById("mktr-js")) return;
