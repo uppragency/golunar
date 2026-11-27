@@ -6,6 +6,7 @@ import RefCapture from "@/components/RefCapture";
 import Gtm, { GtmNoScript } from "@/components/Gtm";
 import CookieBanner from "@/components/CookieBanner";
 import Mktr from "@/components/Mktr";
+import Clarity from "@/components/Clarity";
 import { SITE_URL } from "@/lib/env";
 import { IS_PROD, JsonLd, organizationLd, websiteLd } from "@/lib/seo";
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RefCapture />
         <CookieBanner />
         <Mktr />
+        <Clarity />
       </body>
     </html>
   );

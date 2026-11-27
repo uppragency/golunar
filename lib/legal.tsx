@@ -1,6 +1,6 @@
 /* Textele legale LUNAR. Ultima actualizare: 21 noiembrie 2026. */
 
-export const LEGAL_UPDATED = "21 noiembrie 2026";
+export const LEGAL_UPDATED = "27 noiembrie 2026";
 
 const OP = "UPPRMARKETING S.R.L., cu sediul în Sat Chiajna, Com. Chiajna, Str. Sergent Ilie Petre Nr. 84, Bl. 1, Et. 7, Ap. 716, Județ Ilfov, CIF 52762670, Reg. com. J2025081624004";
 
@@ -118,6 +118,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
           <li>Supabase (bază de date, autentificare, stocare fișiere);</li>
           <li>Vercel (găzduirea golunar.ro și a website-urilor clienților);</li>
           <li>Resend (trimiterea emailurilor);</li>
+          <li>Microsoft Clarity (înregistrarea anonimă a modului în care este folosit site-ul: click-uri, derulare, pagini vizitate; datele introduse în formulare sunt mascate), doar cu acordul tău pentru cookie-uri;</li>
           <li>theMarketer (email marketing și analiza activității pe site, doar cu acordul tău pentru cookie-uri de marketing și, pentru newslettere, cu acordul de marketing);</li>
           <li>Sentry (monitorizarea erorilor tehnice, cu date stocate în UE și fără conținutul formularelor, cookie-uri sau adrese IP);</li>
           <li>Google (Tag Manager, Analytics, Ads, PageSpeed), doar cu consimțământul tău pentru analiză și marketing;</li>
@@ -181,6 +182,7 @@ export const LEGAL: Record<string, { title: string; lede: string; description: s
           <li><b>Google Tag Manager, Google Analytics 4</b> (_ga, _ga_*): statistici despre vizite și, prin Google signals, rapoarte agregate despre vârstă și interese. Durată: până la 2 ani.</li>
           <li><b>Google Ads</b> (_gcl_*, IDE, ar_debug): măsurarea conversiilor din reclame și remarketing (reclame LUNAR afișate celor care au vizitat site-ul). Durată: până la 13 luni.</li>
           <li><b>theMarketer</b> (cookie-uri proprii theMarketer): activitatea pe site (pagini, planul ales, comanda începută) asociată adresei de email pe care ne-o dai, pentru emailuri relevante, de exemplu amintirea unei comenzi neterminate. Durată: până la 2 ani.</li>
+          <li><b>Microsoft Clarity</b> (_clck, _clsk, CLID): modul în care vizitatorii folosesc paginile (click-uri, derulare), ca să îmbunătățim site-ul. Datele din formulare sunt mascate. Durată: până la 1 an.</li>
           <li><b>Meta Pixel</b> (_fbp), dacă este activat: măsurarea campaniilor Facebook și Instagram. Durată: până la 90 de zile.</li>
         </ul>
         <p>Folosim și Vercel Web Analytics, care măsoară vizitele fără cookie-uri și fără date care te identifică, și Sentry, care ne anunță erorile tehnice ale site-ului fără să plaseze cookie-uri.</p>
